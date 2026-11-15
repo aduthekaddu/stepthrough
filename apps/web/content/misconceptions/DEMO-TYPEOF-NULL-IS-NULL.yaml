@@ -1,0 +1,7 @@
+id: DEMO-TYPEOF-NULL-IS-NULL
+belief: "Demo belief for typeof null is null."
+predicts: Shown only in the component demo.
+truth: Shown only in the component demo.
+counterexample: Shown only in the component demo.
+sources: []
+lessons: [js-demo]

@@ -19,9 +19,11 @@ Some opening words that are not a prediction. We will delve into a binding here.
   code={`console.log(typeof null);`}
   answer="a"
   options={[
-    { id: "a", text: "null", misconception: "VAL-NOPE", feedback: "No." },
-    { id: "b", text: "object", feedback: "Yes." }
+    { id: "a", text: "null", feedback: "No." },
+    { id: "b", text: "object", feedback: "Yes." },
+    { id: "c", text: "undefined", misconception: "VAL-NOPE", feedback: "No." }
   ]}
+  explain="typeof null is a historical quirk."
 />
 <Viz example="missing" view="scope" />
 <Code runnable code={`console.log(3); // → 4`} />

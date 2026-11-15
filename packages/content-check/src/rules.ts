@@ -4,7 +4,7 @@ import {
   type Frontmatter,
   type GlossaryEntry,
   type Misconception,
-  PredictProps,
+  parsePredict,
 } from './schema.ts';
 
 export type Severity = 'error' | 'warning';
@@ -101,8 +101,7 @@ const predicts = (lesson: LessonInput) =>
   lesson.parsed.elements.filter((e) => e.name === 'Predict');
 
 function predictProps(el: JsxElement) {
-  const raw = { kind: 'choice', ...el.props };
-  return PredictProps.safeParse(raw);
+  return parsePredict(el.props);
 }
 
 const firstElement: Rule = (lesson) => {

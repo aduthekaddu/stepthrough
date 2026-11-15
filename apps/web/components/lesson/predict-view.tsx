@@ -28,7 +28,16 @@ type Draft = {
   committing: boolean;
 };
 
-export function PredictView({ spec, code }: { spec: PredictSpec; code: ReactNode }) {
+export function PredictView({
+  spec,
+  code,
+  beliefs,
+}: {
+  spec: PredictSpec;
+  code: ReactNode;
+  /** Misconception id → the belief in words, for the ids this Predict uses. */
+  beliefs: Readonly<Record<string, string>>;
+}) {
   const lesson = useLesson();
   const record = lesson.predictions?.get(spec.id);
   const uid = useId();
@@ -45,7 +54,12 @@ export function PredictView({ spec, code }: { spec: PredictSpec; code: ReactNode
       </p>
       {code}
       {record ? (
-        <Revealed spec={spec} record={record} showOffer={offerHere(lesson, spec)} />
+        <Revealed
+          spec={spec}
+          record={record}
+          beliefs={beliefs}
+          showOffer={offerHere(lesson, spec)}
+        />
       ) : (
         <PredictForm spec={spec} uid={uid} />
       )}
@@ -226,10 +240,12 @@ const sessionCommits = new Set<string>();
 function Revealed({
   spec,
   record,
+  beliefs,
   showOffer,
 }: {
   spec: PredictSpec;
   record: PredictionRow;
+  beliefs: Readonly<Record<string, string>>;
   showOffer: boolean;
 }) {
   const feedbackRef = useRef<HTMLDivElement>(null);
@@ -289,8 +305,9 @@ function Revealed({
           </span>
         </p>
         {!verdict.correct && verdict.misconceptionId && (
-          <p className="misconception-id panel-label">
-            Misconception <code>{verdict.misconceptionId}</code>
+          <p className="misconception-belief">
+            <span className="panel-label">The belief behind this answer</span>{' '}
+            {beliefs[verdict.misconceptionId] ?? verdict.misconceptionId}
           </p>
         )}
         {!verdict.correct && record.confidence === 'sure' && (

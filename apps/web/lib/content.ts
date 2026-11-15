@@ -1,6 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { Frontmatter } from '@stepthrough/content-check/schema';
+import {
+  Frontmatter,
+  GlossaryEntry,
+  HIDDEN_TRACKS,
+  Misconception,
+} from '@stepthrough/content-check/schema';
 import { parse } from 'yaml';
 import { z } from 'zod';
 
@@ -54,6 +59,30 @@ export function listLessons(): Lesson[] {
   return lessonCache;
 }
 
+/** Lessons on the learning path: everything except hidden tracks such as the component demo. */
+export function listPathLessons(): Lesson[] {
+  return listLessons().filter((l) => !HIDDEN_TRACKS.includes(l.track));
+}
+
+let misconceptionCache: Map<string, Misconception> | undefined;
+/** The misconception registry, content/misconceptions/<ID>.yaml, parsed once per build. */
+export function misconceptions(): Map<string, Misconception> {
+  if (misconceptionCache) return misconceptionCache;
+  const dir = path.join(CONTENT_DIR, 'misconceptions');
+  misconceptionCache = new Map();
+  if (existsSync(dir)) {
+    for (const name of readdirSync(dir)
+      .filter((n) => n.endsWith('.yaml'))
+      .sort()) {
+      const file = path.join(dir, name);
+      const result = Misconception.safeParse(parse(readFileSync(file, 'utf8')));
+      if (!result.success) throw new Error(`${file}: ${z.prettifyError(result.error)}`);
+      misconceptionCache.set(result.data.id, result.data);
+    }
+  }
+  return misconceptionCache;
+}
+
 export function findLesson(track: string, slug: string): Lesson {
   const lesson = listLessons().find((l) => l.track === track && l.slug === slug);
   if (!lesson) throw new Error(`No lesson at content/${track}/${slug}/index.mdx`);
@@ -66,14 +95,8 @@ export function lessonById(id: string): Lesson {
   return lesson;
 }
 
-const GlossaryEntry = z.object({
-  term: z.string(),
-  definition: z.string(),
-  aliases: z.array(z.string()).optional(),
-  spec: z.string().optional(),
-  introducedIn: z.string(),
-});
-export type GlossaryEntry = z.infer<typeof GlossaryEntry>;
+export type { GlossaryEntry };
+
 const GlossaryFile = z.record(z.string(), GlossaryEntry);
 
 // Terms live in content/glossary.yaml or one file per lesson in content/glossary/*.yaml.

@@ -1,0 +1,7 @@
+id: DEMO-SPREAD-SHARES-ARRAY
+belief: "Demo belief for spread shares array."
+predicts: Shown only in the component demo.
+truth: Shown only in the component demo.
+counterexample: Shown only in the component demo.
+sources: []
+lessons: [js-demo]

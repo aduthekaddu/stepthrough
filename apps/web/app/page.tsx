@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { ContinueLink } from '@/components/continue-link';
-import { type Lesson, listLessons } from '@/lib/content';
+import { type Lesson, listPathLessons } from '@/lib/content';
 import { trackTitle } from '@/lib/tracks';
 
 export default function Home() {
-  const lessons = listLessons();
+  const lessons = listPathLessons();
   const tracks = new Map<string, Lesson[]>();
   for (const lesson of lessons)
     tracks.set(lesson.track, [...(tracks.get(lesson.track) ?? []), lesson]);

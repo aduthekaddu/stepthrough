@@ -1,0 +1,7 @@
+id: DEMO-ASSIGN-COPIES
+belief: Assigning an object to a second name makes a copy of the object.
+predicts: A change made through the second name does not show through the first.
+truth: Assignment copies the reference, so both names lead to one object.
+counterexample: "const a = { n: 1 }; const b = a; b.n = 2; console.log(a.n) prints 2"
+sources: [https://developer.mozilla.org/en-US/docs/Glossary/Object_reference]
+lessons: [js-demo]

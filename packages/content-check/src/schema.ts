@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+/** Tracks that build pages (for tests and demos) but stay out of the learning path and content-check. */
+export const HIDDEN_TRACKS: readonly string[] = ['demo'];
+
 const Id = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'kebab-case id');
 
 export const Frontmatter = z.object({
@@ -37,35 +40,63 @@ export const Misconception = z.object({
 });
 export type Misconception = z.infer<typeof Misconception>;
 
+const MISCONCEPTION_ID = /^[A-Z]+(-[A-Z0-9]+)+$/;
+export const MisconceptionId = z.string().regex(MISCONCEPTION_ID, 'UPPER-KEBAB id like VAL-COPY');
+
 export const PredictOption = z.object({
-  id: z.string(),
+  id: z.string().min(1),
   text: z.string(),
-  misconception: z.string().optional(),
+  misconception: MisconceptionId.optional(),
   feedback: z.string().min(1),
 });
 
-export const PredictProps = z.discriminatedUnion('kind', [
-  z.object({
-    kind: z.literal('choice'),
-    id: z.string(),
-    prompt: z.string(),
-    code: z.string().optional(),
+const predictCommon = {
+  id: Id,
+  prompt: z.string().min(1),
+  code: z.string().optional(),
+  /** The mechanism sentence shown after every reveal, right or wrong. */
+  explain: z.string().min(1),
+};
+
+const ChoicePredict = z
+  .object({
+    ...predictCommon,
+    kind: z.literal('choice').default('choice'),
     answer: z.string(),
-    options: z.array(PredictOption).min(2).max(5),
-    explain: z.string().optional(),
-  }),
-  z.object({
-    kind: z.literal('text'),
-    id: z.string(),
-    prompt: z.string(),
-    code: z.string().optional(),
-    answer: z.string(),
-    wrong: z
-      .array(
-        z.object({ match: z.string(), misconception: z.string().optional(), feedback: z.string() }),
-      )
-      .default([]),
-    explain: z.string().optional(),
-  }),
-]);
+    options: z.array(PredictOption).min(3).max(4),
+  })
+  .check((ctx) => {
+    const { options, answer } = ctx.value;
+    const issue = (message: string) =>
+      ctx.issues.push({ code: 'custom', input: ctx.value, message });
+    const ids = options.map((o) => o.id);
+    if (new Set(ids).size !== ids.length) issue('option ids repeat');
+    const right = options.find((o) => o.id === answer);
+    if (!right) issue(`answer "${answer}" is not an option id`);
+    else if (right.misconception) issue('the answer option names a misconception');
+  });
+
+const TextPredict = z.object({
+  ...predictCommon,
+  kind: z.literal('text'),
+  answer: z.string().min(1),
+  wrong: z
+    .array(
+      z.object({
+        match: z.string(),
+        misconception: MisconceptionId.optional(),
+        feedback: z.string().min(1),
+      }),
+    )
+    .default([]),
+});
+
+/** One schema for Predict props: the build renders with it and content-check lints with it. */
+export const PredictProps = z.union([TextPredict, ChoicePredict]);
+
+/** Parses Predict props with the schema their kind selects, so errors name the real problem. */
+export function parsePredict(props: unknown) {
+  const kind = (props as { kind?: unknown } | null)?.kind;
+  return kind === 'text' ? TextPredict.safeParse(props) : ChoicePredict.safeParse(props);
+}
 export type PredictProps = z.infer<typeof PredictProps>;

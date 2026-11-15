@@ -1,6 +1,6 @@
 ---
 id: js-demo
-track: javascript
+track: demo
 title: "Component demo: names, objects and typeof"
 minutes: 10
 prereqs: []
@@ -29,9 +29,9 @@ b.n = 2;
 console.log(a.n);`}
   answer="b"
   options={[
-    { id: "a", text: "`1`", misconception: "assignment-copies-object", feedback: "You read `const b = a` as making a copy of the object. It makes a second name for the same object, so the change through `b` is visible through `a`." },
+    { id: "a", text: "`1`", misconception: "DEMO-ASSIGN-COPIES", feedback: "You read `const b = a` as making a copy of the object. It makes a second name for the same object, so the change through `b` is visible through `a`." },
     { id: "b", text: "`2`", feedback: "Both names point at one object, so a change made through `b` is seen through `a`." },
-    { id: "c", text: "It throws a `TypeError`, because `a` is a constant", misconception: "const-freezes-object", feedback: "`const` stops you from pointing `a` at something else. It does not stop anyone from changing the object that `a` points at." }
+    { id: "c", text: "It throws a `TypeError`, because `a` is a constant", misconception: "DEMO-CONST-FREEZES-OBJECT", feedback: "`const` stops you from pointing `a` at something else. It does not stop anyone from changing the object that `a` points at." }
   ]}
   explain="Assigning an object to a new name copies the reference, not the object. Both names now lead to the same object."
 />
@@ -72,8 +72,8 @@ console.log(typeof []);`}
   answer={`object
 object`}
   wrong={[
-    { match: "null\narray", misconception: "typeof-names-exact-type", feedback: "`typeof` does not have a separate name for `null` or for arrays. It reports both as \"object\"." },
-    { match: "null\nobject", misconception: "typeof-null-is-null", feedback: "`null` is its own type in the language, but `typeof null` has returned \"object\" since the first version of JavaScript." }
+    { match: "null\narray", misconception: "DEMO-TYPEOF-NAMES-EXACT-TYPE", feedback: "`typeof` does not have a separate name for `null` or for arrays. It reports both as \"object\"." },
+    { match: "null\nobject", misconception: "DEMO-TYPEOF-NULL-IS-NULL", feedback: "`null` is its own type in the language, but `typeof null` has returned \"object\" since the first version of JavaScript." }
   ]}
   explain='`typeof` returns "object" for `null` and for arrays. To tell an array apart, use `Array.isArray`.'
 />
@@ -98,8 +98,8 @@ console.log(list.length);`}
   answer="a"
   options={[
     { id: "a", text: "`2`", feedback: "The brackets build a new array, and `push` changes only that new array." },
-    { id: "b", text: "`3`", misconception: "spread-shares-array", feedback: "You read `[...list]` as a second name for `list`. The brackets build a new array and copy the items into it, so `push` changes only the copy." },
-    { id: "c", text: "It throws, because `list` is a constant", misconception: "const-freezes-object", feedback: "`const` stops `list` from pointing at a different array. Changing an array, as `push` does, is allowed." }
+    { id: "b", text: "`3`", misconception: "DEMO-SPREAD-SHARES-ARRAY", feedback: "You read `[...list]` as a second name for `list`. The brackets build a new array and copy the items into it, so `push` changes only the copy." },
+    { id: "c", text: "It throws, because `list` is a constant", misconception: "DEMO-CONST-FREEZES-OBJECT", feedback: "`const` stops `list` from pointing at a different array. Changing an array, as `push` does, is allowed." }
   ]}
   explain="`[...list]` creates a new array. Changing it leaves the original alone."
 />

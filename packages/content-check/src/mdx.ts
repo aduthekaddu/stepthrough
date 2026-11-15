@@ -37,7 +37,8 @@ export function literal(node: Expression): unknown {
     case 'Literal':
       return node.value;
     case 'TemplateLiteral':
-      if (node.expressions.length) throw new Error('template literals in props cannot contain placeholders');
+      if (node.expressions.length)
+        throw new Error('template literals in props cannot contain placeholders');
       return node.quasis.map((q) => q.value.cooked ?? q.value.raw).join('');
     case 'ArrayExpression':
       return node.elements.map((el) => {

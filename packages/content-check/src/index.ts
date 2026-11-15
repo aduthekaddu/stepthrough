@@ -3,16 +3,17 @@ import path from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { parseLesson } from './mdx.ts';
 import { type Context, type Finding, type LessonInput, RULES } from './rules.ts';
-import { Frontmatter, GlossaryFile, Misconception } from './schema.ts';
+import { Frontmatter, GlossaryFile, HIDDEN_TRACKS, Misconception } from './schema.ts';
 
 export type { Finding } from './rules.ts';
 
 function lessonDirs(root: string): string[] {
   const out: string[] = [];
+  // Hidden tracks (see HIDDEN_TRACKS) are skipped at the top level.
   const walk = (dir: string) => {
     for (const name of readdirSync(dir)) {
       const full = path.join(dir, name);
-      if (!statSync(full).isDirectory()) continue;
+      if (!statSync(full).isDirectory() || (dir === root && HIDDEN_TRACKS.includes(name))) continue;
       if (existsSync(path.join(full, 'index.mdx'))) out.push(full);
       else walk(full);
     }
