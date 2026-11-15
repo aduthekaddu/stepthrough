@@ -71,7 +71,7 @@ const FIXTURES: (VizProps & { id: string; heading: string; note: string })[] = [
 
 export default function VizPlayground() {
   return (
-    <main className="mx-auto max-w-[1100px] px-4 py-12">
+    <main className="mx-auto max-w-[1100px] px-4 py-12 [counter-reset:viz-figure]">
       <h1 className="text-3xl">Visualizer playground</h1>
       <p className="mt-2 max-w-[66ch]">
         Every fixture in <code>apps/web/viz-fixtures</code>, traced by the real engine at build

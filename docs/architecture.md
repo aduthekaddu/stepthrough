@@ -12,7 +12,8 @@ The learner opens lessons 0.1, 1.1 and 1.2, commits to predictions before seeing
 apps/web                    Next.js 16 App Router, static export
   app/                      / (path map), /learn/[track]/[lesson]
   components/lesson         Predict, Term, Sidenote, Callout, Code, Card, ExplainBack, InterviewQ
-  components/viz            MemoryDiagram, CallStack + EnvChain (consume a Trace)
+  components/viz            Viz (MDX, reads a generated trace), VizPanel, Diagram (scope, memory, both)
+  scripts/build-traces.ts   traces fixtures and lesson examples into generated/traces before next build
   content/<track>/<lesson>/ index.mdx, outline.yaml, examples/*.js
   content/glossary.yaml     every technical term, its definition and the lesson that introduces it
   content/misconceptions/   registry of wrong beliefs, each with what it predicts

@@ -234,7 +234,6 @@
   color: var(--muted);
   font: 12px / 1 var(--mono);
   white-space: nowrap;
-  opacity: 0.7;
 }
 
 .record {
@@ -278,6 +277,11 @@
   background: color-mix(in srgb, var(--heap) var(--tint), var(--paper));
 }
 
+/* Muted text fails 4.5:1 on the 14% heap tint, so labels inside heap boxes use ink. */
+.heapBox :is(.decl, .heapId, .muted) {
+  color: var(--ink);
+}
+
 .heapBox .boxHeader {
   border-block-end-color: color-mix(in srgb, var(--heap) 35%, transparent);
 }
@@ -313,7 +317,7 @@
 
 .value {
   display: inline-grid;
-  min-inline-size: 0;
+  flex-shrink: 0;
 }
 
 .value > * {
@@ -341,12 +345,14 @@
 }
 
 .was {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 1px 4px;
   border: 1px dashed var(--muted);
   border-radius: 3px;
   color: var(--muted);
   font: 11px / 1 var(--sans);
-  opacity: 0.8;
 }
 
 .port {

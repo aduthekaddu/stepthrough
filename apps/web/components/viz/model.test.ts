@@ -139,6 +139,13 @@ describe('describeStep', () => {
     expect(text).toContain('greet = function greet');
   });
 
+  it('names the shared object when a write goes through an alias', () => {
+    const step = aliasing.frames.findIndex((f) => f.span?.startLine === 4);
+    expect(describeStep(aliasing, step, recordOwners(aliasing))).toBe(
+      'Property n of object #0 changes from 1 to 2. Line 4 runs next.',
+    );
+  });
+
   it('explains why a record outlives its call when nothing was authored', () => {
     const bare = { ...closure, frames: closure.frames.map((f) => ({ ...f, narration: null })) };
     expect(describeStep(bare, afterMake, owners)).toContain(

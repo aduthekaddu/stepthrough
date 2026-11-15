@@ -4,7 +4,14 @@ import type { ArrayItem, BindingState, Frame, HeapObject } from '@stepthrough/tr
 import { AnimatePresence, motion, type Transition } from 'motion/react';
 import { type ReactNode, useEffect, useId, useRef } from 'react';
 import { type ArrowKind, beforeStates, type Rect, type Scene, slotKey, slots } from './layout.ts';
-import { type Change, functionName, heapLabel, inlineValue, stateKey } from './model.ts';
+import {
+  type Change,
+  callLabel,
+  functionTitle,
+  heapLabel,
+  inlineValue,
+  stateKey,
+} from './model.ts';
 import styles from './viz.module.css';
 
 /** reduced: the learner asked for less motion. instant: a new step arrived mid-animation. */
@@ -129,7 +136,7 @@ function Ghost({
 }
 
 function heapTitle(obj: HeapObject): string {
-  if (obj.kind === 'function') return `ƒ ${functionName(obj)}${obj.arrow ? ' (arrow)' : ''}`;
+  if (obj.kind === 'function') return functionTitle(obj);
   if (obj.kind === 'array') return 'array';
   return obj.className ?? 'object';
 }
@@ -252,7 +259,7 @@ export function Diagram({
                 data={{ 'data-running': f.running || undefined }}
                 {...common}
               >
-                {f.frame.fn === '(script)' ? 'script' : `${f.frame.fn}()`}
+                {callLabel(f.frame)}
                 {f.running && (
                   <span className={styles.srOnly}>
                     {' '}
@@ -272,18 +279,19 @@ export function Diagram({
                   y: g.rect.y,
                   width: g.rect.w,
                   height: g.rect.h,
-                  opacity: 0.7,
+                  opacity: 0,
                 }}
                 animate={{
                   x: g.rect.x,
                   y: g.rect.y,
                   width: g.rect.w,
                   height: g.rect.h,
-                  opacity: 0.7,
+                  opacity: 1,
                 }}
                 exit={{ opacity: 0, transition: exitTransition(mode) }}
+                transition={fadeTransition(mode)}
               >
-                {g.frame.fn}() returned
+                {callLabel(g.frame)}
               </motion.li>
             ))}
           </AnimatePresence>
@@ -361,16 +369,12 @@ export function Diagram({
                     {obj.kind === 'function' && (
                       <li className={styles.row}>
                         <span className={styles.decl}>[[Environment]]</span>{' '}
-                        {scene.view === 'both' ? (
+                        {scene.envArrows ? (
                           <>
                             <span className={styles.srOnly}>
                               {envLabels.get(obj.envId ?? '') ?? 'none'}
                             </span>
-                            <span
-                              className={styles.port}
-                              data-side={scene.narrow ? undefined : 'left'}
-                              aria-hidden="true"
-                            />
+                            <span className={styles.port} data-side="left" aria-hidden="true" />
                           </>
                         ) : (
                           <span>

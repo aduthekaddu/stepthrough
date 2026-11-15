@@ -6,7 +6,14 @@ import type {
   HeapObject,
   StackFrame,
 } from '@stepthrough/trace';
-import { type Change, type Concept, heapLabel, inlineValue } from './model.ts';
+import {
+  type Change,
+  type Concept,
+  callLabel,
+  functionTitle,
+  heapLabel,
+  inlineValue,
+} from './model.ts';
 
 /** `scope`: stack and records. `memory`: records and heap. `both`: all three lanes. */
 export type View = 'scope' | 'memory' | 'both';
@@ -42,6 +49,8 @@ export type Arrow = { id: string; kind: ArrowKind; d: string; faint: boolean };
 export type Scene = {
   view: View;
   narrow: boolean;
+  /** Function boxes point at their [[Environment]] with an arrow; otherwise they name it. */
+  envArrows: boolean;
   width: number;
   height: number;
   lanes: Lane[];
@@ -61,14 +70,13 @@ export type LayoutInput = {
   detached: ReadonlySet<string>;
 };
 
-const NARROW_BELOW: Record<View, number> = { scope: 460, memory: 520, both: 640 };
+const NARROW_BELOW: Record<View, number> = { scope: 420, memory: 480, both: 560 };
+
+/** Room between the records and the heap for wires. */
+const HEAP_GAP = 60;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.max(Math.min(min, max), Math.min(value, max));
-
-function textWidth(chars: number): number {
-  return Math.ceil(chars * METRICS.char) + 20;
-}
 
 function boxHeight(rows: number): number {
   return METRICS.header + Math.max(1, rows) * METRICS.row + METRICS.padBottom;
@@ -78,20 +86,41 @@ function rowY(rect: Rect, index: number): number {
   return rect.y + METRICS.header + index * METRICS.row + METRICS.row / 2;
 }
 
-/** Characters a value takes in a row. A ref is a wire (`#id` and a port) unless the view has no heap lane. */
-function valueChars(state: BindingState | ArrayItem, heap: readonly HeapObject[], view: View) {
+/** Approximate advance widths: 13px mono for code text, 11px sans for labels. */
+const MONO = METRICS.char;
+const SANS = 6.4;
+const GAP = 6;
+const ROW_PAD = 16 + 8;
+
+function valueWidth(state: BindingState | ArrayItem, heap: readonly HeapObject[], view: View) {
+  if (state.kind === 'uninitialized') return 'uninitialized'.length * SANS + 12;
+  if (state.kind === 'hole') return 56;
+  if (state.kind === 'ref' && view !== 'scope') return heapLabel(state.heapId).length * MONO;
   if (state.kind === 'ref')
-    return view !== 'scope'
-      ? heapLabel(state.heapId).length + 2
-      : inlineValue(state, heap).length + heapLabel(state.heapId).length + 1;
-  return inlineValue(state, heap).length;
+    return (inlineValue(state, heap).length + 1 + heapLabel(state.heapId).length) * MONO;
+  return inlineValue(state, heap).length * MONO;
 }
 
-function ghostChars(
+function ghostWidth(
   before: BindingState | ArrayItem | null | undefined,
   heap: readonly HeapObject[],
 ) {
-  return before ? 5 + inlineValue(before, heap).length : 0;
+  return before ? GAP + (4 + inlineValue(before, heap).length) * SANS + 10 : 0;
+}
+
+/** Width of a row: a sans label (decl or key), an optional mono name, the value and its ghost. */
+function rowWidth(
+  label: string,
+  name: string,
+  state: BindingState | ArrayItem,
+  before: BindingState | ArrayItem | null | undefined,
+  heap: readonly HeapObject[],
+  view: View,
+) {
+  const nameW = name ? GAP + (name.length + 2) * MONO + GAP : GAP;
+  return (
+    ROW_PAD + label.length * SANS + nameW + valueWidth(state, heap, view) + ghostWidth(before, heap)
+  );
 }
 
 const horizontal = (x0: number, y0: number, x1: number, y1: number) => {
@@ -106,6 +135,11 @@ const bulge = (x0: number, y0: number, x1: number, y1: number, b: number) =>
 /** Child record's header to its parent's lower-left corner, like a tree outline. */
 const elbow = (x0: number, y0: number, x1: number, y1: number) =>
   `M ${x0} ${y0} C ${x1} ${y0}, ${x1} ${y0}, ${x1} ${y1}`;
+
+function heapTitleChars(obj: HeapObject): number {
+  if (obj.kind === 'function') return functionTitle(obj).length;
+  return obj.kind === 'object' ? (obj.className ?? 'object').length : 5;
+}
 
 /** Records in tree order: each parent first, then its children in trace order. */
 function treeOrder(envs: readonly EnvRecord[]): { env: EnvRecord; depth: number }[] {
@@ -174,31 +208,60 @@ export function layoutScene({ frame, changes, view, width, detached }: LayoutInp
   const hasStack = view !== 'memory';
   const hasHeap = view !== 'scope';
   const heap = frame.heap;
+  const envArrows = view === 'both' && !narrow;
 
   const before = beforeStates(changes);
 
-  const stackW = hasStack ? (narrow ? 84 : 112) : 0;
-  const envX = hasStack ? stackW + (narrow ? 20 : 40) : 0;
+  const longestCall = Math.max(0, ...frame.stack.map((f) => callLabel(f).length));
+  const stackW = hasStack
+    ? clamp(Math.ceil(longestCall * MONO) + 22, narrow ? 64 : 80, narrow ? 104 : 140)
+    : 0;
+  const envX = hasStack ? stackW + (narrow ? 12 : 36) : 0;
+  const top = M.laneLabel;
+  const ordered = treeOrder(frame.envs);
+  const heapObjects = hasHeap ? heapOrder(frame, ordered) : [];
+  const heapHasLinks = heapObjects.some((obj) => slots(obj).some((item) => item.kind === 'ref'));
+  /** Bulging arrows need room on the right: scope-view closures, narrow wires, heap links. */
+  const gutter = narrow ? 36 : view === 'scope' || heapHasLinks ? M.gutter : 8;
+
+  const heapWidth = (obj: HeapObject, max: number) => {
+    const header = (heapTitleChars(obj) + heapLabel(obj.id).length) * 7.2 + 16 + 16;
+    const rows =
+      obj.kind === 'function'
+        ? [
+            ROW_PAD +
+              15 * SANS +
+              (envArrows
+                ? 0
+                : GAP + (frame.envs.find((e) => e.id === obj.envId)?.label.length ?? 8) * MONO),
+          ]
+        : slots(obj).map((item, i) =>
+            rowWidth(
+              obj.kind === 'array' ? `[${i}]` : `${slotKey(obj, i)}:`,
+              '',
+              item,
+              before.slots.get(`${obj.id}/${slotKey(obj, i)}`),
+              heap,
+              view,
+            ),
+          );
+    return clamp(Math.ceil(Math.max(header, ...rows)), 110, max);
+  };
+  const heapNeed = narrow ? 0 : Math.max(0, ...heapObjects.map((obj) => heapWidth(obj, 240)));
   const envMax =
     narrow || !hasHeap
-      ? width - envX - M.gutter
-      : Math.min(300, (width - envX - 72 - M.gutter) * 0.55);
-  const top = M.laneLabel;
+      ? width - envX - gutter
+      : Math.min(340, width - envX - HEAP_GAP - heapNeed - gutter);
 
   const records: RecordNode[] = [];
   let y = top;
-  for (const { env, depth } of treeOrder(frame.envs)) {
-    const headerChars = env.label.length + (detached.has(env.id) ? 14 : 0);
-    const rowChars = env.bindings.map(
-      (b) =>
-        b.decl.length +
-        b.name.length +
-        4 +
-        valueChars(b.state, heap, view) +
-        ghostChars(before.bindings.get(`${env.id}/${b.name}`), heap),
+  for (const { env, depth } of ordered) {
+    const header = 16 + env.label.length * 7 + (detached.has(env.id) ? GAP + 10 * SANS : 0);
+    const rows = env.bindings.map((b) =>
+      rowWidth(b.decl, b.name, b.state, before.bindings.get(`${env.id}/${b.name}`), heap, view),
     );
     const indent = depth * M.indent;
-    const w = clamp(textWidth(Math.max(headerChars, ...rowChars)), 150, envMax - indent);
+    const w = clamp(Math.ceil(Math.max(header, ...rows)), 150, envMax - indent);
     const h = boxHeight(env.bindings.length);
     records.push({
       id: env.id,
@@ -243,47 +306,28 @@ export function layoutScene({ frame, changes, view, width, detached }: LayoutInp
   }
 
   const heapNodes: HeapNode[] = [];
-  const heapX = narrow ? envX : envRight + 72;
-  const heapMax = width - heapX - M.gutter;
+  const heapX = narrow ? envX : envRight + HEAP_GAP;
+  const heapMax = width - heapX - gutter;
   const heapTop = narrow ? Math.max(envBottom, stackBottom) + M.laneLabel + 16 : top;
   const anchors = new Map<string, number>();
-  if (hasHeap) {
-    for (const r of records)
-      r.env.bindings.forEach((b, i) => {
-        if (b.state.kind === 'ref' && !anchors.has(b.state.heapId))
-          anchors.set(b.state.heapId, rowY(r.rect, i));
-      });
-    let cursor = heapTop;
-    for (const obj of heapOrder(frame, records)) {
-      const items = slots(obj);
-      const rowChars =
-        obj.kind === 'function'
-          ? [
-              view === 'both'
-                ? 16
-                : 17 + (frame.envs.find((e) => e.id === obj.envId)?.label.length ?? 4),
-            ]
-          : items.map(
-              (item, i) =>
-                slotKey(obj, i).length +
-                4 +
-                valueChars(item, heap, view) +
-                ghostChars(before.slots.get(`${obj.id}/${slotKey(obj, i)}`), heap),
-            );
-      const headerChars =
-        (obj.kind === 'function' ? obj.name.length + 2 : 8) + heapLabel(obj.id).length + 2;
-      const w = clamp(textWidth(Math.max(headerChars, ...rowChars)), 110, heapMax);
-      const h = boxHeight(obj.kind === 'function' ? 1 : items.length);
-      const anchor = narrow ? undefined : anchors.get(obj.id);
-      const boxY = Math.max(cursor, anchor === undefined ? cursor : anchor - M.header / 2);
-      const rect = { x: heapX, y: boxY, w, h };
-      heapNodes.push({ id: obj.id, obj, rect });
-      items.forEach((item, i) => {
-        if (item.kind === 'ref' && !anchors.has(item.heapId))
-          anchors.set(item.heapId, rowY(rect, i));
-      });
-      cursor = boxY + h + M.gap;
-    }
+  for (const r of records)
+    r.env.bindings.forEach((b, i) => {
+      if (b.state.kind === 'ref' && !anchors.has(b.state.heapId))
+        anchors.set(b.state.heapId, rowY(r.rect, i));
+    });
+  let cursor = heapTop;
+  for (const obj of heapObjects) {
+    const items = slots(obj);
+    const w = heapWidth(obj, heapMax);
+    const h = boxHeight(obj.kind === 'function' ? 1 : items.length);
+    const anchor = narrow ? undefined : anchors.get(obj.id);
+    const boxY = Math.max(cursor, anchor === undefined ? cursor : anchor - M.header / 2);
+    const rect = { x: narrow ? Math.max(envX, envRight - w) : heapX, y: boxY, w, h };
+    heapNodes.push({ id: obj.id, obj, rect });
+    items.forEach((item, i) => {
+      if (item.kind === 'ref' && !anchors.has(item.heapId)) anchors.set(item.heapId, rowY(rect, i));
+    });
+    cursor = boxY + h + M.gap;
   }
 
   const recordById = new Map(records.map((r) => [r.id, r]));
@@ -316,7 +360,7 @@ export function layoutScene({ frame, changes, view, width, detached }: LayoutInp
     }
 
   let lap = 0;
-  const nextBulge = () => 26 + 10 * (lap++ % 4);
+  const nextBulge = () => 22 + 8 * (lap++ % 4);
   for (const r of records)
     r.env.bindings.forEach((b, i) => {
       const ref = b.state;
@@ -364,23 +408,22 @@ export function layoutScene({ frame, changes, view, width, detached }: LayoutInp
         faint: false,
       });
     });
-    if (view === 'both' && obj.kind === 'function' && obj.envId !== null) {
+    if (envArrows && obj.kind === 'function' && obj.envId !== null) {
       const target = recordById.get(obj.envId);
       if (!target) continue;
       const t = target.rect;
       arrows.push({
         id: `env:${obj.id}`,
         kind: 'env',
-        d: narrow
-          ? bulge(rect.x + rect.w, rowY(rect, 0), t.x + t.w, headerY(t), nextBulge())
-          : horizontal(rect.x, rowY(rect, 0), t.x + t.w, headerY(t)),
+        d: horizontal(rect.x, rowY(rect, 0), t.x + t.w, headerY(t)),
         faint: false,
       });
     }
   }
 
   const lanes: Lane[] = [];
-  if (hasStack) lanes.push({ concept: 'stack', label: 'Call stack', x: 0, y: 0 });
+  if (hasStack)
+    lanes.push({ concept: 'stack', label: narrow ? 'Stack' : 'Call stack', x: 0, y: 0 });
   lanes.push({ concept: 'env', label: 'Records', x: envX, y: 0 });
   if (hasHeap)
     lanes.push({ concept: 'heap', label: 'Heap', x: heapX, y: narrow ? heapTop - M.laneLabel : 0 });
@@ -394,6 +437,7 @@ export function layoutScene({ frame, changes, view, width, detached }: LayoutInp
   return {
     view,
     narrow,
+    envArrows,
     width,
     height: Math.max(...bottoms) + 8,
     lanes,

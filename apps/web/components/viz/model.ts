@@ -197,6 +197,12 @@ export function closuresOver(frame: Frame, envId: string): HeapObject[] {
   return frame.heap.filter((obj) => obj.kind === 'function' && obj.envId === envId);
 }
 
+/** What a stack bar says: the function's name, or "script" for top-level code. */
+export function callLabel(frame: StackFrame): string {
+  if (frame.fn === '(script)') return 'script';
+  return frame.fn === '(anonymous)' ? 'anonymous()' : `${frame.fn}()`;
+}
+
 export function heapLabel(id: string): string {
   return `#${id.replace(/^obj(?=\d+$)/, '')}`;
 }
@@ -206,6 +212,13 @@ export function functionName(obj: Extract<HeapObject, { kind: 'function' }>): st
 }
 
 const PREVIEW_CHARS = 28;
+
+/** How a function is drawn: `ƒ inc`, `ƒ inc =>` for a named arrow, `ƒ () =>` for an anonymous one. */
+export function functionTitle(obj: Extract<HeapObject, { kind: 'function' }>): string {
+  const name = functionName(obj);
+  if (!obj.arrow) return `ƒ ${name}`;
+  return name === 'anonymous' ? 'ƒ () =>' : `ƒ ${name} =>`;
+}
 
 /** Compact text for a value drawn inline, e.g. `{n: 2}`, `[1, empty]` or `ƒ inc`. */
 export function inlineValue(
@@ -218,7 +231,7 @@ export function inlineValue(
   if (state.kind === 'hole') return 'empty';
   const obj = heap.find((h) => h.id === state.heapId);
   if (!obj) return heapLabel(state.heapId);
-  if (obj.kind === 'function') return `ƒ ${functionName(obj)}`;
+  if (obj.kind === 'function') return functionTitle(obj);
   if (nested) return obj.kind === 'array' ? '[…]' : '{…}';
   const text =
     obj.kind === 'array'
@@ -274,11 +287,12 @@ function describeChange(
       const record = frame.envs.find(
         (e) => detached.has(e.id) && owners.get(e.id) === change.frame.callId,
       );
-      if (!record) return `${change.frame.fn}() has left the stack.`;
+      if (change.frame.fn === '(script)') return null;
+      if (!record) return `${callLabel(change.frame)} has left the stack.`;
       const holders = closuresOver(frame, record.id).map((f) =>
         f.kind === 'function' ? functionName(f) : f.id,
       );
-      return `${change.frame.fn}() has left the stack, but its record "${record.label}" stays, because ${plural(holders)} still ${holders.length === 1 ? 'points' : 'point'} to it.`;
+      return `${callLabel(change.frame)} has left the stack, but its record "${record.label}" stays, because ${plural(holders)} still ${holders.length === 1 ? 'points' : 'point'} to it.`;
     }
     case 'record-added':
       return change.env.kind === 'global'
@@ -310,8 +324,8 @@ function describeChange(
       const owner = heap.find((h) => h.id === change.heapId);
       const target =
         owner?.kind === 'array'
-          ? `${heapLabel(change.heapId)}[${change.slot}]`
-          : `${heapLabel(change.heapId)}.${change.slot}`;
+          ? `Slot [${change.slot}] of array ${heapLabel(change.heapId)}`
+          : `Property ${change.slot} of object ${heapLabel(change.heapId)}`;
       if (change.after === null) return `${target} is removed.`;
       const after = spokenValue(change.after, heap);
       if (change.before === null) return `${target} is set to ${after}.`;
@@ -354,10 +368,10 @@ export function describeStep(
       const contents = record?.bindings.length
         ? ` with ${listBindings(record, frame.heap)}`
         : ', with no bindings';
-      return `${top?.fn ?? 'A function'}() is called. Its new record "${record?.label ?? '?'}" starts${contents}.`;
+      return `${top ? callLabel(top) : 'A function'} is called. Its new record "${record?.label ?? '?'}" starts${contents}.`;
     }
     case 'return':
-      return `${top?.fn ?? 'The function'}() returns. Its call leaves the stack next.`;
+      return `${top ? callLabel(top) : 'The function'} returns. Its call leaves the stack next.`;
     default:
       break;
   }
