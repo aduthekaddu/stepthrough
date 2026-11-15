@@ -1,23 +1,13 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { Frontmatter } from '@stepthrough/content-check/schema';
 import { parse } from 'yaml';
 import { z } from 'zod';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 
-export const Frontmatter = z.object({
-  id: z.string().regex(/^[a-z0-9-]+$/),
-  track: z.string(),
-  title: z.string(),
-  minutes: z.number().int().positive(),
-  prereqs: z.array(z.string()),
-  outcomes: z.array(z.string()).min(1).max(3),
-  sources: z.array(z.url()).min(1),
-  interviewTags: z.array(z.string()),
-  status: z.enum(['draft', 'reviewed']),
-  verifiedAt: z.iso.date(),
-});
-export type Frontmatter = z.infer<typeof Frontmatter>;
+// One schema for the build and for content-check, so the two cannot drift.
+export { Frontmatter };
 
 export type Lesson = { track: string; slug: string; href: string; meta: Frontmatter };
 

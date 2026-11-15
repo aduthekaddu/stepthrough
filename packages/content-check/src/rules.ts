@@ -182,8 +182,10 @@ const predictOutput: Rule = (lesson) => {
     }
     const expected =
       p.kind === 'choice' ? (p.options.find((o) => o.id === p.answer)?.text ?? '') : p.answer;
+    // Option text may be written as inline code (`2`) so it renders in monospace.
     const norm = (s: string) =>
       s
+        .replace(/^`([^`]*)`$/, '$1')
         .split('\n')
         .map((l) => l.trimEnd())
         .join('\n')
