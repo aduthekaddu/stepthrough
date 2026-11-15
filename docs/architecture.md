@@ -1,87 +1,65 @@
 # Architecture
 
-Status: proposed, 2026-11-15. This file is the developer-facing copy of the design. `GROUNDWORK_BUILD_SPEC.md` is the product spec; where this file departs from it, the reason is in `DECISIONS.md`.
+Status: accepted for the first slice, 2026-11-15, after an independent review by GPT-6.1 Terra (findings in `DECISIONS.md`). `GROUNDWORK_BUILD_SPEC.md` is the product spec; where this file departs from it, `DECISIONS.md` says why.
 
-## What the first slice delivers
+## First slice
 
-The learner opens a lesson, answers predictions before seeing results, steps through visualizers whose state comes from a real JavaScript engine, runs code in a sandbox, and gets review cards saved in the browser. Lessons 0.1, 1.1 and 1.2 ship first. CI proves every code block and every trace.
+The learner opens lessons 0.1, 1.1 and 1.2, commits to predictions before seeing results, steps through visualizers whose state comes from a real JavaScript engine, runs code in a sandbox, and gets review cards saved in the browser. Only synchronous examples are traced in this slice. Async jobs, generators, the browser and Node event loops, live tracing of learner code, and the review pages come later.
 
 ## Repository
 
 ```
-apps/web                 Next.js 16 App Router, static export (output: 'export')
-  app/                   routes: / (path map), /learn/[track]/[lesson], /review, /today, /playground
-  components/lesson      Predict, Reveal, Callout, Sidenote, Term, Code, Card, ExplainBack, InterviewQ
-  components/viz         MemoryDiagram, CallStack, EnvChain, ... (consume a projected Trace)
-  content/<track>/*.mdx  lessons, frontmatter validated by Zod at build
-packages/trace           Trace types, engine262 generator, teaching projection, narration binder
-packages/sandbox         Web Worker runner, describe/it/expect, TS transpile (typescript@6)
-packages/srs             card model, ts-fsrs 6 wrapper, Dexie schema
-packages/content-check   CLI: run code blocks, check // → annotations and Predict answers, banned phrases, frontmatter
-examples/<id>/           source.js + narration.ts + generated trace.json (golden file)
+apps/web                    Next.js 16 App Router, static export
+  app/                      / (path map), /learn/[track]/[lesson]
+  components/lesson         Predict, Term, Sidenote, Callout, Code, Card, ExplainBack, InterviewQ
+  components/viz            MemoryDiagram, CallStack + EnvChain (consume a Trace)
+  content/<track>/<lesson>/ index.mdx, outline.yaml, examples/*.js
+  content/glossary.yaml     every technical term, its definition and the lesson that introduces it
+  content/misconceptions/   registry of wrong beliefs, each with what it predicts
+packages/trace              Trace types and the engine262 generator
+packages/sandbox            Worker runner for runnable code
+packages/content-check      CLI for the content rules
 ```
 
-Package scope is `@stepthrough/*`. pnpm workspaces and Turborepo. Biome for lint and format.
+Package scope `@stepthrough/*`, pnpm workspaces, Turborepo, Biome. Imports use explicit `.ts` extensions so build scripts run directly on Node 26.
 
-## Trace pipeline
+## Content
 
-The spec (§6.1) asks for hand-written traces checked only by their final console output. That check passes a trace whose intermediate states are wrong. We generate the state instead.
+Lessons are MDX compiled by `@next/mdx` (with `remark-frontmatter`). A small reader parses each lesson's YAML frontmatter with Zod at build time. Required fields: `id`, `track`, `title`, `minutes`, `prereqs`, `outcomes` (at most 3), `sources` (primary only), `interviewTags`, `status` (`draft` or `reviewed`), `verifiedAt`. The build fails on duplicate ids, unknown prerequisites or a malformed field.
 
-1. An author writes `examples/<id>/source.js` and `examples/<id>/narration.ts`.
-2. `pnpm trace:build` runs the source in engine262 (`@engine262/engine262`, pinned commit build) inside Node. A hook on `onNodeEvaluation` takes a snapshot before each statement: the execution context stack, every reachable environment record with each binding's state (uninitialized = TDZ, primitive, or reference to a heap id), reachable heap objects, and console output. The engine's real job queue supplies microtask state for async examples later.
-3. A projection step turns engine detail into the teaching view: hide `arguments` unless an example opts in, merge a function's separate lexical record into its function record when it adds nothing, drop empty block records, rename records to readable labels. Every projection rule is a named, tested function. A lesson can ask for `detail: 'spec'` to show the raw records.
-4. Narration is a list of `{ at: Anchor, say: string }`. An anchor matches a frame by line, node type and occurrence count. The build fails when an anchor matches no frame or two frames.
-5. Output is `trace.json`, committed. CI regenerates it and fails on any diff, so a change to engine262 or the projection shows up in review.
-6. CI also runs `source.js` in real Node (Node-host examples) and in Playwright Chromium (browser-host examples) and compares console output with the trace's final frame. Examples whose order is not deterministic in real hosts (for example `setTimeout(0)` against `setImmediate` in Node's main module) are rejected by a 20-run stability check.
+Drafts are visible to the learner with a "draft" label, because the learner reviews a lesson by studying it. Only the learner changes `status` to `reviewed`.
 
-Trace types are a discriminated union so a binding cannot be both uninitialized and hold a value:
+Each lesson follows the recipe in `research/pedagogy.md` §4: an `outline.yaml` (segments with one idea each, word budgets, terms introduced and used, the interaction that ends each segment), 8 to 12 predictions with confidence, misconception-coded wrong options, and a closing set of cards.
 
-```ts
-type BindingValue =
-  | { kind: 'uninitialized' }
-  | { kind: 'primitive'; type: 'undefined' | 'null' | 'boolean' | 'number' | 'bigint' | 'string' | 'symbol'; text: string }
-  | { kind: 'ref'; heapId: string };
-type EnvRecord = { id: string; label: string; kind: 'global' | 'function' | 'block' | 'module'; parentId: string | null; bindings: Record<string, BindingValue> };
-type StackFrame = { fn: string; lexEnvId: string; varEnvId: string; line: number | null };
-type HeapObject = { id: string; kind: 'object' | 'array' | 'function' | 'map' | 'set' | 'date' | 'promise' | 'error'; props: Record<string, BindingValue>; protoId: string | null; label?: string };
-type Frame = { step: number; line: number | null; stack: StackFrame[]; envs: EnvRecord[]; heap: HeapObject[]; console: string[]; narration: string | null };
-type Trace = { id: string; host: 'node' | 'browser' | 'neutral'; source: string; frames: Frame[] };
-```
+### Terms
 
-Later, the same generator runs in a lazy-loaded Web Worker for learner code (spec Phase 2), with a node-count budget and the 2 s kill switch.
+The prose explains each new idea in visible words before naming it. `<Term>` then marks the first use and gives a definition popover as a reminder; the popover never replaces the explanation. content-check fails a lesson when a glossary term (or alias) appears before the segment that introduces it or a prerequisite lesson that defines it. A novice-reader review (DeepSeek through opencode) lists jargon the glossary does not know.
 
-## Lesson content
+## Traces
 
-MDX files with YAML frontmatter, validated by a Zod schema at build time. The content layer (content-collections, fumadocs-mdx, or `@mdx-js/mdx` compiled in a small build step) is chosen by a spike against Next 16 + Turbopack + static export; Velite is out because of its open Turbopack build race (velite#408) and its bundled Zod 3.
+`packages/trace/src/types.ts` is the contract. Key rules:
 
-Components the MDX can use:
+- A `Binding` has a `decl` kind (`var`, `let`, `const`, `function`, `class`, `param`, `implicit`) and a `state` that may be `uninitialized` (the TDZ). Object properties and array items hold a `Value`, which cannot be uninitialized. Array holes are their own item kind. Symbols carry an id so two symbols with one description stay distinct.
+- Each stack frame has a `callId`, so recursive calls stay distinct. Every function heap object carries `envId`, its `[[Environment]]`.
+- Frame kinds: `start`, `enter` (after declaration instantiation, before the first step), `statement`, `expression` (only in expression-level traces: before calls, assignments and updates), `return` (the call is still on the stack), `end`, `throw`.
+- The global record is always shown, so the final frame shows final values. Records reachable only through a function's `[[Environment]]` are shown, which is what makes a closure visible after its call returns.
 
-- `Predict`: multiple choice or free text. The learner must commit before the answer shows. Each wrong option names the misconception it reveals and shows a targeted explanation. Free-text predict-output answers are normalised and compared.
-- `Term`: an inline technical term with a definition popover (`interestfor` + `popover="hint"`, with the polyfill). Every term is defined in a glossary file; content-check fails a lesson that uses a glossary term before its first `Term` or a prerequisite lesson defined it.
-- `Stepper` visualizers: manual stepping by default, keyboard `→ l ← h space r`, an `aria-live` transcript of the current frame's narration, reduced motion swaps movement for cross-fades.
-- `Code runnable`: CodeMirror 6, runs in the sandbox worker with a 2 s terminate.
-- `Card`, `ExplainBack`, `InterviewQ`, `Callout`, `Sidenote`.
+`generateTrace()` runs the snippet in engine262 (pinned build) at build time. Teaching detail hides `arguments`, folds the extra record that sloppy-mode functions create for top-level `let`/`const`, and folds block records with no bindings. It never folds when parameters contain expressions, because the engine then keeps parameters in a separate record that changes lookup. Spec detail keeps everything. A frame cap and an evaluated-node cap stop runaway examples.
+
+### Proof
+
+- Unit tests assert states derived by hand from the ECMAScript spec (TDZ, hoisting, call records, closures, per-iteration `let` records, symbols, holes, aliases, cycles) and compare console output with real Node. Planted bugs in the TDZ and terminal-frame handling were caught.
+- Each lesson example carries explicit expectations at named markers (`// @mark name` comments, stripped from displayed code), checked in CI against the generated trace, plus the real-Node console comparison.
+- Generated traces are committed and regenerated in CI; a diff fails the build so an engine or generator change shows in review.
 
 ## Learner state
 
-Dexie (IndexedDB) tables: `predictions` (lessonId, predictId, answer, correct, at), `cards` (cardId, lessonId, FSRS card state), `reviews` (FSRS review log), `explanations` (lessonId, text, at), `lessonProgress` (lessonId, state, updatedAt). Lesson state is derived, not stored as free booleans: `locked | available | inProgress | done | dueForReview`. Export and import is one JSON file with a schema version.
+Dexie (IndexedDB): `predictions` (lesson, predict id, answer, confidence, correct, misconception id, at), `cards` (FSRS state), `reviews`, `explanations`, `lessonProgress`. Lesson state is derived (`locked | available | inProgress | done | dueForReview`). Export and import is one versioned JSON file.
 
-## Verification
+## Sandbox
 
-- Vitest: trace projection rules, narration binding, frontmatter schema, FSRS wrapper, sandbox runner.
-- content-check: every runnable block executes; `// →` annotations and Predict answers match real output; banned phrases; first element of a lesson is a Predict or code or diagram; glossary order.
-- Playwright: lesson flow (predict, reveal, step a visualizer, run code, card saved, survives reload), keyboard control, a screenshot per visualizer step for two traces, axe accessibility scan.
-- Lighthouse on a lesson page: performance at least 90, accessibility 100.
-
-## Lesson writing pipeline
-
-1. Claude writes the outline, the code examples, the Predict items with misconceptions, the trace narration and the cards, after reading the lesson's primary sources.
-2. Gemini 4 Argon (agy) drafts the prose for each segment against the outline.
-3. Claude edits for accuracy and voice.
-4. DeepSeek v4.1 Flash (opencode) runs content-check and reads the lesson as a novice, listing every term used before it is explained and every step that skips reasoning.
-5. GPT-6.1 Terra (codex) reviews technical accuracy against the sources.
-6. The learner studies it and flips `status: reviewed`.
+`runInSandbox(code)` runs code as an ES module in a fresh Worker, captures console output formatted like Node (tested against `util.inspect`), waits until no timer is pending, and terminates the worker after 2 s. The worker can reach IndexedDB and `fetch`; acceptable because it only runs the learner's own code and reviewed lesson code. TypeScript labs will pin `typescript@6` in a lazy-loaded worker with a virtual file system and the standard `lib.*.d.ts` files.
 
 ## CI
 
-GitHub Actions, every job `runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}` per the global decision for private repos. Jobs: typecheck, lint, unit, content-check + trace regenerate-and-diff, e2e.
+Every job `runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}`. A private repo also needs the owner to grant the romper runner access (Notion decision "Run private repos' CI on romper"). Jobs: typecheck, lint, unit, content-check (code runs, predictions match real output, terms, banned phrases, primary sources, `verifiedAt` age, trace expectations and regenerate-diff), production static build with a 200 KB gzip budget for lesson JavaScript, Playwright e2e with step snapshots and transcripts, and Lighthouse. Node is pinned to 24 or later (ts-fsrs 6 requires it).
