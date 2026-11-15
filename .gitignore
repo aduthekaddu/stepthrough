@@ -14,3 +14,4 @@ research/design/dl/
 research/design/scripts/
 research/design/text/
 .DS_Store
+.claude/
