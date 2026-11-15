@@ -210,3 +210,23 @@ for (const scheme of ['light', 'dark'] as const) {
     );
   });
 }
+
+test('a figure gated by a prediction unlocks on commit and stays unlocked after a reload', async ({
+  page,
+}) => {
+  await page.goto(LESSON);
+  await hydrated(page);
+  const fig = page.locator('figure').filter({ hasText: 'Aliasing' });
+  const next = fig.getByRole('button', { name: 'Next step' });
+  await expect(next).toHaveAttribute('aria-disabled', 'true');
+
+  await answerChoice(page, 'hook', '2', 'Sure');
+  await expect(next).not.toHaveAttribute('aria-disabled', 'true');
+
+  await page.reload();
+  await hydrated(page);
+  await expect(fig.getByRole('button', { name: 'Next step' })).not.toHaveAttribute(
+    'aria-disabled',
+    'true',
+  );
+});

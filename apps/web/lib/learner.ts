@@ -63,6 +63,7 @@ class LearnerDb extends Dexie {
   cards!: Table<CardRow, CardId>;
   explanations!: Table<ExplanationRow, [LessonId, ExplainId]>;
   lessonProgress!: Table<LessonProgressRow, LessonId>;
+  frameGuesses!: Table<FrameGuessRow, number>;
 
   constructor() {
     super('stepthrough');
@@ -72,10 +73,25 @@ class LearnerDb extends Dexie {
       explanations: '[lessonId+explainId], lessonId',
       lessonProgress: 'lessonId, lastVisitedAt',
     });
+    this.version(2).stores({ frameGuesses: '++, lessonId, traceId, at' });
   }
 }
 
+/** A "what changes next?" answer inside a visualizer. */
+export type FrameGuessRow = {
+  lessonId: LessonId;
+  traceId: string;
+  step: number;
+  choice: string;
+  correct: boolean;
+  at: number;
+};
+
 export const db = new LearnerDb();
+
+export function saveFrameGuess(row: FrameGuessRow) {
+  return db.frameGuesses.add(row);
+}
 
 export const cardIdFor = (lessonId: LessonId, id: string) => `${lessonId}/${id}` as CardId;
 

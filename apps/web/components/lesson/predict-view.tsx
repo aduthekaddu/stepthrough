@@ -1,6 +1,7 @@
 'use client';
 
 import { type FormEvent, type ReactNode, useEffect, useId, useRef, useState } from 'react';
+import { commitPrediction as openVizGate } from '@/components/viz/predictions';
 import { CONFIDENCE, type Confidence, commitPrediction, type PredictionRow } from '@/lib/learner';
 import { Inline } from './inline';
 import { FastPathOffer, qualifiesForFastPath, useLesson } from './lesson-scope';
@@ -31,6 +32,10 @@ export function PredictView({ spec, code }: { spec: PredictSpec; code: ReactNode
   const lesson = useLesson();
   const record = lesson.predictions?.get(spec.id);
   const uid = useId();
+  // A committed answer, fresh or loaded after a reload, unlocks any <Viz gate={id}>.
+  useEffect(() => {
+    if (record) openVizGate(spec.id);
+  }, [record, spec.id]);
 
   return (
     <section className="predict" data-interaction="" data-predict-id={spec.id}>

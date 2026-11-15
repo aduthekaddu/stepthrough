@@ -1,0 +1,361 @@
+{
+  "id": "fixtures/cycle-and-holes",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "const box = { label: 'box' };\nbox.self = box;\nconst slots = [1, , undefined];\nslots.push(box);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 29
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "box",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "slots",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 2,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "box",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "slots",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "label",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"box\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 31
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "box",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "slots",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "label",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"box\""
+              }
+            },
+            {
+              "key": "self",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 16
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "box",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "slots",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "label",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"box\""
+              }
+            },
+            {
+              "key": "self",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "number",
+              "text": "1"
+            },
+            {
+              "kind": "hole"
+            },
+            {
+              "kind": "primitive",
+              "type": "undefined",
+              "text": "undefined"
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 5,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "box",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "slots",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "label",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"box\""
+              }
+            },
+            {
+              "key": "self",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "number",
+              "text": "1"
+            },
+            {
+              "kind": "hole"
+            },
+            {
+              "kind": "primitive",
+              "type": "undefined",
+              "text": "undefined"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj0"
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

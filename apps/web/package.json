@@ -3,10 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/build-traces.ts && next dev",
+    "build": "node scripts/build-traces.ts && next build",
+    "traces": "node scripts/build-traces.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "e2e": "playwright test"
   },
   "dependencies": {
@@ -25,10 +26,12 @@
     "@next/mdx": "16.4.6",
     "@stepthrough/content-check": "workspace:*",
     "@stepthrough/sandbox": "workspace:*",
+    "@stepthrough/trace": "workspace:*",
     "@types/mdx": "^2.0.14",
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",
     "interestfor": "^1.0.14",
+    "motion": "14.9.0",
     "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",

@@ -2,6 +2,7 @@
 
 import { useLiveQuery } from 'dexie-react-hooks';
 import { createContext, type ReactNode, use, useEffect, useMemo, useRef, useState } from 'react';
+import { onNextFramePrediction } from '@/components/viz/predictions';
 import {
   db,
   type FastPath,
@@ -9,6 +10,7 @@ import {
   type PredictId,
   type PredictionRow,
   recordVisit,
+  saveFrameGuess,
   setFastPath,
 } from '@/lib/learner';
 
@@ -47,6 +49,14 @@ export function LessonScope({ lessonId, children }: { lessonId: LessonId; childr
   useEffect(() => {
     void recordVisit(lessonId);
   }, [lessonId]);
+
+  useEffect(
+    () =>
+      onNextFramePrediction((guess) => {
+        void saveFrameGuess({ lessonId, ...guess, at: Date.now() });
+      }),
+    [lessonId],
+  );
 
   useEffect(() => {
     if (root.current) setPredictOrder(predictIdsIn(root.current));

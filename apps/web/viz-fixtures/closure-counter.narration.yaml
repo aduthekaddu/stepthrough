@@ -1,0 +1,3 @@
+steps:
+  - at: { mark: after-make, kind: statement }
+    say: "make() has returned and its call has left the stack, but its record is still here: inc was created inside it, and counter now holds inc."

@@ -8,6 +8,7 @@ import { Predict } from '@/components/lesson/predict';
 import { Card, ExplainBack } from '@/components/lesson/review';
 import { Sidenote } from '@/components/lesson/sidenote';
 import { Term } from '@/components/lesson/term';
+import { Viz } from '@/components/viz/Viz';
 
 const slug = z.string().regex(/^[a-z0-9-]+$/);
 const children = z.custom<ReactNode>(() => true);
@@ -56,6 +57,7 @@ const components = {
     z.object({ id: slug, question: z.string().min(1), rubric: z.array(z.string()).min(1) }),
     InterviewQ,
   ),
+  Viz,
 } satisfies MDXComponents;
 
 export function useMDXComponents(inherited: MDXComponents): MDXComponents {
