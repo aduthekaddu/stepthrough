@@ -1,0 +1,133 @@
+apps/web/vitest.config.ts
+  s_2a56c3b7f09e96::t_1ae6b7e41529e2 1-10
+apps/web/app/lesson.css
+  s_2a56c3b7f09e96::t_b28309e7c7ded6 346-349,757,874-877,885-893
+  s_2a56c3b7f09e96::t_4a706591369a41 112,377-378,481,485-486
+  s_2a56c3b7f09e96::t_54818ea2d06718 78,690,692,695-705,717-719,722
+  s_2a56c3b7f09e96::t_4e6ceea27aad1f 1-77,79-111,113-345,350-376,379-480,482-484,487-689,691,693-694,706-716,720-721,723-756,758-778,783-873,878-884,894-901
+  s_2a56c3b7f09e96::t_44954d4f4edd58 779-782
+apps/web/lib/content.ts
+  s_2a56c3b7f09e96::t_e202fc73ffec03 1,9,13-18,22-111,114-119
+apps/web/components/lesson/sidenote.tsx
+  s_2a56c3b7f09e96::t_5aad72e4d46d07 3-4,6-7,10,13,15,17-29,31,42,45-57
+  s_2a56c3b7f09e96::t_af53f6d92db59e 1-2,5,8-9,11-12,14,16,30,32-41,43-44,58-60
+apps/web/components/lesson/predict-view.tsx
+  s_2a56c3b7f09e96::t_44954d4f4edd58 207,282-284,293-294
+  s_2a56c3b7f09e96::t_353357cd80324f 17,19,72,78-80,84,89,91-92,164-165,167-172,231,297,299
+  s_2a56c3b7f09e96::t_b28309e7c7ded6 36,38
+  s_2a56c3b7f09e96::t_0b4704f9a1b6c3 1-16,18,20-35,37,39-71,73-77,81-83,85-88,90,93-163,166,173-206,208-230,232-281,285-292,295-296,298,300-309
+apps/web/components/lesson/predict.tsx
+  s_2a56c3b7f09e96::t_a142bf2440411d 48
+  s_2a56c3b7f09e96::t_44954d4f4edd58 42,49,61-64,70-73
+  s_2a56c3b7f09e96::t_c3387568391856 1-41,43-47,50-60,65-69,74-80
+docs/architecture.md
+  s_2a56c3b7f09e96::t_ae9ad83ba17559 17-18,58
+apps/web/components/lesson/code.tsx
+  s_2a56c3b7f09e96::t_eaacbd3bb4aa57 4
+  s_2a56c3b7f09e96::t_1ecd52908ba638 1-3,5-11
+apps/web/components/lesson/editor.ts
+  s_2a56c3b7f09e96::t_e2321c69005fdb 1-30
+apps/web/components/lesson/predict-model.ts
+  s_2a56c3b7f09e96::t_b9224e5c6d7531 1-27,29-40,48-49,51-52,54-56
+  s_2a56c3b7f09e96::t_885263b9d73298 28,41-47,50,53
+apps/web/playwright.config.ts
+  s_2a56c3b7f09e96::t_41352b4a4bcac7 1-24
+apps/web/mdx-components.tsx
+  s_2a56c3b7f09e96::t_1f43a52107a55b 16
+  s_2a56c3b7f09e96::t_b8966d48a2b366 2-10,12-15,17-25,27-62
+  s_2a56c3b7f09e96::t_44954d4f4edd58 26
+apps/web/components/lesson/inline.tsx
+  s_2a56c3b7f09e96::t_f000a132c2a24b 1-2,11
+  s_2a56c3b7f09e96::t_44954d4f4edd58 3-10
+apps/web/components/lesson/review.tsx
+  s_2a56c3b7f09e96::t_61076e039ca790 1-63,65-82,84-91,93-94,97-114,116,118-133
+  s_2a56c3b7f09e96::t_942cc64dbe9cb8 64,83,92,95-96,115,117
+apps/web/app/page.tsx
+  s_2a56c3b7f09e96::t_b28309e7c7ded6 20,25
+  s_2a56c3b7f09e96::t_1742a44a8e7038 15-17
+  s_2a56c3b7f09e96::t_64b8e1a5303791 1-2,4-5,7,12-14,18-19,21-24,26-35
+  s_2a56c3b7f09e96::t_44954d4f4edd58 9-10
+  s_2a56c3b7f09e96::t_1f43a52107a55b 3,8
+apps/web/components/lesson/runnable-code.tsx
+  s_2a56c3b7f09e96::t_99bbc3d9ab8a3c 1-110,114-118
+  s_2a56c3b7f09e96::t_44954d4f4edd58 111-113
+apps/web/lib/tracks.ts
+  s_2a56c3b7f09e96::t_c11bd9e6271ec1 1-10
+DECISIONS.md
+  s_2a56c3b7f09e96::t_ae9ad83ba17559 16-18
+apps/web/components/lesson/predict-model.test.ts
+  s_2a56c3b7f09e96::t_573c63b4f124eb 1-35,40-43,45-49,51-57,59-61,63-66,68-72,77-78
+  s_2a56c3b7f09e96::t_885263b9d73298 36-39,44,50,58,62,67,73-76
+apps/web/components/theme-toggle.tsx
+  s_2a56c3b7f09e96::t_26d41b20b6f084 1-37,41-57,63-76,78-83
+  s_2a56c3b7f09e96::t_44954d4f4edd58 38-40,58-62
+  s_2a56c3b7f09e96::t_54818ea2d06718 77
+apps/web/components/continue-link.tsx
+  s_2a56c3b7f09e96::t_e73e7fb2cba0e6 1-9,11,14-17,19-22
+  s_2a56c3b7f09e96::t_1742a44a8e7038 10,12-13,18
+apps/web/package.json
+  s_2a56c3b7f09e96::t_a1da7058e3004e 22
+  s_2a56c3b7f09e96::t_3592eee8ef8279 13-21,28-30
+  s_2a56c3b7f09e96::t_c1a6b4fcd449aa 26,39-40,46-47
+apps/web/e2e/lesson.spec.ts
+  s_2a56c3b7f09e96::t_c07f19709eabd7 1-15,31-190,192-212
+  s_2a56c3b7f09e96::t_b6f066068293a2 16-30,191
+apps/web/components/lesson/sandbox.worker.ts
+  s_2a56c3b7f09e96::t_cd1fff339106fd 1
+apps/web/app/globals.css
+  s_2a56c3b7f09e96::t_5b5f714a1f7f26 3,5-26,28-32,37,41-44,49,54-72,78-205,207-208,210-211,213-214,216-220,222-229,231-247
+  s_2a56c3b7f09e96::t_54818ea2d06718 206,209,212,215,221,230
+apps/web/components/lesson/blocks.tsx
+  s_2a56c3b7f09e96::t_3c909bdb3fc153 1-15,17-55
+  s_2a56c3b7f09e96::t_eaacbd3bb4aa57 16
+apps/web/app/layout.tsx
+  s_2a56c3b7f09e96::t_1742a44a8e7038 30
+  s_2a56c3b7f09e96::t_829a51aa913ec7 1-5,7-12,15,19-20,23-29,31-39
+apps/web/components/lesson/lesson-scope.tsx
+  s_2a56c3b7f09e96::t_44954d4f4edd58 132-134
+  s_2a56c3b7f09e96::t_9aae73e1993e85 1-131,135-140
+apps/web/components/lesson/term.tsx
+  s_2a56c3b7f09e96::t_0905081513abfe 1-32
+apps/web/content/glossary/js-demo.yaml
+  s_2a56c3b7f09e96::t_dbfaecb3cdd7d0 1-16
+apps/web/next.config.ts
+  s_2a56c3b7f09e96::t_8bb8f7982e1540 10
+apps/web/lib/theme.ts
+  s_2a56c3b7f09e96::t_eca2f3601196b8 1-7
+apps/web/lib/learner.ts
+  s_2a56c3b7f09e96::t_84ff84d33636e9 1-112
+apps/web/components/lesson/popover-support.tsx
+  s_2a56c3b7f09e96::t_a52e27a292fdee 1-7,9-43
+  s_2a56c3b7f09e96::t_5b7e7ff2b9bf47 8
+apps/web/e2e/serve.ts
+  s_2a56c3b7f09e96::t_44954d4f4edd58 24-25,33-35
+  s_2a56c3b7f09e96::t_926d115ce13956 1-23,26-32,36-37
+apps/web/types/interestfor.d.ts
+  s_2a56c3b7f09e96::t_8bb8f7982e1540 1-2
+apps/web/components/lesson/highlight.tsx
+  s_2a56c3b7f09e96::t_a3c9fd0f241278 1-34
+apps/web/app/learn/[track]/[lesson]/page.tsx
+  s_2a56c3b7f09e96::t_c11983b9f40470 1-7,11-14,17-19,22,24-27,29-68
+apps/web/content/javascript/demo/index.mdx
+  s_2a56c3b7f09e96::t_bd089834f825e4 1-42,44-58,60-74,76-149
+  s_2a56c3b7f09e96::t_8dd8418a6f4bef 43,59
+  s_2a56c3b7f09e96::t_39951c9bd8c21b 75
+pnpm-lock.yaml
+  s_2a56c3b7f09e96::t_00445859303b1c 181-210,220-222,226-234,237,254-259,278-280,316-321,391-414,436-444,623-637,731-735,1166-1169,1209-1211,1238-1246,1331-1333,1601-1610,1699-1701,1875-1877,1898-1902,1946-1998,2022-2027,2154-2171,2257-2260,2539-2540,2565-2566,2585-2591,2716-2717,3125,3144,3167-3172,3338-3339,3491-3492
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5c944ce4ab950491dc8cc470b1b7616532f5264d",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
