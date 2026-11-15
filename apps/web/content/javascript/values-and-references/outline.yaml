@@ -165,9 +165,10 @@ misconceptions:
 design_decisions:
   - "Hook: pass an object, mutate it, then reassign the parameter. It splits the two main wrong models (copy vs true pass-by-reference) and Aditya meets the same rule in Java, so s10 can resolve it with a Java contrast."
   - "Primitives are drawn inside their binding row and objects as separate boxes with arrows. This is the trace format's drawing choice; s04 and s11 say it is a drawing, not where an engine stores values."
-  - "Narration expectations use only the shapes the build checks: { record, binding, value } (value is the primitive text, \"uninitialized\", or \"object\" / \"array\" / \"function <name>\" for a reference), { stackDepth }, { record, exists }, { console }. These cannot say that two bindings share one object or what a property holds; the console expectation on the end frame pins the observable result instead. Every step needs a mark, and end and return frames have no source line, so they cannot be narrated; values-pass-object.js adds return user.name; to get a frame right after the reassignment."
+  - "Narration expectations use only the shapes the build checks: { record, binding, value } (value is the primitive text, \"uninitialized\", or \"object\" / \"array\" / \"function <name>\" for a reference), { stackDepth }, { record, exists }, { console }. These cannot say that two bindings share one object or what a property holds; the observable result of each example is pinned by its Predict answer (content-check runs it) instead. Every step needs a mark, and end and return frames have no source line, so they cannot be narrated; values-pass-object.js adds return user.name; to get a frame right after the reassignment."
   - "Every snippet runs as a classic script (node -e), matching the trace generator and the browser sandbox. The string index write in s05 is silently ignored in sloppy mode and throws in strict mode; both are shown."
-  - "12 Predicts (the brief's upper bound), plus 6 next-frame pauses in 5 traces and 2 mid-lesson explain prompts."
+  - "12 Predicts (the brief's upper bound), plus 6 next-frame pauses in 5 traces and 3 mid-lesson explain prompts (s10, s14, s19)."
+  - "Added after review: runnable blocks in s02 (Number vs bigint precision), s14 (rules 4, 6, 7 and 8 at work) and s16 (Object.assign writes into its target), each a real interaction that also keeps prose runs under 250 words."
 
 segments:
   - id: s01-hook
