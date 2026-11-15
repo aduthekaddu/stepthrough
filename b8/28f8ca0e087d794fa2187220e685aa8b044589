@@ -1,0 +1,47 @@
+DECISIONS.md
+  s_2a56c3b7f09e96::t_1e7f2490ec75ef 16-19
+docs/architecture.md
+  s_2a56c3b7f09e96::t_1e7f2490ec75ef 15-16
+apps/web/app/playground/viz/page.tsx
+  s_2a56c3b7f09e96::t_48f72dd81dc7ee 74
+apps/web/components/viz/model.ts
+  s_2a56c3b7f09e96::t_b32c5dac8d2dbf 327-328
+  s_2a56c3b7f09e96::t_6294f09201374a 216-222,234
+  s_2a56c3b7f09e96::t_e5906648970066 290
+  s_2a56c3b7f09e96::t_a636fb1670ff5a 200-205,291,295,371,374
+apps/web/components/viz/layout.ts
+  s_2a56c3b7f09e96::t_a636fb1670ff5a 9-16
+  s_2a56c3b7f09e96::t_7f2997b4b7f88e 89-98,100-101,104,108-123,139,141,220-224,226-250,253-254,258-261,264,310,313-324,326-330
+  s_2a56c3b7f09e96::t_6294f09201374a 140,425-426
+  s_2a56c3b7f09e96::t_038993a3104267 52-53,73-76,211,309,363,411,418,440
+  s_2a56c3b7f09e96::t_e5906648970066 142-143,215-219,225,325
+apps/web/components/viz/Diagram.tsx
+  s_2a56c3b7f09e96::t_67bf9c54c96fd7 292
+  s_2a56c3b7f09e96::t_a636fb1670ff5a 8,10-14
+  s_2a56c3b7f09e96::t_6294f09201374a 139
+  s_2a56c3b7f09e96::t_e5906648970066 262,294
+  s_2a56c3b7f09e96::t_038993a3104267 372,377
+  s_2a56c3b7f09e96::t_aa981006de25d8 7,9
+  s_2a56c3b7f09e96::t_554f20a1b061a6 282,289
+apps/web/components/viz/model.test.ts
+  s_2a56c3b7f09e96::t_d32830e42363ce 142-148
+apps/web/components/viz/viz.module.css
+  s_2a56c3b7f09e96::t_8f9977ab048575 280-284
+  s_2a56c3b7f09e96::t_b7d12feb15b121 320,348-350
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b828f8ca0e087d794fa2187220e685aa8b044589",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
