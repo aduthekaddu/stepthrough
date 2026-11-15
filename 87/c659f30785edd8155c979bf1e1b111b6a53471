@@ -1,0 +1,64 @@
+docs/architecture.md
+  s_2a56c3b7f09e96::t_f0930f50a6b6e2 3
+research/pedagogy.md
+  s_2a56c3b7f09e96::t_7bad0e3f647a2a 5,48,108,172,192,232,301,346,398,437,445,651,695,706
+DECISIONS.md
+  s_2a56c3b7f09e96::t_7bad0e3f647a2a 11
+.gitignore
+  s_2a56c3b7f09e96::t_c559d11a0e5ad5 18
+CLAUDE.md
+  s_2a56c3b7f09e96::t_f0930f50a6b6e2 3
+  s_2a56c3b7f09e96::t_aed778d09b9928 11
+research/prior-art.md
+  s_2a56c3b7f09e96::t_7bad0e3f647a2a 5,69,126
+docs/spec.md
+  s_2a56c3b7f09e96::t_7991a3e0e49fb9 3,9,11,14,20,27,40,51-52,83,190,322,380,397,407,434,451
+  s_2a56c3b7f09e96::t_d2a41c372a5f4f 1-2,4-8,10,12-13,15-19,21-26,28-39,41-50,53-82,84-189,191-270,272-281,283-294,296,298-299,301-305,307,309-314,316,318-321,323-329,333,337-341,344,346-349,351-356,359-363,368-369,371-379,381-396,398-406,408-433,435-450,452-460,462,464-466,468-469,472,474,476-478
+  s_2a56c3b7f09e96::t_d32e642635aaa4 271,282,295,297,300,306,308,315,317,330-332,334-336,342-343,345,350,357-358,364-367,370,461,463,467,470-471,473,475,479-482
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_2a56c3b7f09e96::t_b7ea392ed91580 229,622,654,656
+apps/web/content/foundations/how-programs-run/outline.yaml
+  s_2a56c3b7f09e96::t_0a3e9c6fd7f3ca 480
+apps/web/content/foundations/how-programs-run/review.md
+  s_2a56c3b7f09e96::t_c23b12dd0c9712 91
+apps/web/content/javascript/execution-context/outline.yaml
+  s_2a56c3b7f09e96::t_1575f152defe0f 285
+apps/web/content/javascript/execution-context/review.md
+  s_2a56c3b7f09e96::t_e7b1beec9bba70 84
+apps/web/content/javascript/values-and-references/index.mdx
+  s_2a56c3b7f09e96::t_6efb6bb357b105 691
+apps/web/content/javascript/values-and-references/outline.yaml
+  s_2a56c3b7f09e96::t_8a1fc3132d29a6 305,679
+apps/web/content/misconceptions/COPY-CLONE-SPLITS-SHARED.yaml
+  s_2a56c3b7f09e96::t_968e26e48d7559 8
+apps/web/content/misconceptions/COPY-SPREAD-ALIAS.yaml
+  s_2a56c3b7f09e96::t_25814e2911097f 8
+apps/web/content/misconceptions/EQ-OBJECT-NEVER-LOOSE-EQUAL.yaml
+  s_2a56c3b7f09e96::t_443ce8ef590714 8
+apps/web/content/misconceptions/EQ-STRINGS-BY-IDENTITY.yaml
+  s_2a56c3b7f09e96::t_315611c7aa417e 9
+apps/web/content/misconceptions/VAL-CONST-OBJECT-REASSIGNABLE.yaml
+  s_2a56c3b7f09e96::t_cd571a3b75ad77 8
+apps/web/content/misconceptions/VAL-EVERYTHING-IS-OBJECT.yaml
+  s_2a56c3b7f09e96::t_574794e1b5390d 9
+apps/web/content/misconceptions/VAL-PASS-BY-REFERENCE.yaml
+  s_2a56c3b7f09e96::t_d5161c62d94a81 9
+apps/web/content/misconceptions/VAL-REASSIGN-MUTATES.yaml
+  s_2a56c3b7f09e96::t_de767e49977f0c 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "87c659f30785edd8155c979bf1e1b111b6a53471",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
