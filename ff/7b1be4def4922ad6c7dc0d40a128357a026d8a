@@ -1,0 +1,64 @@
+apps/web/playwright.config.ts
+  s_2a56c3b7f09e96::t_48667ff29204a2 1-21
+apps/web/components/viz/panel-state.test.ts
+  s_2a56c3b7f09e96::t_493efb2e26e717 1-47,58-63,72-87,93-105
+  s_2a56c3b7f09e96::t_918667a4dae17b 48-57,64-71,88-92
+apps/web/app/playground/viz/page.tsx
+  s_2a56c3b7f09e96::t_21b742670d57aa 1-76,79-96
+  s_2a56c3b7f09e96::t_918667a4dae17b 77-78
+apps/web/components/viz/Viz.tsx
+  s_2a56c3b7f09e96::t_999761ee42af42 1-46
+apps/web/components/viz/panel-state.ts
+  s_2a56c3b7f09e96::t_5d2e23f9248763 1-134
+apps/web/e2e/viz.spec.ts
+  s_2a56c3b7f09e96::t_03ec3ad0d76511 53,93-96
+  s_2a56c3b7f09e96::t_0de7925750d3c3 1-52,54-92,97-113
+apps/web/components/viz/CodePane.tsx
+  s_2a56c3b7f09e96::t_166c9132b144f9 19
+  s_2a56c3b7f09e96::t_efb38f16593491 1-18,20-43
+apps/web/components/viz/predictions.ts
+  s_2a56c3b7f09e96::t_d676e5066186e1 1-48
+apps/web/app/playground/viz/GateButton.tsx
+  s_2a56c3b7f09e96::t_dc5a4d4517dd60 1-18
+apps/web/e2e/serve.ts
+  s_2a56c3b7f09e96::t_9cc72628c3927c 1-36
+apps/web/components/viz/Diagram.tsx
+  s_2a56c3b7f09e96::t_737c11e1e62dff 328-330,401-403
+  s_2a56c3b7f09e96::t_03ec3ad0d76511 324-326,363,398-399
+  s_2a56c3b7f09e96::t_918667a4dae17b 6,35,50,120-126,155-156,163-169,192-198,222-224,230-233,256-261,270-283,311-313,319-323,349,366-373,376-380,391-397,404-406
+  s_2a56c3b7f09e96::t_4e98c4b2f0e209 1-5,7-34,36-49,51-119,127-154,157-162,170-191,199-221,225-229,234-255,262-269,284-310,314-318,327,331-348,350-362,364-365,374-375,381-390,400,407-419
+biome.json
+  s_2a56c3b7f09e96::t_3711511d5e455f 18
+apps/web/components/viz/viz.module.css
+  s_2a56c3b7f09e96::t_4d569eca4a2cc1 1-52,54-77,79-103,105-169,171-177,179-217,219-234,236-259,261-264,266-269,271-291,293-301,303-305,307-329,331-338,340-347,349-448,450-460,462-468,471,473-476,479,486-497,499-505,507-693,695-706,708-710,712-714
+  s_2a56c3b7f09e96::t_918667a4dae17b 53,78,104,178,218,235,260,265,270,292,302,306,330,339,348,449,461,481,498,506,694,707,711
+  s_2a56c3b7f09e96::t_bac6808f3e40f3 170,469-470,472,477-478,480,482-485
+apps/web/components/viz/Stepper.tsx
+  s_2a56c3b7f09e96::t_9a516bc4b82aaa 1-2,4-36,38-47,50-56,65-150,152,154-156
+  s_2a56c3b7f09e96::t_3711511d5e455f 48
+  s_2a56c3b7f09e96::t_918667a4dae17b 37,57-64
+  s_2a56c3b7f09e96::t_31a1b654520ade 3,49,151,153
+apps/web/components/viz/VizPanel.tsx
+  s_2a56c3b7f09e96::t_f1e3a6ecca4532 1-6,8-57,59-61,74-77,90-93,106-108,111-154,159-166,171-232,240-248,254,256-259,263-274,277-282,287-288,295-298,300-323
+  s_2a56c3b7f09e96::t_bd12d325a1a344 261-262,283-286,299
+  s_2a56c3b7f09e96::t_39c5ecf9ea6ce8 7,58
+  s_2a56c3b7f09e96::t_918667a4dae17b 62-73,78-89,94-105,155-158,167-170,233-239,249-253,275-276,289-294
+  s_2a56c3b7f09e96::t_3711511d5e455f 109-110
+  s_2a56c3b7f09e96::t_bac6808f3e40f3 255,260
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ff7b1be4def4922ad6c7dc0d40a128357a026d8a",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
