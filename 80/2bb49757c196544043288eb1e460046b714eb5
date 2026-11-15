@@ -1,0 +1,106 @@
+apps/web/content/javascript/values-and-references/examples/shallow-copy.narration.yaml
+  s_2a56c3b7f09e96::t_8c721088ec8639 1-14,16-21,23-34
+  s_2a56c3b7f09e96::t_f3121c3f4fedac 15,22
+apps/web/content/misconceptions/NUM-NAN-SELF-EQUAL.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/javascript/values-and-references/examples/primitive-copy.js
+  s_2a56c3b7f09e96::t_ef3b9fd0766ac7 1-4
+apps/web/content/misconceptions/COPY-SPREAD-ALIAS.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/misconceptions/COPY-SPREAD-DEEP.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/misconceptions/VAL-ASSIGN-COPIES-OBJECT.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-11
+apps/web/content/misconceptions/VAL-TYPEOF-ARRAY.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-9
+apps/web/content/misconceptions/VAL-REASSIGN-MUTATES.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/misconceptions/EQ-OBJECT-TOSTRING-FIRST.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/misconceptions/MEM-PRIMITIVES-ON-STACK.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-11
+apps/web/content/misconceptions/VAL-EVERYTHING-IS-OBJECT.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-11
+apps/web/content/javascript/values-and-references/examples/alias.js
+  s_2a56c3b7f09e96::t_2b545630dcc81e 1-4
+apps/web/content/javascript/values-and-references/outline.yaml
+  s_2a56c3b7f09e96::t_3e45735037a2a5 1-108,110-385
+  s_2a56c3b7f09e96::t_9fbac5503ee1ab 109
+apps/web/content/misconceptions/EQ-NULL-LOOSE-ZERO.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-9
+apps/web/content/glossary/js-values.yaml
+  s_2a56c3b7f09e96::t_e2e64d3eaf6584 1-90
+apps/web/content/javascript/values-and-references/examples/reassign-vs-mutate.narration.yaml
+  s_2a56c3b7f09e96::t_f3121c3f4fedac 17,23,30
+  s_2a56c3b7f09e96::t_3360f234b1b50e 1-16,18-22,24-29,31-37
+apps/web/content/javascript/values-and-references/examples/primitive-copy.narration.yaml
+  s_2a56c3b7f09e96::t_c95a2e2e614de0 1-4,6-9,11-13,15-18,20-26
+  s_2a56c3b7f09e96::t_f3121c3f4fedac 5,10,14,19
+apps/web/content/misconceptions/COPY-CLONE-SPLITS-SHARED.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/misconceptions/EQ-STRINGS-BY-IDENTITY.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-11
+apps/web/content/misconceptions/VAL-EQUAL-BY-CONTENT.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/javascript/values-and-references/lab/solution.js
+  s_2a56c3b7f09e96::t_ba9d80684c0cfe 81
+  s_2a56c3b7f09e96::t_09650f98bd4313 1-80,82-97
+apps/web/content/javascript/values-and-references/index.mdx
+  s_2a56c3b7f09e96::t_15892fb4c0d011 89,271
+  s_2a56c3b7f09e96::t_9fc1dc1dc8edc1 54,173,175,183,191,200-201,203,356,358,360,362,394-395,400
+  s_2a56c3b7f09e96::t_32686d0debd950 343
+  s_2a56c3b7f09e96::t_023601619ea043 1-53,55-88,90-172,174,176-182,184-190,192-199,202,204-270,272-342,344-355,357,359,361,363-393,396-399,401-466,468-799
+  s_2a56c3b7f09e96::t_ea145c362e9da0 467
+apps/web/content/javascript/values-and-references/examples/shallow-copy.js
+  s_2a56c3b7f09e96::t_bdf341e7003a11 1-5
+apps/web/content/javascript/values-and-references/lab/lab.test.js
+  s_2a56c3b7f09e96::t_51bf786070d420 1-213
+apps/web/content/javascript/values-and-references/lab/README.md
+  s_2a56c3b7f09e96::t_d575924b3c3816 1-112
+apps/web/content/misconceptions/VAL-PASS-BY-REFERENCE.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-11
+apps/web/content/javascript/values-and-references/examples/pass-object.js
+  s_2a56c3b7f09e96::t_f9932f8e80b118 4
+  s_2a56c3b7f09e96::t_5cb9f948bf1d0d 1-3,5-7
+apps/web/content/misconceptions/EQ-BOOLEAN-TRUTHINESS.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/javascript/values-and-references/examples/alias.narration.yaml
+  s_2a56c3b7f09e96::t_a050a961a570d9 1-4,6-8,10-13,15-18,20-26
+  s_2a56c3b7f09e96::t_f3121c3f4fedac 5,9,14,19
+apps/web/content/misconceptions/COPY-CLONE-KEEPS-CLASS.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-9
+apps/web/content/misconceptions/VAL-CONST-OBJECT-REASSIGNABLE.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/javascript/values-and-references/lab/starter.js
+  s_2a56c3b7f09e96::t_a59df088c1b253 1-43
+apps/web/content/misconceptions/VAL-TYPEOF-NULL.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/javascript/values-and-references/examples/reassign-vs-mutate.js
+  s_2a56c3b7f09e96::t_95ad30200e02e6 1-6
+apps/web/content/javascript/values-and-references/examples/pass-object.narration.yaml
+  s_2a56c3b7f09e96::t_8e6946d4219b47 1-4,6-15,17-21,23-26,28-32,34-41
+  s_2a56c3b7f09e96::t_f3121c3f4fedac 5,16,22,27,33
+apps/web/content/misconceptions/VAL-CONST-FREEZES.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+apps/web/content/javascript/values-and-references/review.md
+  s_2a56c3b7f09e96::t_5daea3990d4523 1-9,11-51
+  s_2a56c3b7f09e96::t_d6ca8109f560e2 10
+apps/web/content/misconceptions/EQ-OBJECT-NEVER-LOOSE-EQUAL.yaml
+  s_2a56c3b7f09e96::t_5833388d8288c4 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "802bb49757c196544043288eb1e460046b714eb5",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
