@@ -1,0 +1,105 @@
+apps/web/content/javascript/execution-context/examples/ec-lookup.js
+  s_2a56c3b7f09e96::t_ee65659a77f4ac 1-8
+apps/web/content/javascript/execution-context/examples/ec-hook-replay.narration.yaml
+  s_2a56c3b7f09e96::t_234a64ed5d96b0 7-18
+apps/web/content/misconceptions/EXC-HOIST-ALL-FUNCTIONS.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/misconceptions/EXC-TDZ-IS-SPATIAL.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/javascript/execution-context/examples/ec-implicit-global.narration.yaml
+  s_2a56c3b7f09e96::t_e26c646d48a491 5,10
+  s_2a56c3b7f09e96::t_3a2dd101897903 7-8,12-19
+apps/web/content/javascript/execution-context/lab/gauntlet.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 17,20,34,37,49,52,67,86,89,104,107,120,123,140,143,158,177,180,183,196,199,213,216,231,245,248,251,266,269
+  s_2a56c3b7f09e96::t_e74de48cba944c 69-71,106,108,161-162,197
+apps/web/content/misconceptions/EXC-HOIST-CLASS-LIKE-FUNCTION.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-11
+apps/web/content/misconceptions/EXC-HOIST-VAR-BEATS-FUNCTION.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/misconceptions/EXC-HOIST-FN-AS-VAR.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-12
+apps/web/content/javascript/execution-context/examples/ec-global-setup.narration.yaml
+  s_2a56c3b7f09e96::t_ac5e908d50a38f 8-26
+apps/web/content/misconceptions/EXC-TYPEOF-UNDECLARED-THROWS.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/javascript/execution-context/examples/ec-function-forms.narration.yaml
+  s_2a56c3b7f09e96::t_0c456f975dc284 7-23
+apps/web/content/misconceptions/EXC-GLOBAL-ASSIGN-ALWAYS-WORKS.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/glossary/js-execution-context.yaml
+  s_2a56c3b7f09e96::t_e26c646d48a491 44,50,61
+apps/web/content/misconceptions/EXC-HOIST-MOVES-CODE.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/misconceptions/EXC-HOIST-LET-NOT-HOISTED.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-11
+apps/web/content/misconceptions/EXC-TDZ-IS-UNDEFINED.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/javascript/execution-context/examples/ec-tdz-shadow.narration.yaml
+  s_2a56c3b7f09e96::t_1cb19c1a78b9d2 7-18
+apps/web/content/misconceptions/EXC-GLOBAL-ASSIGN-MAKES-LOCAL.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-3,5-11
+  s_2a56c3b7f09e96::t_7626a8d13b5e7d 4
+apps/web/content/misconceptions/EXC-LOCALS-PERSIST.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/misconceptions/EXC-LOOKUP-MISSING-IS-UNDEFINED.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/misconceptions/EXC-CALL-NO-WAIT.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-11
+apps/web/content/misconceptions/EXC-IMPLICIT-NOT-PROPERTY.yaml
+  s_2a56c3b7f09e96::t_7626a8d13b5e7d 1-10
+apps/web/content/misconceptions/EXC-VAR-REDECLARE-RESETS.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-11
+apps/web/content/misconceptions/EXC-LOOKUP-AT-DEFINITION.yaml
+  s_2a56c3b7f09e96::t_7626a8d13b5e7d 1-10
+apps/web/content/javascript/execution-context/examples/ec-first-call.narration.yaml
+  s_2a56c3b7f09e96::t_a7b4ec5ebf8cb1 7-30
+apps/web/content/javascript/execution-context/outline.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 145-146,148,158,166,184,192,199,208,217,231,239,246-247,262,270-271
+  s_2a56c3b7f09e96::t_2cd1c73ec964a0 165,167,183,185,207,209,253-255,275-276,294-297
+  s_2a56c3b7f09e96::t_a804c45f1961fc 32,65,147,188,235,299-301
+  s_2a56c3b7f09e96::t_371bde0533ce3a 174,182,193,200,223,232,263,272
+apps/web/content/misconceptions/EXC-GLOBAL-NOTHING-ON-OBJECT.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-11
+apps/web/content/misconceptions/EXC-TDZ-TYPEOF-SAFE.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-3,5-10
+  s_2a56c3b7f09e96::t_7626a8d13b5e7d 4
+apps/web/content/misconceptions/EXC-TOP-TO-BOTTOM.yaml
+  s_2a56c3b7f09e96::t_7626a8d13b5e7d 4
+  s_2a56c3b7f09e96::t_47dec98d343622 1-3,5-11
+apps/web/content/javascript/execution-context/index.mdx
+  s_2a56c3b7f09e96::t_e5adb3134ee52a 70,72,91,126,128,140,144,216,260,262,264,266-274,325,327,368,393,466,474,504,506,538,547,554,556,563-565,664,699,750,783
+  s_2a56c3b7f09e96::t_47dec98d343622 34,36-37,64-65,120-121,160-161,193,195,230-231,289-290,342-343,345,380,382,414,437-438,502,537,616-617,632-633,646-647,663,681-682,698,713-714,732-733,749,767-769,784,799-800,816,831-833,849-850
+  s_2a56c3b7f09e96::t_371bde0533ce3a 93,132,166,206,350,509,543
+  s_2a56c3b7f09e96::t_2d6283d209044f 309,311,458
+  s_2a56c3b7f09e96::t_e26c646d48a491 415,902-903,965
+  s_2a56c3b7f09e96::t_91d1a4a05fc6b1 315
+apps/web/content/misconceptions/EXC-HOIST-FN-LINE-ASSIGNS.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-3,5-10
+  s_2a56c3b7f09e96::t_7626a8d13b5e7d 4
+apps/web/content/misconceptions/EXC-GLOBAL-LET-ON-OBJECT.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-10
+apps/web/content/javascript/execution-context/examples/ec-lookup.narration.yaml
+  s_2a56c3b7f09e96::t_30191223946207 6,8-22,25,27-29
+  s_2a56c3b7f09e96::t_e26c646d48a491 24
+  s_2a56c3b7f09e96::t_4ac6fde1dfbe3b 23
+apps/web/content/javascript/execution-context/examples/ec-countdown.narration.yaml
+  s_2a56c3b7f09e96::t_c68959db3f643f 8-26
+apps/web/content/misconceptions/EXC-TDZ-PARAMS-EXEMPT.yaml
+  s_2a56c3b7f09e96::t_47dec98d343622 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "203316af03af0be917e1766cbb8d82d9c446cdcb",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
