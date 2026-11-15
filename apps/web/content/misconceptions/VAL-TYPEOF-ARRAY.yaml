@@ -1,0 +1,9 @@
+id: VAL-TYPEOF-ARRAY
+belief: typeof returns "array" for arrays.
+predicts: "`typeof [1, 2]` prints array."
+truth: Arrays are objects, and typeof returns "object" for every object that cannot be called. Use Array.isArray to test for an array.
+counterexample: console.log(typeof [1, 2]) prints object.
+sources:
+  - https://tc39.es/ecma262/#sec-typeof-operator
+lessons:
+  - js-values

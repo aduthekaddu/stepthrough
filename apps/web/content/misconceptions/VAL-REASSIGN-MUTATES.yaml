@@ -1,0 +1,10 @@
+id: VAL-REASSIGN-MUTATES
+belief: Assigning a new object to a name changes the object that the name used to point to, so other names that shared it see the new contents.
+predicts: "For `let a = { n: 1 }; let b = a; b = { n: 2 };`, a.n is 2."
+truth: "Reassignment changes which object one binding refers to. It changes no object, so a still reaches the old object with n: 1."
+counterexample: "let a = { n: 1 }; let b = a; b = { n: 2 }; console.log(a.n) prints 1."
+sources:
+  - https://tc39.es/ecma262/#sec-assignment-operators-runtime-semantics-evaluation
+  - Inferred from the mutation/reassignment distinction in Just JavaScript ep. 9; confirm from Aditya's answers.
+lessons:
+  - js-values

@@ -1,0 +1,11 @@
+id: VAL-ASSIGN-COPIES-OBJECT
+belief: Giving an object to another name, by = or by passing it to a function, makes a separate copy of the object.
+predicts: A change made through the second name, or inside the function, does not show through the first name. For `let b = a; b.n = 2`, a.n stays 1.
+truth: Assignment and argument passing copy the value, and for an object that value is a reference. Both names reach the same single object.
+counterexample: "let a = { n: 1 }; let b = a; b.n = 2; console.log(a.n) prints 2."
+sources:
+  - https://progmiscon.org/misconceptions/JavaScript/AssignmentCopiesObject/
+  - https://tc39.es/ecma262/#sec-assignment-operators-runtime-semantics-evaluation
+  - https://tc39.es/ecma262/#sec-identity
+lessons:
+  - js-values
