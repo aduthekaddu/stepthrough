@@ -87,7 +87,7 @@ describe('Task 1: deepEqual', () => {
     expect(deepEqual(new Point(1), new Point(1))).toBe(true);
   });
 
-  it('stops on cyclic structures and compares them by shape', () => {
+  it('stops on cyclic structures and compares what is reachable by following properties', () => {
     const a = { name: 'loop' };
     a.self = a;
     const b = { name: 'loop' };

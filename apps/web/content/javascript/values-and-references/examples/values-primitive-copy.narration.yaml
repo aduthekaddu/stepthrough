@@ -4,12 +4,14 @@ steps:
   - at: { mark: start, kind: statement }
     say: "The Global box lists the names this script declares; both exist already but hold nothing yet, a waiting state that lesson 1.2 explains."
     expect:
-      - { record: Global, binding: a, value: "<TDZ>" }
-      - { record: Global, binding: b, value: "<TDZ>" }
+      - { record: Global, binding: a, value: "uninitialized" }
+      - { record: Global, binding: b, value: "uninitialized" }
+      - { stackDepth: 1 }
   - at: { mark: before-copy, kind: statement }
     say: "The name a now holds the number 5, a primitive, written inside its row."
     expect:
       - { record: Global, binding: a, value: "5" }
+      - { record: Global, binding: b, value: "uninitialized" }
   - at: { mark: before-reassign, kind: statement }
     say: "let b = a read the value of a, which is 5, and gave b that value, and nothing links the two names."
     expect:
@@ -20,7 +22,4 @@ steps:
     expect:
       - { record: Global, binding: a, value: "6" }
       - { record: Global, binding: b, value: "5" }
-  - at: { kind: end }
-    say: "The script printed 6 5."
-    expect:
-      - { console: ["6 5"] }
+      - { console: [] }

@@ -4,23 +4,20 @@ steps:
   - at: { mark: start, kind: statement }
     say: "Two names and nothing created yet; objects will appear on the right, outside the Global box."
     expect:
-      - { record: Global, binding: a, value: "<TDZ>" }
+      - { record: Global, binding: a, value: "uninitialized" }
+      - { record: Global, binding: b, value: "uninitialized" }
   - at: { mark: one-object, kind: statement }
     say: "The object literal made one new object, and the row for a holds an arrow to it, not the object itself."
     expect:
-      - { record: Global, binding: a, value: "→obj0" }
-      - { object: obj0, prop: n, value: "1" }
+      - { record: Global, binding: a, value: "object" }
+      - { record: Global, binding: b, value: "uninitialized" }
   - at: { mark: two-arrows, kind: statement }
     say: "let b = a copied the arrow, so two arrows now lead to one object and no second object was made."
     expect:
-      - { record: Global, binding: a, value: "→obj0" }
-      - { record: Global, binding: b, value: "→obj0" }
+      - { record: Global, binding: a, value: "object" }
+      - { record: Global, binding: b, value: "object" }
   - at: { mark: done, kind: statement }
     say: "b.n = 2 followed b's arrow and changed the object at its end, which is the same object a points to."
     expect:
-      - { object: obj0, prop: n, value: "2" }
-      - { record: Global, binding: a, value: "→obj0" }
-  - at: { kind: end }
-    say: "Reading a.n follows a's arrow to the changed object, so the script printed 2."
-    expect:
-      - { console: ["2"] }
+      - { record: Global, binding: a, value: "object" }
+      - { console: [] }

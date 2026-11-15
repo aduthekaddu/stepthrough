@@ -1,0 +1,40 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: start, kind: statement }
+    say: "The function declaration already made a function object, which is an object like any other, and the name rename points to it."
+    expect:
+      - { record: Global, binding: rename, value: "function rename" }
+      - { record: Global, binding: player, value: "uninitialized" }
+      - { stackDepth: 1 }
+  - at: { mark: before-call, kind: statement }
+    say: "player points to one object whose name is \"Aditya\"."
+    expect:
+      - { record: Global, binding: player, value: "object" }
+      - { record: "rename() call", exists: false }
+      - { stackDepth: 1 }
+  - at: { mark: in-call, kind: enter }
+    say: "The call pushed a new stack frame with its own box of names, and the parameter user got a copy of player's arrow, so it points to the same object."
+    expect:
+      - { stackDepth: 2 }
+      - { record: "rename() call", exists: true }
+      - { record: "rename() call", binding: user, value: "object" }
+      - { record: Global, binding: player, value: "object" }
+  - at: { mark: after-mutate, kind: statement }
+    say: "user.name = \"Riya\" followed user's arrow and changed the shared object, which player sees because it points to the same object."
+    expect:
+      - { record: "rename() call", binding: user, value: "object" }
+      - { stackDepth: 2 }
+  - at: { mark: after-reassign, kind: statement }
+    say: "user = { name: \"Kabir\" } made a new object and moved only the arrow in the rename() box, while player's arrow stayed put."
+    expect:
+      - { record: "rename() call", binding: user, value: "object" }
+      - { record: Global, binding: player, value: "object" }
+      - { stackDepth: 2 }
+  - at: { mark: done, kind: statement }
+    say: "The call is over and its box is gone; nothing points to the Kabir object any more, so the diagram drops it, and player still reaches the object named \"Riya\"."
+    expect:
+      - { stackDepth: 1 }
+      - { record: "rename() call", exists: false }
+      - { record: Global, binding: player, value: "object" }
+      - { console: [] }

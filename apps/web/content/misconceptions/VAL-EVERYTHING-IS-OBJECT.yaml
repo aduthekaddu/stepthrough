@@ -1,6 +1,6 @@
 id: VAL-EVERYTHING-IS-OBJECT
 belief: In JavaScript everything is an object, including numbers and strings.
-predicts: A number such as 5 is an object, so it has identity and can be changed in place.
+predicts: A number such as 5 is an object, so the spec stores it on the heap like other objects, gives it identity, and lets it be changed in place.
 truth: The spec has seven primitive types and one Object type. Primitives are not objects; reading a property such as "hi".length works because JavaScript wraps the primitive in a temporary wrapper object for that access.
 counterexample: 'typeof 5 is "number", and (5).x = 1 does not stick: (5).x is undefined.'
 sources:

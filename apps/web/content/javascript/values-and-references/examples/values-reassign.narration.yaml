@@ -4,34 +4,27 @@ steps:
   - at: { mark: start, kind: statement }
     say: "Same start as before: two names, no objects yet."
     expect:
-      - { record: Global, binding: a, value: "<TDZ>" }
+      - { record: Global, binding: a, value: "uninitialized" }
+      - { record: Global, binding: b, value: "uninitialized" }
   - at: { mark: one-object, kind: statement }
     say: "One object exists, and a points to it."
     expect:
-      - { record: Global, binding: a, value: "→obj0" }
+      - { record: Global, binding: a, value: "object" }
   - at: { mark: shared, kind: statement }
     say: "b got a copy of the arrow, so both names reach the same object."
     expect:
-      - { record: Global, binding: b, value: "→obj0" }
+      - { record: Global, binding: b, value: "object" }
   - at: { mark: after-mutate, kind: statement }
     say: "Mutation: b.n = 2 changed the object itself, and both arrows still point to it, so both names see n: 2."
     expect:
-      - { object: obj0, prop: n, value: "2" }
-      - { record: Global, binding: a, value: "→obj0" }
-      - { record: Global, binding: b, value: "→obj0" }
+      - { record: Global, binding: a, value: "object" }
+      - { record: Global, binding: b, value: "object" }
   - at: { mark: after-reassign, kind: statement }
     say: "Reassignment: b = { n: 3 } made a new object and moved only b's arrow, leaving the first object and a's arrow as they were."
     expect:
-      - { record: Global, binding: a, value: "→obj0" }
-      - { record: Global, binding: b, value: "→obj1" }
-      - { object: obj0, prop: n, value: "2" }
-      - { object: obj1, prop: n, value: "3" }
+      - { record: Global, binding: a, value: "object" }
+      - { record: Global, binding: b, value: "object" }
   - at: { mark: done, kind: statement }
     say: "b.n = 4 mutated the object b points to now, the new one, so a's object still says 2."
     expect:
-      - { object: obj0, prop: n, value: "2" }
-      - { object: obj1, prop: n, value: "4" }
-  - at: { kind: end }
-    say: "The script printed 2 4."
-    expect:
-      - { console: ["2 4"] }
+      - { console: [] }

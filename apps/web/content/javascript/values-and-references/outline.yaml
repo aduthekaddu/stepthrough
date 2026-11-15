@@ -165,7 +165,7 @@ misconceptions:
 design_decisions:
   - "Hook: pass an object, mutate it, then reassign the parameter. It splits the two main wrong models (copy vs true pass-by-reference) and Aditya meets the same rule in Java, so s10 can resolve it with a Java contrast."
   - "Primitives are drawn inside their binding row and objects as separate boxes with arrows. This is the trace format's drawing choice; s04 and s11 say it is a drawing, not where an engine stores values."
-  - "Narration expectations use the show.ts notation: value \"→obj0\" means an arrow to heap object obj0; { object, prop, value } and { object, items } check heap contents; { absent } checks that an object is gone; { console } checks output. A return frame has no source span, so it is addressed as at: { kind: return }."
+  - "Narration expectations use only the shapes the build checks: { record, binding, value } (value is the primitive text, \"uninitialized\", or \"object\" / \"array\" / \"function <name>\" for a reference), { stackDepth }, { record, exists }, { console }. These cannot say that two bindings share one object or what a property holds; the console expectation on the end frame pins the observable result instead. Every step needs a mark, and end and return frames have no source line, so they cannot be narrated; values-pass-object.js adds return user.name; to get a frame right after the reassignment."
   - "Every snippet runs as a classic script (node -e), matching the trace generator and the browser sandbox. The string index write in s05 is silently ignored in sloppy mode and throws in strict mode; both are shown."
   - "12 Predicts (the brief's upper bound), plus 6 next-frame pauses in 5 traces and 2 mid-lesson explain prompts."
 
@@ -207,8 +207,8 @@ segments:
     terms_introduced: [binding]
     terms_used: [value, primitive, memory]
     words: 130-170
-    code: examples/primitive-copy.js
-    visual: { component: MemoryDiagram, example: primitive-copy, new_parts: [global-box, binding-row, inline-primitive], pauseAt: [3] }
+    code: examples/values-primitive-copy.js
+    visual: { component: MemoryDiagram, example: values-primitive-copy, new_parts: [global-box, binding-row, inline-primitive], pauseAt: [3] }
     interaction: { kind: predict-next-frame, at_step: 3, question: "What changes when a = 6 runs?" }
     doubt: "Doesn't b = a tie b to a, like a formula in a spreadsheet?"
     teaching_model: "Abramov's 'wire' is a teaching word, not a JS term (he says so). The spec word is binding."
@@ -229,9 +229,9 @@ segments:
     terms_introduced: [reference]
     terms_used: [object, binding, value]
     words: 120-170
-    code: examples/alias.js
+    code: examples/values-alias.js
     interaction: { kind: predict, id: alias, type: text, answer: "2", wrong: ["1 -> VAL-ASSIGN-COPIES-OBJECT"] }
-    visual: { component: MemoryDiagram, example: alias, gate: alias, new_parts: [object-box, reference-arrow], pauseAt: [3] }
+    visual: { component: MemoryDiagram, example: values-alias, gate: alias, new_parts: [object-box, reference-arrow], pauseAt: [3] }
     doubt: "So does let b = a copy the object or not?"
     facts: [assignment, identity, reference-record]
 
@@ -251,9 +251,9 @@ segments:
     terms_introduced: [mutation]
     terms_used: [object, binding, reference]
     words: 120-170
-    code: "modify of s06: b = { n: 2 } instead of b.n = 2; then examples/reassign-vs-mutate.js"
+    code: "modify of s06: b = { n: 2 } instead of b.n = 2; then examples/values-reassign.js"
     interaction: { kind: predict, id: reassign, type: text, answer: "1", wrong: ["2 -> VAL-REASSIGN-MUTATES"], role: "modify and predict again" }
-    visual: { component: MemoryDiagram, example: reassign-vs-mutate, gate: reassign, pauseAt: [4] }
+    visual: { component: MemoryDiagram, example: values-reassign, gate: reassign, pauseAt: [4] }
     doubt: "Both lines use =. Why do they do different things?"
     facts: [assignment]
 
@@ -273,8 +273,8 @@ segments:
     terms_introduced: []
     terms_used: [reference, binding, mutation, stack-frame, garbage-collection]
     words: 150-210
-    code: examples/pass-object.js (the hook), then the cart transfer snippet
-    visual: { component: MemoryDiagram, example: pass-object, gate: hook, new_parts: [call-box, stack-depth], pauseAt: [4, 5] }
+    code: examples/values-pass-object.js (the hook plus a final return user.name line), then the cart transfer snippet
+    visual: { component: MemoryDiagram, example: values-pass-object, gate: hook, new_parts: [call-box, stack-depth], pauseAt: [4, 5] }
     interaction: { kind: predict, id: pass, answer: "[ 'bread', 'tea' ] 2", options: ["[ 'bread', 'tea' ] 2 (correct)", "[ 'bread' ] 2 -> VAL-ASSIGN-COPIES-OBJECT", "[ 'coffee', 'milk' ] 2 -> VAL-PASS-BY-REFERENCE"], role: transfer }
     explain: { id: e1-hook, prompt: "In one or two sentences, why did player.name become Riya and not Kabir?", rubric: ["user gets a copy of the reference, so it reaches the same object", "user.name = ... mutates that shared object", "user = {...} only moves the parameter's reference"] }
     doubt: "Isn't this pass-by-reference, then?"
@@ -313,7 +313,7 @@ segments:
     facts: [same-value, number-type, same-value-zero-users]
 
   - id: s14-loose-equality
-    goal: "== runs IsLooselyEqual, which converts one side at a time until both sides have the same type and then uses ==="
+    goal: "== runs IsLooselyEqual, an ordered list of rules that either converts one side and compares again or decides directly, and uses === once the types match"
     terms_introduced: [loose-equality, coercion]
     terms_used: [strict-equality, nan, primitive]
     words: 170-230
@@ -324,7 +324,7 @@ segments:
     facts: [is-loosely-equal, to-number, same-value-zero-users]
 
   - id: s15-to-primitive
-    goal: "When == meets an object and a primitive, ToPrimitive turns the object into a primitive by calling valueOf and then toString, or toString first when a string is wanted"
+    goal: "When == meets an object and a string, number, bigint or symbol, ToPrimitive turns the object into a primitive; without a Symbol.toPrimitive method that means valueOf then toString, or toString first when a string is wanted"
     terms_introduced: []
     terms_used: [loose-equality, coercion, object, primitive]
     words: 150-210
@@ -334,13 +334,13 @@ segments:
     facts: [to-primitive, to-string, is-loosely-equal]
 
   - id: s16-shallow-copy
-    goal: "Spread and Object.assign make one new outer object but copy each property's value, so nested objects stay shared"
+    goal: "Spread and Object.assign({}, source) make one new outer object and copy each own enumerable property's value, so nested objects stay shared"
     terms_introduced: [shallow-copy]
     terms_used: [object, reference, mutation]
     words: 120-170
-    code: examples/shallow-copy.js
+    code: examples/values-shallow-copy.js
     interaction: { kind: predict, id: shallow, answer: "chess 3", options: ["chess 3 (correct)", "chess 2 -> COPY-SPREAD-DEEP", "go 3 -> COPY-SPREAD-ALIAS"] }
-    visual: { component: MemoryDiagram, example: shallow-copy, gate: shallow, new_parts: [nested-reference], pauseAt: [4] }
+    visual: { component: MemoryDiagram, example: values-shallow-copy, gate: shallow, new_parts: [nested-reference], pauseAt: [4] }
     doubt: "Is a shallow copy a copy or not?"
     facts: [shallow-copy, object-assign]
 

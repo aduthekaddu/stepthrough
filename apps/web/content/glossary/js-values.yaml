@@ -40,7 +40,7 @@ reference:
   introducedIn: js-values
 identity:
   term: identity
-  definition: The hidden mark that makes each object unique, so under === an object is equal only to itself. Primitives have no identity.
+  definition: The hidden mark that makes each object unique, so under === an object is equal only to itself. Numbers, strings, booleans, bigints, null and undefined have no identity; symbols are the one primitive that does.
   aliases: []
   spec: Identity (5.2.8)
   introducedIn: js-values
@@ -85,6 +85,6 @@ shallow-copy:
   introducedIn: js-values
 deep-copy:
   term: deep copy
-  definition: A copy in which every nested object is copied too, so changing the copy never changes the original.
+  definition: A copy in which every nested object is copied too, so changing an object in the copy never changes an object in the original.
   aliases: [deep copies]
   introducedIn: js-values

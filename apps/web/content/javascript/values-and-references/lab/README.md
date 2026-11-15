@@ -40,10 +40,10 @@ The rules your function must follow. They match Node's `assert.deepStrictEqual` 
 2. Two objects with different prototypes are never equal. An array is not equal to a plain object with the same keys, and a `Point` instance is not equal to `{ x: 1 }`.
 3. Arrays are equal when they have the same length and deeply equal items at every index.
 4. Dates are equal when `getTime()` gives the same number (compare with `Object.is`, so two invalid Dates are equal).
-5. Maps are equal when they have the same size and, for every key of the first, the second has that key (by `Map.has`) with a deeply equal value.
+5. Maps are equal when they have the same size and, for every key of the first, the second has that key (by `Map.has`) with a deeply equal value. A consequence: an object key must be the *same* object in both Maps. So a Map with object keys is not `deepEqual` to its own `deepClone`, because the clone has new key objects. Node's `isDeepStrictEqual` matches object keys deeply instead; we keep the simpler rule.
 6. Sets are equal when they have the same size and every member of the first has a partner in the second. A primitive member must be in the other set (`Set.has`). An object member must deeply equal a different, not yet used object member of the other set.
 7. Other objects (plain objects and class instances) are equal when they have the same own enumerable string keys (`Object.keys`) and deeply equal values for each key. A missing key is not the same as a key that holds `undefined`.
-8. Cycles: if the same pair of objects is already being compared further up, treat the pair as equal. This is what makes the function stop on `a.self = a`.
+8. Cycles: if the same pair of objects is already being compared further up, treat the pair as equal. This is what makes the function stop on `a.self = a`. It compares what you can reach by following properties, not the shape of the cycle: `a.self = a` and `b.self = { }` with `b.self.self = b.self` count as equal here, while Node's `isDeepStrictEqual` says they differ. Both choices are defensible; this one is the shortest to write.
 
 ### Hints for Task 1
 
@@ -60,7 +60,9 @@ Rules:
 3. A `Date` becomes a new `Date` with the same time.
 4. A `Map` becomes a new `Map`. Keys and values are cloned. A `Set` becomes a new `Set` with cloned members.
 5. An array becomes a new array of the same length with cloned items.
-6. Any other object becomes a new object with the **same prototype** (`Object.create(Object.getPrototypeOf(v))`) and cloned own enumerable string keys. This is a deliberate difference from `structuredClone`, which drops the prototype.
+6. Any other object becomes a new object with the **same prototype** (`Object.create(Object.getPrototypeOf(v))`), and each own enumerable string key is copied with `copy[key] = clone(v[key])`. This is a deliberate difference from `structuredClone`, which drops a class's prototype. Two limits you should know:
+   - Keeping the prototype does not recreate private fields (`#count`). A cloned instance whose methods read a private field throws a `TypeError` when you call them.
+   - A key literally named `"__proto__"` (for example from `JSON.parse('{"__proto__": {}}')`) is not copied as a property, because assigning to `copy["__proto__"]` changes the copy's prototype instead. `Object.defineProperty(copy, key, { value, writable: true, enumerable: true, configurable: true })` avoids this. The tests do not require it; try it as a stretch.
 7. Every original object is copied exactly once. If it appears twice, both places get the same copy. A cycle in the original is a cycle in the clone.
 
 **Part A, Parsons.** These lines make a working `deepClone` for plain objects and arrays. Three lines are distractors and do not belong. Put the rest in order inside `deepClone` in `starter.js` (you also need the closing braces).
