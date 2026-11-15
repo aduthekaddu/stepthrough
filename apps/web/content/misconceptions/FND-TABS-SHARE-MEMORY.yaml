@@ -1,7 +1,7 @@
 id: FND-TABS-SHARE-MEMORY
 belief: "All tabs of one browser are one program, so a variable made in one tab can be read in another."
 predicts: "After let score = 10 in tab A, typing score in tab B (another site) gives 10, or at least finds the name."
-truth: "Each page has its own global object and its own variables. Pages with no opener relationship cannot share JavaScript memory; they can only send copies of data with postMessage. Chrome also usually puts different sites in different OS processes."
+truth: "Each page has its own global object and its own variables. Pages with no opener or ancestor relationship cannot share JavaScript memory; they can only exchange copies of data, for example with postMessage. Chrome also usually puts different sites in different OS processes."
 counterexample: "Typing score in the other tab throws ReferenceError: score is not defined."
 sources:
   - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model"

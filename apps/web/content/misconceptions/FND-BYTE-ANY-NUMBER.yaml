@@ -1,7 +1,7 @@
 id: FND-BYTE-ANY-NUMBER
 belief: "One memory cell can hold any number you put in it."
 predicts: "Writing 300 into a Uint8Array element and reading it back gives 300."
-truth: "A byte has 8 bits, so it holds 0 to 255. A Uint8Array keeps only the low 8 bits (ToUint8), so 300 is stored as 300 - 256 = 44. Bigger numbers need several bytes."
+truth: "A byte has 8 bits, so it has 256 patterns: 0 to 255 when read as an unsigned number (Java's signed byte reads them as -128 to 127). A Uint8Array keeps only the low 8 bits (ToUint8), so 300 is stored as 300 - 256 = 44. Bigger numbers need several bytes."
 counterexample: "const c = new Uint8Array(1); c[0] = 300; c[0] is 44."
 sources:
   - "https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8"

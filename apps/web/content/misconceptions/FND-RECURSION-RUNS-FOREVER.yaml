@@ -1,7 +1,7 @@
 id: FND-RECURSION-RUNS-FOREVER
 belief: "A recursive function with no base case runs forever, like while (true) {}."
 predicts: "The program hangs and never prints."
-truth: "Every call pushes a frame, and a frame leaves only when its call returns. With no base case nothing returns, the fixed-size call stack fills, and V8 throws RangeError: Maximum call stack size exceeded. A while loop pushes no frames, so it can run forever."
+truth: "Every call pushes a frame, and a frame leaves only when its call returns or throws. With no base case nothing returns, the stack reaches the engine's limit, and V8 throws RangeError: Maximum call stack size exceeded (Firefox: InternalError). The spec sets no limit, so the overflow is engine behaviour; the spec's strict-mode proper tail calls would avoid it, but V8 does not implement them. A while loop pushes no frames, so it can run forever."
 counterexample: "function down(n) { return down(n - 1); } throws RangeError in well under a second."
 sources:
   - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"

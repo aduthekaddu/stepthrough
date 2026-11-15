@@ -158,6 +158,16 @@ facts:
       text: "--print-bytecode --print-bytecode-filter=add on the s10 lazy.js code printed 'before the first call', then the bytecode for add once, then 3 and 7. With the filter set to neverCalled, no bytecode was printed."
     - id: m-oom
       text: "node --max-old-space-size=16 with an ever-growing array prints 'FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory'."
+    - id: m-pife
+      text: "A parenthesized function expression that is never called, (function neverCalled(){return 5}), still gets bytecode at load (--print-bytecode-filter=neverCalled prints it). Found by the codex review, re-run by the author."
+    - id: m-deopt-effects
+      text: "With c++ inside add, 100,000 number calls plus one string call leave c at 100001: the deopt does not repeat work already done."
+    - id: v8-flushing
+      text: "V8 can discard (flush) bytecode of functions not run recently and recompile it if needed (V8 Lite post)."
+      url: https://v8.dev/blog/v8-lite
+    - id: v8-escape
+      text: "V8's escape analysis can avoid allocating objects that do not escape a function (post on disabling escape analysis)."
+      url: https://v8.dev/blog/disabling-escape-analysis
     - id: m-depth-lesson
       text: "The s15 runnable dive() code prints 'frames before the overflow: 12517' twice in a row on this machine."
     - id: m-p1b

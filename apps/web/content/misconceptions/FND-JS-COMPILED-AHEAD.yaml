@@ -1,8 +1,8 @@
 id: FND-JS-COMPILED-AHEAD
 belief: "JavaScript is translated in full before it runs, the way gcc turns a whole C file into machine code."
 predicts: "Every function becomes bytecode or machine code when the file loads, whether or not it is ever called."
-truth: "The language only requires parsing (and early errors) before running. V8 compiles most functions to bytecode lazily, on their first call, and compiles hot code to machine code later while the program runs."
-counterexample: "V8's --print-bytecode prints nothing for a function that is never called."
+truth: "The language only requires parsing (and early errors) before running. V8 compiles most functions to bytecode lazily, on their first call (with exceptions such as functions wrapped in parentheses), and compiles hot code to machine code later while the program runs."
+counterexample: "With --print-bytecode, a plain function declaration that is never called gets no bytecode, and a called function's bytecode is printed only after the log line placed before its first call."
 sources:
   - "https://v8.dev/blog/preparser"
   - "https://v8.dev/blog/maglev"

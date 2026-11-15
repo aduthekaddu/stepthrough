@@ -66,7 +66,7 @@ The first line prints `5`. The second prints your function back, exactly as you 
 
 <Segment id="s03-machine-code" goal="The CPU runs only machine code: numbered instructions stored as bytes">
 
-Computers store everything as bits. A bit is a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>, and one byte can hold a whole number from 0 to 255.
+Computers store everything as bits. A bit is a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>, so one byte has 256 possible patterns. Read as a plain unsigned number, those patterns mean 0 to 255. (Java's `byte` type reads the same patterns as -128 to 127.)
 
 A CPU runs instructions that are themselves numbers, stored as bytes. Each CPU family has its own list of instructions and its own number for each one. Instructions in this numeric form are <Term id="machine-code">machine code</Term>. Machine code is the only thing a CPU can run directly.
 
@@ -97,7 +97,7 @@ While code runs, the CPU needs a place to keep the instructions it is running an
 
 Each byte in the row has a position number, starting at 0. That number is the byte's <Term id="address">address</Term>. To read or write a byte, the CPU gives its address. Addresses are usually written in hexadecimal (base 16), such as `7ffe3f1e4000`.
 
-One byte stops at 255. A bigger number uses several bytes side by side.
+Read as an unsigned number, one byte stops at 255. A bigger number uses several bytes side by side.
 
 JavaScript code never sees real addresses, so the Predict uses a model. A `Uint8Array` is a JavaScript object that behaves like a short row of bytes. Its indexes 0, 1, 2 and 3 play the role of addresses.
 
@@ -136,7 +136,7 @@ Is a `Uint8Array` real memory? Its bytes are stored in real memory, but its inde
 
 Many programs run on one computer at the same time: a browser, an editor, a Node server. One program is in charge of all of them. It starts them, gives each one turns on the CPU, and keeps them apart. That program is the <Term id="operating-system">operating system</Term> (OS), such as Linux, Windows or macOS.
 
-A running program, as the operating system sees it, is a <Term id="process">process</Term>. Each process gets its own private range of memory addresses, called its address space. Code in one process cannot read or write another process's memory by accident.
+A running program, as the operating system sees it, is a <Term id="process">process</Term>. Each process gets its own private range of memory addresses, called its address space. These addresses are virtual. The operating system maps each process's address numbers to real RAM separately, so code in one process cannot read or write another process's memory by accident. Processes can ask the OS to share a region on purpose, but by default they are kept apart.
 
 On Linux, a process can read a map of its own memory from the file `/proc/self/maps`. Below, the same command ran twice, so two separate `node` processes printed part of their maps.
 
@@ -151,7 +151,7 @@ On Linux, a process can read a map of its own memory from the file `/proc/self/m
 62a12068b000-62a1208f3000 rw-p 00000000 00:00 0   [heap]
 7ffd5c40c000-7ffd5c42e000 rw-p 00000000 00:00 0   [stack]`} />
 
-The address ranges differ. And even if two processes used the same address number, it would name a different byte in each, because each process has its own map.
+The address ranges differ. And even if two processes used the same virtual address, it would normally name a different byte of RAM in each, because each process has its own map.
 
 <Sidenote>The Linux manual page for [fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html), the call that copies a process, says "The child process and the parent process run in separate memory spaces."</Sidenote>
 
@@ -159,19 +159,19 @@ Are two browser tabs two processes? The Predict asks the part of that question t
 
 <Predict
   id="p-tabs"
-  prompt="You open this lesson in tab A and type let score = 10 in the browser console. Then you open tab B on a different site and type score in its console. What happens?"
+  prompt="You open this lesson in tab A and type let score = 10 in the browser console. Then you open tab B on a different site, whose own code has no variable named score, and type score in its console. What happens?"
   answer="b"
   options={[
     { id: "a", text: "10", misconception: "FND-TABS-SHARE-MEMORY", feedback: "You pictured all tabs sharing one pool of variables because they run inside one browser. Each page gets its own global object and its own variables, and pages with no opener link cannot share JavaScript memory at all. Tab B has never heard of score, so it throws. The explanation below gives the rule." },
     { id: "b", text: "ReferenceError: score is not defined", feedback: "Right. Each page has its own variables, and tab B has no variable called score." },
     { id: "c", text: "undefined", misconception: "FND-TABS-SHARE-MEMORY", feedback: "You expected the name to exist in tab B, just without its value. Tab B has no variable called score at all, and reading a name that does not exist throws a ReferenceError instead of giving undefined." }
   ]}
-  explain="Each page has its own global object and variables. Pages with no opener relationship cannot share JavaScript memory; they can only send copies of data with postMessage()."
+  explain="Each page has its own global object and variables. Unrelated pages (no opener or parent-frame link) cannot share JavaScript memory; they can only exchange copies of data, for example with postMessage()."
 />
 
 Tab B throws `ReferenceError: score is not defined`. Each page has its own global object and its own variables, so code in tab B cannot name a value created in tab A.
 
-<Sidenote>MDN's [execution model page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model) says two windows "with no opener or ancestor relationship" cannot share memory, even with the same origin. They can only send copies of data with `postMessage()`.</Sidenote>
+<Sidenote>MDN's [execution model page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model) says two windows "with no opener or ancestor relationship" cannot share memory, even with the same origin. They can only exchange copies of data, for example with `postMessage()`.</Sidenote>
 
 Whether two tabs are also two OS processes is up to the browser. Chrome usually puts different sites in different processes ([site isolation](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md)), and it may share one process between tabs of the same site. Your code can rely only on the first rule. Tabs do not share variables.
 
@@ -183,7 +183,7 @@ Inside a process, the CPU follows one instruction after another. One such path t
 
 <Sidenote>The Linux manual page [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) says threads "share the same global memory ..., but each thread has its own stack". Segment 13 explains that stack.</Sidenote>
 
-Your JavaScript is different. The specification gives each agent, its word for one running JavaScript world, one executing thread. MDN says an agent "is analogous to a thread". So while one of your functions runs, no other JavaScript in that page or Node program runs.
+Your JavaScript is different. The specification gives each agent, its word for one running JavaScript world, one executing thread. MDN says an agent "is analogous to a thread". So while one of your functions runs, no other JavaScript on that thread runs. Workers, which you start yourself, are separate agents with their own thread and memory.
 
 The Predict uses `setTimeout(fn, 0)`, which asks for `fn` to be called later, after at least 0 ms. Lesson 1.7 explains where `fn` waits.
 
@@ -198,9 +198,9 @@ console.log("loop done");`}
   options={[
     { id: "a", text: "timer\nloop done", misconception: "FND-JS-PREEMPTED", feedback: "You expected the timer to cut in after 0 ms, the way an operating system can switch between Java threads. JavaScript runs one piece of your code at a time on its thread, and a running piece is never interrupted by other JavaScript. The timer's function waits until the loop and the rest of the script finish." },
     { id: "b", text: "loop done\ntimer", feedback: "Right. The loop holds the only thread your JavaScript has, so the timer's function runs after the script finishes, about 100 ms late." },
-    { id: "c", text: "loop done", misconception: "FND-LATE-CALLBACK-DROPPED", feedback: "You expected the timer to be skipped because it missed its time. It is not skipped. A timer delay is a minimum, not a deadline. The function waits and runs as soon as the thread is free." }
+    { id: "c", text: "loop done", misconception: "FND-LATE-CALLBACK-DROPPED", feedback: "You expected the timer to be skipped because it missed its time. It is not skipped. A timer delay is a minimum, not a deadline. The function waits for its turn and runs after the running code finishes." }
   ]}
-  explain="Your JavaScript runs on one thread, and each piece runs to completion. A callback can only start when the code that is running has finished."
+  explain="Your JavaScript runs on one thread, and each job runs to completion. A timer callback waits for its turn until the running code has finished. Callbacks you call directly, like the one you pass to forEach, run inside the current work."
 />
 
 `loop done` prints first, then `timer`. The timer was due after 0 ms, but its function could not start while the loop held the thread. It ran about 100 ms late. It was not skipped. A timer's delay is a minimum, not a deadline.
@@ -215,7 +215,7 @@ You may ask, "My laptop has many cores, so why does one loop block the timer?" M
 
 <Segment id="s07-interpreter" goal="A compiler translates ahead of time; an interpreter carries out code itself; bytecode sits between">
 
-There are two ways to get source code running. The first is to compile it. A compiler translates all of it to machine code ahead of time, and then the CPU runs that machine code, as with gcc in segment 3. The second is to hand your code to a program that reads it and carries out each step itself. That program is an <Term id="interpreter">interpreter</Term>. The interpreter is itself machine code. The CPU runs the interpreter, and the interpreter runs your code.
+There are two ways to get source code running. The first is to compile it. A compiler translates code into another form. When it translates the whole program to machine code before the program starts, as gcc does in segment 3, that is called ahead-of-time compilation, and the CPU then runs the result. The second is to hand your code to a program that reads it and carries out each step itself. That program is an <Term id="interpreter">interpreter</Term>. The interpreter is itself machine code. The CPU runs the interpreter, and the interpreter runs your code.
 
 <Code code={`// compile ahead of time:  add.c ---gcc---> machine code ---> the CPU runs it
 // interpret:              add.sh -------------------------> bash, itself machine code, reads it and does each step
@@ -238,7 +238,7 @@ So is Java compiled or interpreted? Both, at different moments. The next segment
   rubric={["A compiler produces new code (machine code or bytecode) before the code runs", "An interpreter produces no machine code for your program; it carries out each step itself while reading", "The interpreter is itself machine code that the CPU runs"]}
 />
 
-A compiler produces new code and then stops. An interpreter produces no machine code for your program. It does the work itself while it reads. Java uses both. JavaScript does too, but there is no separate compile step that you run yourself.
+A compiler produces new code. It can do that before the program runs or, as segment 11 shows, while it runs. An interpreter produces no machine code for your program. It does the work itself while it reads. Java uses both. JavaScript does too, but there is no separate compile step that you run yourself.
 
 </Segment>
 
@@ -267,7 +267,7 @@ Isn't `console.log` part of JavaScript? Commit to an answer before you read on.
 
 It prints `object undefined function`. `Math` comes from the engine, so every JavaScript environment has it. `document` comes from the browser, so Node does not have it. `setTimeout` comes from the runtime too, and browsers and Node each supply their own version.
 
-`console` is not in the ECMAScript specification at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it, and each runtime provides it.
+`console` is not in the ECMAScript specification at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ.
 
 <Sidenote>The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "a host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."</Sidenote>
 
@@ -277,7 +277,7 @@ So when code works in the browser but fails in Node, first ask whether it uses t
 
 <Segment id="s09-parse-first" goal="The engine parses the whole script before running any of it, so early errors stop everything">
 
-Now you can explain the hook from segment 1. Before it runs anything, the engine parses the whole file. Parsing means reading all of the text and building a tree that shows how the code fits together, for example which parts are functions and which statements sit inside which blocks. Running the code is a separate step that starts only after parsing succeeds.
+Now you can explain the hook from segment 1. Before it runs anything, the engine parses the whole file. Parsing means reading all of the text and working out how the code fits together, for example which parts are functions and which statements sit inside which blocks. Engines usually build a tree from it. How much detail they build is their choice. Running the code is a separate step that starts only after parsing succeeds.
 
 While parsing, the engine also looks for early errors. These are mistakes it can find without running anything. Declaring the same `let` name twice in one scope is one of them. That is why the hook printed nothing, not even `one`. The older keyword `var` allows a repeated declaration, so the same file with `var` runs to the end.
 
@@ -357,9 +357,9 @@ Frame size 0
   prompt="In V8, when is a function's bytecode made?"
   answer="b"
   options={[
-    { id: "a", text: "When the file loads, for every function in it", misconception: "FND-JS-COMPILED-AHEAD", feedback: "You pictured JavaScript being translated in full before it runs, like gcc with a C file. V8 only parses most function bodies at load time. It makes a function's bytecode when the function is first called, and a function that is never called gets none." },
+    { id: "a", text: "When the file loads, for every function in it", misconception: "FND-JS-COMPILED-AHEAD", feedback: "You pictured JavaScript being translated in full before it runs, like gcc with a C file. V8 only parses most function bodies at load time. For most functions it makes the bytecode when the function is first called, and a function that is never called usually gets none." },
     { id: "b", text: "The first time the function is called (for most functions)", feedback: "Right. V8 compiles lazily: parse everything first, make bytecode for a function when it is first needed, then reuse that bytecode on later calls." },
-    { id: "c", text: "Every time the function is called, from its source text", misconception: "FND-LINE-BY-LINE", feedback: "You pictured the engine reading your text again on each call. V8 makes the bytecode once and keeps it. Later calls run the same bytecode, and hot functions may later get machine code too." }
+    { id: "c", text: "Never. V8 reads the function's source text and runs it one line at a time", misconception: "FND-LINE-BY-LINE", feedback: "You pictured the engine working straight from your text, line by line. V8 turns the whole function into bytecode first and usually reuses that bytecode on later calls. (It may throw old bytecode away to save memory and make it again.) Hot functions may later get machine code too." }
   ]}
   explain="V8 compiles a function to bytecode lazily, on its first call, and reuses the bytecode after that. This is a V8 choice, not a language rule."
 />
@@ -382,7 +382,7 @@ console.log(add(3, 4));
 // 3
 // 7`} />
 
-Making bytecode only when a function is first needed is called lazy compilation. It is a V8 choice. The specification only requires the parse and the early-error check from segment 9. It says nothing about bytecode.
+Making bytecode only when a function is first needed is called lazy compilation. It is a V8 choice, and V8 bends it with its own rules. For example, it compiles a function wrapped in parentheses right away, because such functions are usually called at once. The specification only requires the parse and the early-error check from segment 9. It says nothing about bytecode.
 
 Why not make all the bytecode at once? Many functions in a real web page never run. Making their bytecode would waste startup time and memory.
 
@@ -407,8 +407,8 @@ V8 has four tiers today.
   answer="c"
   options={[
     { id: "a", text: "Every call takes the same time, because it runs the same code", misconception: "FND-SAME-CODE-SAME-SPEED", feedback: "You expected speed to depend only on the code. In V8 the first calls run as bytecode in the interpreter. Once the function is hot, V8 can switch it to machine code, and later calls usually get faster. Speed depends on the engine's state too." },
-    { id: "b", text: "Later calls are faster because JavaScript remembers each call's result", misconception: "FND-JIT-CACHES-RESULTS", feedback: "You pictured the engine storing answers. A JIT compiles the function's code, not its results. Every call still runs and computes, so a function that logs still logs every time. Storing results is memoization, which you write yourself." },
-    { id: "c", text: "V8 will probably compile it to faster machine code once it is hot, but the language promises nothing about speed", feedback: "Right. Tiers and thresholds are V8 choices that change between versions. The specification says nothing about speed." },
+    { id: "b", text: "Later calls are faster because JavaScript remembers each call's result", misconception: "FND-JIT-CACHES-RESULTS", feedback: "You pictured the engine storing answers. A JIT compiles the function's code. It keeps no table of past results, and everything observable, such as a log line, still happens on every call. Storing results is memoization, which you write yourself." },
+    { id: "c", text: "The language promises nothing about speed. V8 may compile it to faster machine code once it is hot", feedback: "Right. Tiers and thresholds are V8 choices that change between versions, and Node can even run V8 with the JIT turned off (--jitless). The specification says nothing about speed." },
     { id: "d", text: "The JavaScript language guarantees that a hot function gets compiled to machine code", misconception: "FND-ENGINE-IS-LANGUAGE", feedback: "You treated a V8 habit as a language rule. The ECMAScript specification describes results, errors and order, never speed or compilation. Another engine, or next year's V8, may do it differently." }
   ]}
   explain="JIT compilation is something engines do, not something the language promises. A JIT changes how fast code runs, never what it computes."
@@ -416,11 +416,11 @@ V8 has four tiers today.
 
 The JavaScript specification says nothing about speed or compilation. Tiers, thresholds and timing are V8 choices, and they change between versions. The V8 posts cited here give no fixed "after N calls" number.
 
-A JIT compiles code. It does not store results. Every call still runs and computes its answer. Saving results is a different technique, memoization, which you write yourself.
+A JIT compiles code. It does not keep a table of past results. The optimizer may skip work whose result it can already prove, but everything your code does that you can observe, such as logging or changing a variable, still happens on every call. Saving results by arguments is a different technique, memoization, which you write yourself.
 
 You may ask, "If machine code is faster, why not compile everything at the start?" Compiling costs time, and the optimizing compilers need feedback that only exists after the code has run for a while. Most code never runs often enough to repay that cost.
 
-One practical result is warm-up. When you time code, the first runs are often slower than later ones, so do not trust a single measurement.
+So when you time code, expect the first runs to be slower (warm-up).
 
 </Segment>
 
@@ -462,9 +462,9 @@ It prints `100000`, then `abcd`. Here is what V8 reported when the same code ran
 abcd
 ```
 
-Smi is V8's name for a small integer. The optimized code checked its guess, the check failed, and V8 deoptimized. It dropped the optimized code and finished the call in the interpreter, or in V8's words, it "tiers-down and continues the function's execution in the interpreter" ([Sparkplug](https://v8.dev/blog/sparkplug)). The interpreter follows the language rules, so `"ab" + "cd"` gave `"abcd"`. A deoptimization can change speed. It never changes the result.
+Smi is V8's name for a small integer. The optimized code checked its guess, the check failed, and V8 deoptimized. It dropped the optimized code and finished the call in the interpreter, or in V8's words, it "tiers-down and continues the function's execution in the interpreter" ([Sparkplug](https://v8.dev/blog/sparkplug)). V8 rebuilds the interpreter's state at the exact point of the failed check, so work the function already did is not done twice. The interpreter follows the language rules, so `"ab" + "cd"` gave `"abcd"`. A deoptimization can change speed. It never changes the result.
 
-Does JavaScript use only one thread, then? Your JavaScript does. But `ConcurrencyMode::kConcurrent` in the trace means V8 compiled `add` on a helper thread, off the thread that runs your code. V8 also uses helper threads to clean up unused memory (segment 16), and Node runs some slow work, such as file reads and `crypto.pbkdf2`, on a pool of helper threads. None of these threads run your JavaScript functions.
+Does JavaScript use only one thread, then? Your JavaScript does. But `ConcurrencyMode::kConcurrent` in the trace means V8 compiled `add` on a helper thread, off the thread that runs your code. V8 also uses helper threads to clean up unused memory (segment 16), and Node runs some slow work, such as file reads and `crypto.pbkdf2`, on a pool of helper threads. These helper threads never run your JavaScript functions. Only workers, which you start yourself, run JavaScript on other threads.
 
 <ExplainBack
   id="e-deopt"
@@ -480,7 +480,7 @@ Back to the one thread that runs your code. When one function calls another, the
 
 The frames form a list. A new call goes on top, and only the top frame runs. When a call returns, its frame is removed from the top. Last in, first out, like a stack of plates. This list is the <Term id="call-stack">call stack</Term>.
 
-<Sidenote>The specification calls a frame an "execution context" and the list the "execution context stack" ([section 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)): "The running execution context is always the top element of this stack." Lesson 1.2 uses those names.</Sidenote>
+<Sidenote>The specification calls a frame an "execution context" and the list the "execution context stack" ([section 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)): "The running execution context is always the top element of this stack." This is an abstract model. Engines build real frames, and an optimizer may even merge a small function into its caller (inlining). Lesson 1.2 uses the spec's names.</Sidenote>
 
 Before you step, learn the two parts of the picture. The left column is the call stack, newest frame on top, with the script's own frame at the bottom. The right side shows each call's variables in a box of its own. Lesson 1.2 gives those boxes their proper name. The visualizer stops once and asks what changes next.
 
@@ -490,7 +490,7 @@ Before you step, learn the two parts of the picture. The left column is the call
 
 Only the top frame was ever running. The frames below it were paused, each waiting for a value to come back.
 
-Where does `sumOfSquares` wait while `square` runs? In its own frame. The frame records the exact spot, the middle of `const x = square(a)`, and the values of `a` and `b`. That record is what lets one thread go down into calls and come back up.
+Where does `sumOfSquares` wait while `square` runs? In its own frame. The frame records the exact spot, the middle of `const x = square(a)`, and the values of `a` and `b`. That record is what lets one thread go down into calls and come back up. A frame also leaves when an error is thrown out of its call. Generators and async functions, in later lessons, can pause a frame and resume it, so this simple picture covers ordinary calls.
 
 </Segment>
 
@@ -529,16 +529,16 @@ try {
   options={[
     { id: "a", text: "RangeError: Maximum call stack size exceeded", feedback: "Right. Each call pushed a frame and none returned, so the stack filled up and V8 threw a RangeError." },
     { id: "b", text: "Nothing. It runs forever, like while (true) {}", misconception: "FND-RECURSION-RUNS-FOREVER", feedback: "You treated recursion like a loop. A loop reuses one frame, but every call pushes a new frame, and a frame only leaves when its call returns. Nothing returns here, so the stack fills in a fraction of a second and V8 throws." },
-    { id: "c", text: "RangeError: Maximum call stack size exceeded, but only after several seconds, once the computer's RAM is full", misconception: "FND-STACK-IS-ALL-MEMORY", feedback: "You expected the stack to grow until all memory is used. Each thread's stack has a small fixed size. V8's default is 984 KB, so the error comes after about ten thousand frames, long before RAM is a problem." }
+    { id: "c", text: "RangeError: Maximum call stack size exceeded, but only after several seconds, once the computer's RAM is full", misconception: "FND-STACK-IS-ALL-MEMORY", feedback: "You expected the stack to grow until all memory is used. Each thread's stack has a small fixed size, and V8 limits JavaScript to 984 KB of it by default. The error comes after about ten thousand small frames, long before RAM is a problem." }
   ]}
   explain="Every call pushes a frame and only a return removes it. With no base case, frames pile up until the fixed-size stack is full, and V8 throws RangeError."
 />
 
 It prints `RangeError: Maximum call stack size exceeded`. Every call pushed a frame and none returned, so the stack reached its limit. V8 then threw a `RangeError`, and the `catch` block printed it. This is a stack overflow. A `while (true) {}` loop is different. It pushes no frames, so it can run forever without overflowing.
 
-You may ask, "Why is the limit so small when my laptop has gigabytes of memory?" Each thread's stack is one fixed-size block, set by the engine or the OS, and frames sit side by side inside it. V8's default stack size is 984 KB (`node --v8-options` lists `--stack-size=984`). Run the code below to count how many frames fit. On Node v26, it counted 12,517 frames on the machine used for this lesson. Bigger frames mean fewer calls. Java works the same way. `-Xss` sets the stack size per thread (1024 KB by default on Linux x64), and running out throws `StackOverflowError`.
+You may ask, "Why is the limit so small when my laptop has gigabytes of memory?" A thread's stack is one fixed-size block that the OS sets up, and frames sit side by side inside it. V8 also sets its own, smaller limit on how much of that stack JavaScript may use: 984 KB by default (`node --v8-options` describes `--stack-size=984` as the "default size of stack region v8 is allowed to use"). Run the code below to count how many frames fit. On Node v26, it counted 12,517 frames on the machine used for this lesson. Bigger frames mean fewer calls. Java works the same way. `-Xss` sets the stack size per thread (1024 KB by default on Linux x64), and running out throws `StackOverflowError`.
 
-The specification sets no limit and names no error for this. MDN lists `RangeError` in Chrome and Safari, but `InternalError: too much recursion` in Firefox ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)). Those are engine choices. The fix is in your code. Give the recursion a base case, or turn very deep recursion into a loop.
+The specification sets no limit and names no error for this, so the overflow itself is engine behaviour. MDN lists `RangeError` in Chrome and Safari, but `InternalError: too much recursion` in Firefox ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)). Those are engine choices. The fix is in your code. Give the recursion a base case, or turn very deep recursion into a loop.
 
 <Code runnable code={`let depth = 0;
 function dive() {
@@ -557,7 +557,7 @@ try {
 
 <Segment id="s16-heap" goal="Objects live in the heap, whose data outlives the call that made it, and garbage collection frees it later">
 
-Frames have a short life. When a call returns, its frame leaves the call stack, and the local variables in that frame go with it. But code often needs data to live longer than the call that made it. A helper function creates an object and returns it, and later code reads it.
+Frames have a short life. When a call returns, its frame leaves the call stack, and its local variables can no longer be reached through that call. (Lesson 1.3 shows the one way they can survive.) But code often needs data to live longer than the call that made it. A helper function creates an object and returns it, and later code reads it.
 
 In the Predict, `makeUser` creates an object and returns it. By the time the last line runs, the frame for `makeUser` is already gone.
 
@@ -572,24 +572,24 @@ const u = makeUser();
 console.log(u.name);`}
   answer="a"
   options={[
-    { id: "a", text: "Asha", feedback: "Right. The frame and its variable user are gone, but the object was never inside the frame. It stays as long as something, here u, can reach it." },
+    { id: "a", text: "Asha", feedback: "Right. The frame and its variable user are gone, but the object was not part of the frame. It stays usable as long as something, here u, can reach it." },
     { id: "b", text: "undefined", misconception: "FND-RETURN-FREES-ALL", feedback: "You expected everything makeUser created to vanish with its frame. Only the frame and its local variable go away. The object lives in a separate region and stays while u still refers to it." },
     { id: "c", text: "TypeError: Cannot read properties of undefined (reading 'name')", misconception: "FND-RETURN-FREES-ALL", feedback: "You expected the returned object to be destroyed when the call ended, leaving u empty. The return hands the caller a way to reach the object, and an object that can still be reached is kept." }
   ]}
   explain="A frame disappears when its call returns, but objects live in the heap and stay as long as something can reach them."
 />
 
-It prints `Asha`. The variable `user` lived in `makeUser`'s frame, and that frame is gone. But the object that `user` pointed to was never inside the frame. Engines keep objects in a separate region of memory for data whose lifetime is not tied to one call. This region is the <Term id="heap">heap</Term>. MDN calls it "just a name to denote a large (mostly unstructured) region of memory".
+It prints `Asha`. The variable `user` belonged to `makeUser`'s frame, and that frame is gone. The object stays usable because `u` still refers to it. In the usual engine model, objects are not stored in a frame at all. They go in a separate region of memory for data whose lifetime is not tied to one call. This region is the <Term id="heap">heap</Term>. MDN calls it "just a name to denote a large (mostly unstructured) region of memory".
 
-Who removes objects from the heap? Not you. In C you free memory yourself with `free()`. MDN says JavaScript "automatically allocates memory when objects are created and frees it when they are not used anymore". The engine finds objects that nothing can reach any more and reuses their memory. This work is called <Term id="garbage-collection">garbage collection</Term>. Lesson 1.9 shows how it decides.
+Who removes objects from the heap? In C you would call `free()`. In JavaScript, MDN says JavaScript the engine "automatically allocates memory when objects are created and frees it when they are not used anymore". An object that nothing can reach becomes eligible to be freed, and the engine may reuse its memory later. This is <Term id="garbage-collection">garbage collection</Term>. An object you forgot but can still reach, say in a cache that only grows, is never freed. Lesson 1.9 covers such leaks.
 
-You may ask, "So numbers live on the stack and objects on the heap?" You will hear that rule of thumb often, but it is not a rule of JavaScript. The specification never mentions a stack region or a heap. Where each value is stored is the engine's choice, and lesson 1.1 shows what the language does promise. Lesson 1.3 adds one surprise. A function created inside a call can keep that call's variables alive after its frame is gone.
+You may ask, "So numbers live on the stack and objects on the heap?" You will hear that rule of thumb often, but it is not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
 
 </Segment>
 
 <Segment id="s17-map" goal="Sort every fact in this lesson into general computing, JavaScript spec, or V8 choice">
 
-Many interview answers go wrong because they mix three kinds of facts: how all computers work, what the JavaScript specification promises, and what one engine, V8, happens to do. Pick the one item below that the language itself promises.
+Interview answers often mix three kinds of facts: how all computers work, what the JavaScript specification promises, and what V8 happens to do. Pick the one item the language itself promises.
 
 <Predict
   id="p-which-rule"
@@ -613,10 +613,10 @@ For a new fact, ask whether it would still hold in Firefox and in next year's V8
 | Processes have separate memory, threads share it | General (OS) |
 | Early errors stop the whole script | JS spec |
 | One job runs at a time, to completion | JS spec |
-| Calls push frames, the top one runs | JS spec |
+| Calls push contexts, the top one runs | JS spec (a model) |
 | `document`, `setTimeout`, `console` | Runtime |
 | Bytecode, the four tiers, deopt | V8 |
-| 984 KB stack, its error message | V8 |
+| 984 KB stack limit, its error message | V8 |
 | Where values are stored | Engine |
 
 </Segment>
@@ -652,7 +652,7 @@ wss.on("connection", (socket) => {
 
 **LiveChess and React.** In LiveChess, one Node process holds every WebSocket connection, and it handles all their messages on its one JavaScript thread. A slow synchronous search like the one above freezes every game on that server until it ends. The browser has the same limit. React runs your components on the main thread, so a slow synchronous render freezes clicks and scrolling. MDN says that while a long job runs, the page "is unable to process user interactions like click or scroll".
 
-**Your Java work.** AEM runs on the JVM. Java servlet containers usually handle requests on a pool of threads, so one slow request does not hold up the others in the same way. Apart from that difference, the JVM uses the same machinery as V8. It has bytecode, an interpreter, a JIT for hot methods (`-Xmixed`), a fixed-size stack per thread (`-Xss`, `StackOverflowError`), and a garbage-collected heap with a maximum size (`-Xmx`). Node passes matching flags to V8, such as `--stack-size` and `--max-old-space-size`. The block below shows what running out looks like on each side.
+**Your Java work.** AEM runs on the JVM. Java servlet containers usually handle requests on a pool of threads, so one slow request does not hold up the others in the same way. Apart from that difference, the JVM uses the same machinery as V8. It has bytecode, an interpreter, a JIT for hot methods (`-Xmixed`), a fixed-size stack per thread (`-Xss`, `StackOverflowError`), and a garbage-collected heap with a maximum size (`-Xmx`). Node passes similar flags to V8, such as `--stack-size` and `--max-old-space-size`. The second one limits only V8's "old space", the part of the heap for long-lived objects, so it is close to `-Xmx` but not the same. The block below shows what running out looked like in one run on each side. The exact messages vary.
 
 <Code code={`// Java (AEM)                           Node (V8)
 // java -Xss1m -Xmx2g ...                node --stack-size=984 --max-old-space-size=2048 app.js
@@ -675,12 +675,12 @@ wss.on("connection", (socket) => {
 | A late timer is dropped | It runs late. |
 | `document` is JavaScript | The runtime adds it. |
 | Same code, same speed | Hot code gets a JIT. |
-| A JIT caches results | It compiles code. Calls still compute. |
+| A JIT caches results | It compiles code. Effects still happen. |
 | V8's habits are language rules | The spec promises behaviour, not speed. |
 | Optimized code can change the answer | A failed guess deoptimizes. Same result. |
-| Endless recursion runs forever | The stack overflows. |
-| The stack can use all RAM | V8's stack is 984 KB by default. |
-| Returning destroys everything | Reachable heap objects stay. |
+| Endless recursion runs forever | In V8, the stack overflows. |
+| The stack can use all RAM | V8 stops at 984 KB by default. |
+| Returning destroys everything | Reachable objects stay. |
 
 </Segment>
 
@@ -731,14 +731,14 @@ function later() {
 
 <Card id="c-why-timer-waits" kind="explain" front="Why does a setTimeout(fn, 0) callback wait for a 100 ms busy loop to finish?" back="Your JavaScript runs on one thread, and each piece of work runs to completion. The callback can only start when the running code has finished, so it runs late, not never." />
 
-<Card id="c-ping-pong" kind="predict" front={`What happens when you run this?
+<Card id="c-ping-pong" kind="predict" front={`What happens when you run this in Node?
 function ping() {
   return pong();
 }
 function pong() {
   return ping();
 }
-ping();`} back="RangeError: Maximum call stack size exceeded. Each call pushes a frame and none ever returns, so the fixed-size stack fills up." />
+ping();`} back="RangeError: Maximum call stack size exceeded. Each call pushes a frame and none ever returns, so the stack fills up to V8's limit. Firefox would report InternalError: too much recursion instead." />
 
 <Card id="c-v8-tiers" kind="recall" front="Name V8's execution tiers in order. Which of them does the JavaScript language require?" back="Ignition (bytecode interpreter), Sparkplug (baseline compiler), Maglev (fast optimizing compiler), TurboFan (top optimizing compiler). None. They are V8 choices, and the specification says nothing about compilation." />
 

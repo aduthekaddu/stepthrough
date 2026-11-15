@@ -1,7 +1,7 @@
 id: FND-JIT-CACHES-RESULTS
 belief: "A JIT makes repeat calls fast by remembering each call's result."
 predicts: "A function with side effects (like logging) would skip them on later calls; a call with new arguments would be slow again."
-truth: "A JIT compiles the function's code into faster machine code. Every call still runs the code and computes its result. Saving results is a different technique (memoization) that you write yourself."
+truth: "A JIT compiles the function's code into faster machine code. It keeps no table of past results. The optimizer may skip work whose result it can prove, but every observable effect (a log line, a changed variable) still happens on every call. Saving results by arguments is a different technique (memoization) that you write yourself."
 counterexample: "A hot function that logs still logs on every call, and gives correct results for arguments it has never seen."
 sources:
   - "https://developer.mozilla.org/en-US/docs/Glossary/Just_In_Time_Compilation"

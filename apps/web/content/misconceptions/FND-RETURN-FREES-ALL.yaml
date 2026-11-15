@@ -1,7 +1,7 @@
 id: FND-RETURN-FREES-ALL
 belief: "When a function returns, everything it created is destroyed."
 predicts: "An object created inside a function and returned from it is gone, so reading a property gives undefined or a TypeError."
-truth: "The frame is removed, so the function's local variables go away. The object itself lives in the heap, and it stays as long as something can still reach it. Garbage collection frees it later, once nothing can."
+truth: "The call's frame ends. Its local variables can no longer be reached through that call (a closure can keep them, lesson 1.3). The object is not part of the frame: in the usual engine model it lives in the heap, and it stays usable as long as something can still reach it. Once nothing can, it becomes eligible for garbage collection, which the engine may run later."
 counterexample: "function makeUser() { const user = { name: \"Asha\" }; return user; } console.log(makeUser().name) prints Asha."
 sources:
   - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management"
