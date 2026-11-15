@@ -20,7 +20,7 @@ machine-code:
   introducedIn: fnd-how-programs-run
 byte:
   term: byte
-  definition: Eight bits. One byte holds a whole number from 0 to 255.
+  definition: Eight bits, so 256 possible patterns. Read as an unsigned number, one byte holds 0 to 255.
   aliases: [bytes]
   introducedIn: fnd-how-programs-run
 compiler:

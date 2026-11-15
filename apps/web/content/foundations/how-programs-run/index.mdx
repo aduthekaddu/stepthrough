@@ -72,12 +72,12 @@ A CPU runs instructions that are themselves numbers, stored as bytes. Each CPU f
 
 To get machine code from source code, you need a translator. A program that translates code into another form before the code runs is a <Term id="compiler">compiler</Term>. `gcc` is a compiler for C.
 
-<Code code={`// add.c                          machine code from gcc 13.3 -O1, x86-64 Linux
+<Code code={`// add.c                          gcc 13.3 -O1 -fcf-protection=none, x86-64 Linux
 int add(int a, int b) {           // 8d 04 37    lea eax,[rdi+rsi*1]
   return a + b;                   // c3          ret
 }`} />
 
-This is real output. The whole C function became four bytes, `8d 04 37 c3`. The first three bytes are one instruction, `lea`. It adds the two inputs and puts the sum where the caller looks for the answer. The inputs arrive in registers, which are tiny named storage slots inside the CPU, such as `rdi` and `rsi`. The last byte, `c3`, is the instruction `ret`, which means "go back to the code that called me".
+This is real output. The function's instructions became four bytes, `8d 04 37 c3`. (Without `-fcf-protection=none`, Ubuntu's gcc adds a 4-byte security instruction in front.) The first three bytes are one instruction, `lea`. It was designed for a different job, but compilers use it to add two numbers in one step, and the sum lands where the caller looks for the answer. The inputs arrive in registers, which are tiny named storage slots inside the CPU, such as `rdi` and `rsi`. The last byte, `c3`, is the instruction `ret`, which means "go back to the code that called me".
 
 Why can't one set of bytes run on every computer? Each CPU family has its own instruction set. An ARM chip, the kind in most phones and in Apple M-series laptops, uses different numbers, so `8d 04 37 c3` means nothing useful to it. A C program has to be compiled again for each CPU family.
 
@@ -128,15 +128,15 @@ It prints `200 44`. 200 fits in one byte. 300 does not, because a byte stops at 
 
 <Sidenote>The specification calls this conversion [ToUint8](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8). It turns any number into one of the 256 values from 0 to 255.</Sidenote>
 
-Is a `Uint8Array` real memory? Its bytes are stored in real memory, but its indexes are not real addresses. The software in between picks the real addresses and hides them.
+Is a `Uint8Array` real memory? Its bytes sit in real memory, but its indexes are not real addresses. Software you meet in segments 5 and 8 picks the real ones and hides them.
 
 </Segment>
 
 <Segment id="s05-process" goal="The operating system runs each program as a process with its own private memory">
 
-Many programs run on one computer at the same time: a browser, an editor, a Node server. One program is in charge of all of them. It starts them, gives each one turns on the CPU, and keeps them apart. That program is the <Term id="operating-system">operating system</Term> (OS), such as Linux, Windows or macOS.
+Many programs run on one computer at the same time: a browser, an editor, a Node server. One program is in charge of all of them. It starts them, gives each one a turn on the CPU, and keeps them apart. That program is the <Term id="operating-system">operating system</Term> (OS), such as Linux, Windows or macOS.
 
-A running program, as the operating system sees it, is a <Term id="process">process</Term>. Each process gets its own private range of memory addresses, called its address space. These addresses are virtual. The operating system maps each process's address numbers to real RAM separately, so code in one process cannot read or write another process's memory by accident. Processes can ask the OS to share a region on purpose, but by default they are kept apart.
+A running program, as the operating system sees it, is a <Term id="process">process</Term>. Each process gets its own private range of memory addresses, called its address space. These addresses are virtual. The operating system maps each process's numbers to real RAM separately, so one process cannot touch another's memory by accident. Processes can share a region on purpose, but by default they are apart.
 
 On Linux, a process can read a map of its own memory from the file `/proc/self/maps`. Below, the same command ran twice, so two separate `node` processes printed part of their maps.
 
@@ -267,7 +267,7 @@ Isn't `console.log` part of JavaScript? Commit to an answer before you read on.
 
 It prints `object undefined function`. `Math` comes from the engine, so every JavaScript environment has it. `document` comes from the browser, so Node does not have it. `setTimeout` comes from the runtime too, and browsers and Node each supply their own version.
 
-`console` is not in the ECMAScript specification at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ.
+`console` is not in ECMAScript, the official JavaScript standard, at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ.
 
 <Sidenote>The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "a host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."</Sidenote>
 
@@ -328,14 +328,14 @@ console.log("two"); // → two`} />
 
 <Segment id="s10-bytecode" goal="V8 turns each function into bytecode, usually the first time it is called">
 
-V8 does not run the parsed tree directly. It first turns each function into bytecode, and an interpreter called Ignition runs that bytecode. Ignition, and everything in the next three segments, is how V8 works, not a rule of JavaScript.
+V8 does not run the parsed tree directly. It first turns each function into bytecode, and an interpreter called Ignition runs that bytecode. Ignition, and everything from here to segment 12, is how V8 works, not a rule of JavaScript.
 
 <Sidenote>V8 blog, [Maglev](https://v8.dev/blog/maglev) (2023): "All JavaScript code is first compiled to ignition bytecode, and executed by interpreting it."</Sidenote>
 
-You can see this bytecode yourself. Node prints it with the flag `--print-bytecode`. Below is real output from Node v26 (V8 14.6) for `function add(a, b) { return a + b; }`. The whole function is 6 bytes long and has three instructions.
+You can see this bytecode yourself. Node prints it with the flag `--print-bytecode`. Below is real output from Node v26 (V8 14.6) for `function add(a, b) { return a + b; }`. Its bytecode is 6 bytes long and has three instructions.
 
 - `Ldar a1` loads the second parameter, `b`, into the accumulator. The accumulator is one special slot that most Ignition instructions read from and write to. It is a V8 word, not a JavaScript term.
-- `Add a0, FBV[0]` adds the first parameter, `a`, to the accumulator. `FBV[0]` names a feedback slot, a small record where V8 notes what kinds of values it saw at this spot, such as "both were small integers". Segment 11 shows why that matters.
+- `Add a0, FBV[0]` computes `a + b`, taking `a` from its slot and `b` from the accumulator, and leaves the result in the accumulator. `FBV[0]` names a feedback slot, a small record where V8 notes what kinds of values it saw at this spot, such as "both were small integers". Segment 11 shows why that matters.
 - `Return` returns whatever is in the accumulator.
 
 Compare this with segment 3. The CPU cannot run `Ldar` or `Add`. Ignition is machine code, and it reads these bytes and does the work.
@@ -344,9 +344,7 @@ Compare this with segment 3. The CPU cannot run `Ldar` or `Add`. Ignition is mac
 $ node --print-bytecode --print-bytecode-filter=add add.js
 [generated bytecode for function: add (...)]
 Bytecode length: 6
-Parameter count 3
-Register count 0
-Frame size 0
+(three more header lines trimmed)
    0 : 0b 04       Ldar a1
    2 : 40 03 00    Add a0, FBV[0]
    5 : b7          Return
@@ -579,17 +577,17 @@ console.log(u.name);`}
   explain="A frame disappears when its call returns, but objects live in the heap and stay as long as something can reach them."
 />
 
-It prints `Asha`. The variable `user` belonged to `makeUser`'s frame, and that frame is gone. The object stays usable because `u` still refers to it. In the usual engine model, objects are not stored in a frame at all. They go in a separate region of memory for data whose lifetime is not tied to one call. This region is the <Term id="heap">heap</Term>. MDN calls it "just a name to denote a large (mostly unstructured) region of memory".
+It prints `Asha`. The variable `user` belonged to `makeUser`'s frame, and that frame is gone. A variable holds a way to reach an object, not the object itself (lesson 1.1 shows this). The object stays usable because `u` still refers to it. In the usual engine model, objects live outside frames, in a region of memory for data whose lifetime is not tied to one call. This region is the <Term id="heap">heap</Term>. MDN calls it "just a name to denote a large (mostly unstructured) region of memory".
 
 Who removes objects from the heap? In C you would call `free()`. In JavaScript, MDN says JavaScript the engine "automatically allocates memory when objects are created and frees it when they are not used anymore". An object that nothing can reach becomes eligible to be freed, and the engine may reuse its memory later. This is <Term id="garbage-collection">garbage collection</Term>. An object you forgot but can still reach, say in a cache that only grows, is never freed. Lesson 1.9 covers such leaks.
 
-You may ask, "So numbers live on the stack and objects on the heap?" You will hear that rule of thumb often, but it is not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
+You may ask, "So numbers live on the stack and objects on the heap?" It is a common rule of thumb, not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
 
 </Segment>
 
 <Segment id="s17-map" goal="Sort every fact in this lesson into general computing, JavaScript spec, or V8 choice">
 
-Interview answers often mix three kinds of facts: how all computers work, what the JavaScript specification promises, and what V8 happens to do. Pick the one item the language itself promises.
+Interview answers often mix four kinds of facts: general computing, the JavaScript spec, the runtime, and V8. Pick the one item the language itself promises.
 
 <Predict
   id="p-which-rule"
@@ -608,29 +606,30 @@ For a new fact, ask whether it would still hold in Firefox and in next year's V8
 
 | Fact | Kind |
 |---|---|
-| CPUs run only their own machine code | General |
-| Memory is bytes with numbered addresses | General |
-| Processes have separate memory, threads share it | General (OS) |
-| Early errors stop the whole script | JS spec |
-| One job runs at a time, to completion | JS spec |
-| Calls push contexts, the top one runs | JS spec (a model) |
+| CPUs run only their own machine code | General computing |
+| Memory is bytes with numbered addresses | General computing |
+| Processes have separate memory; a process's threads share it | General computing |
+| Early errors stop the whole script | JavaScript spec |
+| One job runs at a time, to completion | JavaScript spec |
+| Calls push contexts, the top one runs | JavaScript spec (a model) |
 | `document`, `setTimeout`, `console` | Runtime |
 | Bytecode, the four tiers, deopt | V8 |
 | 984 KB stack limit, its error message | V8 |
-| Where values are stored | Engine |
+| Where values are stored | V8 |
 
 </Segment>
 
 <Segment id="s18-wild" goal="One thread, one stack and a JIT show up in Express servers, React apps and the JVM you use at work">
 
 <Code code={`// salt and encrypt stand for your own code.
-// One slow handler blocks every request on this server.
+// Before: this slow handler blocks every request on the server.
 app.post("/secrets", (req, res) => {
   const key = crypto.pbkdf2Sync(req.body.password, salt, 600000, 32, "sha256");
   res.json(encrypt(req.body.value, key));
 });
 
-// The callback version runs the key derivation on Node's helper threads.
+// After: the same route, rewritten. The callback version
+// runs the key derivation on Node's helper threads.
 app.post("/secrets", (req, res, next) => {
   crypto.pbkdf2(req.body.password, salt, 600000, 32, "sha256", (err, key) => {
     if (err) return next(err);
@@ -638,7 +637,7 @@ app.post("/secrets", (req, res, next) => {
   });
 });`} />
 
-**Express and DevSecret.** An Express server runs every request handler on one JavaScript thread. A handler that does heavy CPU work synchronously blocks every other request until it finishes. The Node docs warn that "if the Event Loop spends too long at any point, all current and new clients will not get a turn" ([Don't block the event loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)). The event loop is Node's name for the work that thread does, and lesson 1.7 covers it. Suppose DevSecret derives an encryption key from a password, as in the code above. `crypto.pbkdf2Sync` does that work on the main thread and blocks it. The callback version, `crypto.pbkdf2`, runs the work on Node's pool of helper threads, which the same page lists among its Worker Pool APIs.
+**Express and DevSecret.** An Express server runs every request handler on one JavaScript thread. A handler that does heavy CPU work synchronously blocks every other request until it finishes. The Node docs warn that "if the Event Loop spends too long at any point, all current and new clients will not get a turn" ([Don't block the event loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)). The event loop is the loop on that thread that picks the next waiting callback and runs it. Lesson 1.7 covers it. Suppose DevSecret derives an encryption key from a password, as in the code above. `crypto.pbkdf2Sync` does that work on the main thread and blocks it. The callback version, `crypto.pbkdf2`, runs the work on Node's pool of helper threads, which the same page lists among its Worker Pool APIs.
 
 <Code code={`// A LiveChess-style server using the ws package.
 wss.on("connection", (socket) => {
@@ -689,19 +688,19 @@ wss.on("connection", (socket) => {
 <InterviewQ
   id="iq-compiled"
   question="Is JavaScript compiled or interpreted?"
-  rubric={["Says the language does not decide this; engines do", "Describes V8: parse the whole script, make bytecode, interpret it with Ignition", "Explains JIT: hot functions are compiled to machine code while running (Sparkplug, Maglev, TurboFan) using type feedback", "Mentions deoptimization: when a guess fails, V8 returns to the interpreter and the result is unchanged", "Compares with Java: javac makes bytecode ahead of time, the JVM interprets and JIT-compiles hot methods"]}
+  rubric={["Says the language does not decide this; engines do", "Describes V8: parse the whole script, make bytecode, interpret it with Ignition", "Explains JIT: hot functions are compiled to machine code while running (Sparkplug, Maglev, TurboFan), using the types V8 saw in its feedback slots", "Mentions deoptimization: when a guess fails, V8 returns to the interpreter and the result is unchanged", "Compares with Java: javac makes bytecode ahead of time, the JVM interprets and JIT-compiles hot methods"]}
 />
 
 <InterviewQ
   id="iq-process-thread"
   question="What is the difference between a process and a thread? How does Node serve many users with one JavaScript thread?"
-  rubric={["A process has its own address space; the OS keeps processes' memory apart", "Threads are paths of execution inside one process; they share its memory and each has its own stack", "Node runs your JavaScript on one thread, one job at a time, to completion", "Waiting (network, timers) does not hold the thread; slow I/O and some CPU work (fs, dns.lookup, crypto.pbkdf2, zlib) run on libuv's worker pool", "Consequence: synchronous CPU-heavy code in a handler blocks every user; fix with async APIs, worker threads, or splitting the work"]}
+  rubric={["A process has its own address space; the OS keeps processes' memory apart", "Threads are paths of execution inside one process; they share its memory and each has its own stack", "Node runs your JavaScript on one thread, one job at a time, to completion", "Some slow work, such as file reads and crypto.pbkdf2, runs on Node's pool of helper threads, which never run your JavaScript", "Consequence: synchronous CPU-heavy code in a handler blocks every user; fix with the callback versions of slow APIs, with workers, or by splitting the work"]}
 />
 
 <InterviewQ
   id="iq-overflow"
   question="What causes 'Maximum call stack size exceeded', and how do you fix it?"
-  rubric={["Each call pushes a stack frame; a frame is removed only when its call returns", "Recursion with no base case, or recursion deeper than the limit, fills the fixed-size stack", "The limit is set by the engine (V8 default --stack-size 984 KB), not by the language and not by total RAM", "Fixes: add or correct the base case; rewrite deep recursion as a loop with your own array as a stack", "Notes that the spec's proper tail calls are not implemented in V8, so tail recursion does not help in Node or Chrome"]}
+  rubric={["Each call pushes a stack frame; a frame is removed only when its call returns", "Recursion with no base case, or recursion deeper than the limit, fills the fixed-size stack", "The limit is set by the engine (V8 default --stack-size 984 KB), not by the language and not by total RAM", "Fixes: add or correct the base case; rewrite very deep recursion as a loop", "Notes that the spec's proper tail calls are not implemented in V8, so a call in tail position still uses a frame in Node and Chrome"]}
 />
 
 </Segment>
@@ -740,7 +739,7 @@ function pong() {
 }
 ping();`} back="RangeError: Maximum call stack size exceeded. Each call pushes a frame and none ever returns, so the stack fills up to V8's limit. Firefox would report InternalError: too much recursion instead." />
 
-<Card id="c-v8-tiers" kind="recall" front="Name V8's execution tiers in order. Which of them does the JavaScript language require?" back="Ignition (bytecode interpreter), Sparkplug (baseline compiler), Maglev (fast optimizing compiler), TurboFan (top optimizing compiler). None. They are V8 choices, and the specification says nothing about compilation." />
+<Card id="c-v8-tiers" kind="recall" front="Name V8's execution tiers in order. Which of them does the JavaScript language require?" back="Ignition (bytecode interpreter), Sparkplug (fast compiler that does not optimize), Maglev (fast optimizing compiler), TurboFan (top optimizing compiler). None. They are V8 choices, and the specification says nothing about compilation." />
 
 <Card id="c-loop-not-recursion" kind="recall" front="sum(n) written as n + sum(n - 1) throws RangeError for sum(100000) in Node. Write a version that works." back="function sum(n) { let total = 0; for (let i = 1; i <= n; i++) total += i; return total; } A loop reuses one frame, so depth stops being a limit. sum(100000) is 5000050000." />
 
