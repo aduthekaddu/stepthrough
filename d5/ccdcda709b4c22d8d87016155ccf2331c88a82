@@ -1,0 +1,31 @@
+apps/web/lib/content.ts
+  s_2a56c3b7f09e96::t_dc4e936d973e99 3,9-10
+apps/web/content/javascript/demo/index.mdx
+  s_2a56c3b7f09e96::t_dc4e936d973e99 16
+apps/web/next.config.ts
+  s_2a56c3b7f09e96::t_6a2e64f632af8d 10
+apps/web/package.json
+  s_2a56c3b7f09e96::t_ccd035692bb29d 26
+packages/content-check/package.json
+  s_2a56c3b7f09e96::t_85e56a9ff87c1d 9-10
+packages/content-check/src/rules.ts
+  s_2a56c3b7f09e96::t_d4ecdaff381c00 185,188
+pnpm-lock.yaml
+  s_2a56c3b7f09e96::t_f97264decb1800 220-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d5ccdcda709b4c22d8d87016155ccf2331c88a82",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
