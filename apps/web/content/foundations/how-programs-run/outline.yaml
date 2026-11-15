@@ -175,26 +175,130 @@ facts:
 
 vocabulary:
   # new terms, in the order the segments introduce them
-  - { id: program, status: new, segment: s02-program, def: "A list of instructions that tells a computer what to do." }
-  - { id: source-code, status: new, segment: s02-program, def: "The text of a program as a person writes it, in a language like JavaScript, Java or C." }
-  - { id: cpu, status: new, segment: s02-program, def: "The chip that carries out a program's instructions, one after another." }
-  - { id: machine-code, status: new, segment: s03-machine-code, def: "Instructions written as numbers in the format one CPU family understands. It is the only form a CPU can run directly." }
-  - { id: byte, status: new, segment: s03-machine-code, def: "Eight bits. One byte holds a whole number from 0 to 255." }
-  - { id: compiler, status: new, segment: s03-machine-code, def: "A program that translates code into another form, such as machine code or bytecode, before that code runs." }
-  - { id: memory, status: new, segment: s04-memory, def: "The computer's working storage (RAM): a long row of bytes the CPU can read and write while programs run." }
-  - { id: address, status: new, segment: s04-memory, def: "The number that names one byte's position in memory." }
-  - { id: operating-system, status: new, segment: s05-process, def: "The program that starts other programs, shares the CPU and memory between them and keeps them apart. Linux, Windows and macOS are examples." }
-  - { id: process, status: new, segment: s05-process, def: "A running program as the operating system sees it, with its own private range of memory addresses." }
-  - { id: thread, status: new, segment: s06-thread, def: "One path of execution inside a process. Threads of one process share its memory, but each has its own stack." }
-  - { id: interpreter, status: new, segment: s07-interpreter, def: "A program that reads code and carries it out step by step itself, instead of turning it into machine code first." }
-  - { id: bytecode, status: new, segment: s07-interpreter, def: "Compact instructions made for an interpreter, not for a CPU. Java and V8 both use their own bytecode." }
-  - { id: engine, status: new, segment: s08-engine-host, def: "The program that implements the JavaScript language: it parses source code, runs it and manages its memory. V8 is one.", spec: "implementation (informal)" }
-  - { id: runtime, status: new, segment: s08-engine-host, def: "The software that embeds an engine and adds ways to reach the outside world, such as the page, files and the network. Browsers and Node are runtimes.", spec: "host / host environment" }
-  - { id: jit, status: new, segment: s11-jit, def: "Just-in-time compilation: compiling code to machine code while the program is already running, usually only the parts that run often." }
-  - { id: call-stack, status: new, segment: s13-call-stack, def: "The list of function calls that have started but not finished, newest on top.", spec: "execution context stack" }
-  - { id: stack-frame, status: new, segment: s13-call-stack, def: "One entry on the call stack: one call that has not finished, with its own variables and its place in the code.", spec: "execution context" }
-  - { id: heap, status: new, segment: s16-heap, def: "The region of memory for data whose lifetime is not tied to one function call, such as objects. Not a spec term." }
-  - { id: garbage-collection, status: new, segment: s16-heap, def: "The engine's automatic work of finding memory nothing can reach any more and reusing it. Depth in lesson 1.9." }
+  - {
+      id: program,
+      status: new,
+      segment: s02-program,
+      def: "A list of instructions that tells a computer what to do.",
+    }
+  - {
+      id: source-code,
+      status: new,
+      segment: s02-program,
+      def: "The text of a program as a person writes it, in a language like JavaScript, Java or C.",
+    }
+  - {
+      id: cpu,
+      status: new,
+      segment: s02-program,
+      def: "The chip that carries out a program's instructions, one after another.",
+    }
+  - {
+      id: machine-code,
+      status: new,
+      segment: s03-machine-code,
+      def: "Instructions written as numbers in the format one CPU family understands. It is the only form a CPU can run directly.",
+    }
+  - {
+      id: byte,
+      status: new,
+      segment: s03-machine-code,
+      def: "Eight bits. One byte holds a whole number from 0 to 255.",
+    }
+  - {
+      id: compiler,
+      status: new,
+      segment: s03-machine-code,
+      def: "A program that translates code into another form, such as machine code or bytecode, before that code runs.",
+    }
+  - {
+      id: memory,
+      status: new,
+      segment: s04-memory,
+      def: "The computer's working storage (RAM): a long row of bytes the CPU can read and write while programs run.",
+    }
+  - {
+      id: address,
+      status: new,
+      segment: s04-memory,
+      def: "The number that names one byte's position in memory.",
+    }
+  - {
+      id: operating-system,
+      status: new,
+      segment: s05-process,
+      def: "The program that starts other programs, shares the CPU and memory between them and keeps them apart. Linux, Windows and macOS are examples.",
+    }
+  - {
+      id: process,
+      status: new,
+      segment: s05-process,
+      def: "A running program as the operating system sees it, with its own private range of memory addresses.",
+    }
+  - {
+      id: thread,
+      status: new,
+      segment: s06-thread,
+      def: "One path of execution inside a process. Threads of one process share its memory, but each has its own stack.",
+    }
+  - {
+      id: interpreter,
+      status: new,
+      segment: s07-interpreter,
+      def: "A program that reads code and carries it out step by step itself, instead of turning it into machine code first.",
+    }
+  - {
+      id: bytecode,
+      status: new,
+      segment: s07-interpreter,
+      def: "Compact instructions made for an interpreter, not for a CPU. Java and V8 both use their own bytecode.",
+    }
+  - {
+      id: engine,
+      status: new,
+      segment: s08-engine-host,
+      def: "The program that implements the JavaScript language: it parses source code, runs it and manages its memory. V8 is one.",
+      spec: "implementation (informal)",
+    }
+  - {
+      id: runtime,
+      status: new,
+      segment: s08-engine-host,
+      def: "The software that embeds an engine and adds ways to reach the outside world, such as the page, files and the network. Browsers and Node are runtimes.",
+      spec: "host / host environment",
+    }
+  - {
+      id: jit,
+      status: new,
+      segment: s11-jit,
+      def: "Just-in-time compilation: compiling code to machine code while the program is already running, usually only the parts that run often.",
+    }
+  - {
+      id: call-stack,
+      status: new,
+      segment: s13-call-stack,
+      def: "The list of function calls that have started but not finished, newest on top.",
+      spec: "execution context stack",
+    }
+  - {
+      id: stack-frame,
+      status: new,
+      segment: s13-call-stack,
+      def: "One entry on the call stack: one call that has not finished, with its own variables and its place in the code.",
+      spec: "execution context",
+    }
+  - {
+      id: heap,
+      status: new,
+      segment: s16-heap,
+      def: "The region of memory for data whose lifetime is not tied to one function call, such as objects. Not a spec term.",
+    }
+  - {
+      id: garbage-collection,
+      status: new,
+      segment: s16-heap,
+      def: "The engine's automatic work of finding memory nothing can reach any more and reusing it. Depth in lesson 1.9.",
+    }
   # not glossary terms, explained in plain words where used: register, accumulator, deoptimization, base case, setTimeout (forward to 1.7), worker (forward)
 
 misconceptions:
@@ -329,7 +433,14 @@ segments:
     terms_used: [thread, memory]
     words: 180-220
     code: examples/nested-calls.js
-    visual: { component: Viz, view: scope, example: nested-calls, pauseAt: [4], pretrain: "still labelled description of the two columns before stepping" }
+    visual:
+      {
+        component: Viz,
+        view: scope,
+        example: nested-calls,
+        pauseAt: [4],
+        pretrain: "still labelled description of the two columns before stepping",
+      }
     interaction: { kind: predict-next-frame, at: 4 }
     doubt: "Where does sumOfSquares wait while square runs?"
   - id: s14-recursion
@@ -389,16 +500,91 @@ closing:
     count: 5
 
 predicts:
-  - { id: p-hook, segment: s01-hook, format: choice, answer: "SyntaxError, nothing printed", wrong: [FND-LINE-BY-LINE, FND-REDECLARE-REPLACES] }
-  - { id: p-byte, segment: s04-memory, format: text, answer: "200 44", wrong: [FND-BYTE-ANY-NUMBER] }
-  - { id: p-tabs, segment: s05-process, format: choice, answer: "ReferenceError", wrong: [FND-TABS-SHARE-MEMORY] }
-  - { id: p-busy, segment: s06-thread, format: choice, answer: "loop done, timer", wrong: [FND-JS-PREEMPTED, FND-LATE-CALLBACK-DROPPED] }
-  - { id: p-host, segment: s08-engine-host, format: text, answer: "object undefined function", wrong: [FND-DOM-IS-JS] }
-  - { id: p-parse-first, segment: s09-parse-first, format: choice, modifies: p-hook, answer: "SyntaxError, nothing printed", wrong: [FND-UNCALLED-UNCHECKED, FND-LINE-BY-LINE] }
-  - { id: p-lazy, segment: s10-bytecode, format: choice, answer: "on first call (V8)", wrong: [FND-JS-COMPILED-AHEAD, FND-LINE-BY-LINE] }
-  - { id: p-faster, segment: s11-jit, format: choice, answer: "probably, no promise", wrong: [FND-SAME-CODE-SAME-SPEED, FND-JIT-CACHES-RESULTS, FND-ENGINE-IS-LANGUAGE] }
-  - { id: p-deopt, segment: s12-deopt, format: choice, transfer: true, answer: "100000 / abcd", wrong: [FND-OPTIMIZED-CHANGES-MEANING] }
-  - { id: p-overflow, segment: s15-overflow, format: choice, answer: "RangeError", wrong: [FND-RECURSION-RUNS-FOREVER, FND-STACK-IS-ALL-MEMORY] }
-  - { id: p-survive, segment: s16-heap, format: choice, transfer: true, answer: "Asha", wrong: [FND-RETURN-FREES-ALL] }
-  - { id: p-which-rule, segment: s17-map, format: choice, answer: "early errors stop the script", wrong: [FND-ENGINE-IS-LANGUAGE] }
+  - {
+      id: p-hook,
+      segment: s01-hook,
+      format: choice,
+      answer: "SyntaxError, nothing printed",
+      wrong: [FND-LINE-BY-LINE, FND-REDECLARE-REPLACES],
+    }
+  - {
+      id: p-byte,
+      segment: s04-memory,
+      format: text,
+      answer: "200 44",
+      wrong: [FND-BYTE-ANY-NUMBER],
+    }
+  - {
+      id: p-tabs,
+      segment: s05-process,
+      format: choice,
+      answer: "ReferenceError",
+      wrong: [FND-TABS-SHARE-MEMORY],
+    }
+  - {
+      id: p-busy,
+      segment: s06-thread,
+      format: choice,
+      answer: "loop done, timer",
+      wrong: [FND-JS-PREEMPTED, FND-LATE-CALLBACK-DROPPED],
+    }
+  - {
+      id: p-host,
+      segment: s08-engine-host,
+      format: text,
+      answer: "object undefined function",
+      wrong: [FND-DOM-IS-JS],
+    }
+  - {
+      id: p-parse-first,
+      segment: s09-parse-first,
+      format: choice,
+      modifies: p-hook,
+      answer: "SyntaxError, nothing printed",
+      wrong: [FND-UNCALLED-UNCHECKED, FND-LINE-BY-LINE],
+    }
+  - {
+      id: p-lazy,
+      segment: s10-bytecode,
+      format: choice,
+      answer: "on first call (V8)",
+      wrong: [FND-JS-COMPILED-AHEAD, FND-LINE-BY-LINE],
+    }
+  - {
+      id: p-faster,
+      segment: s11-jit,
+      format: choice,
+      answer: "probably, no promise",
+      wrong: [FND-SAME-CODE-SAME-SPEED, FND-JIT-CACHES-RESULTS, FND-ENGINE-IS-LANGUAGE],
+    }
+  - {
+      id: p-deopt,
+      segment: s12-deopt,
+      format: choice,
+      transfer: true,
+      answer: "100000 / abcd",
+      wrong: [FND-OPTIMIZED-CHANGES-MEANING],
+    }
+  - {
+      id: p-overflow,
+      segment: s15-overflow,
+      format: choice,
+      answer: "RangeError",
+      wrong: [FND-RECURSION-RUNS-FOREVER, FND-STACK-IS-ALL-MEMORY],
+    }
+  - {
+      id: p-survive,
+      segment: s16-heap,
+      format: choice,
+      transfer: true,
+      answer: "Asha",
+      wrong: [FND-RETURN-FREES-ALL],
+    }
+  - {
+      id: p-which-rule,
+      segment: s17-map,
+      format: choice,
+      answer: "early errors stop the script",
+      wrong: [FND-ENGINE-IS-LANGUAGE],
+    }
   # plus next-frame pauses in s13 (step 4) and s14 (step 8): 14 prediction points in total

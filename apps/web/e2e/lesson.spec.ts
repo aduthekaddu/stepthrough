@@ -186,17 +186,24 @@ test('a stored theme is on the page before the first paint', async ({ page }) =>
   expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
 });
 
-// Needs a real lesson on the path; re-enable when lesson 0.1 merges (the demo track is hidden).
-test.fixme('the home page links to the lesson visited last', async ({ page }) => {
+test('the home page links to the lesson visited last', async ({ page }) => {
+  const FIRST = '/learn/foundations/how-programs-run/';
   await page.goto('/');
   await expect(page.getByRole('link', { name: /^Start:/ })).toBeVisible();
-  await page.goto(LESSON);
+  await page.goto(FIRST);
   await expect.poll(() => storedVisits(page)).toBe(1);
   await page.goto('/');
-  await expect(page.getByRole('link', { name: /^Continue: Component demo/ })).toHaveAttribute(
+  await expect(page.getByRole('link', { name: /^Continue: How a program runs/ })).toHaveAttribute(
     'href',
-    LESSON,
+    FIRST,
   );
+});
+
+test('lesson 0.1 renders and has no axe violations', async ({ page }) => {
+  await page.goto('/learn/foundations/how-programs-run/');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('How a program runs');
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
 });
 
 for (const scheme of ['light', 'dark'] as const) {

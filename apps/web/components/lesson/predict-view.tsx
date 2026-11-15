@@ -133,7 +133,7 @@ function PredictForm({ spec, uid }: { spec: PredictSpec; uid: string }) {
                 onChange={() => update({ answer: option.id })}
               />
               <span>
-                <Inline text={option.text} />
+                <OptionText text={option.text} />
               </span>
             </label>
           ))}
@@ -270,7 +270,7 @@ function Revealed({
                 data-right={right || undefined}
               >
                 <span>
-                  <Inline text={option.text} />
+                  <OptionText text={option.text} />
                 </span>
                 <span className="option-tags ui">
                   {chosen && <span className="tag tag-chosen">Your answer</span>}
@@ -328,4 +328,9 @@ function Revealed({
       {showOffer && <FastPathOffer />}
     </>
   );
+}
+
+/** Option text; output that spans several lines keeps its line breaks, like a terminal. */
+function OptionText({ text }: { text: string }) {
+  return text.includes('\n') ? <pre className="option-output">{text}</pre> : <Inline text={text} />;
 }

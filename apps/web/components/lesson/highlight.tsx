@@ -27,7 +27,8 @@ export function highlightJs(code: string): ReactNode[] {
 
 export function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="code-pre">
+    // Focusable so keyboard users can scroll code wider than the column.
+    <pre className="code-pre" tabIndex={0}>
       <code>{highlightJs(code)}</code>
     </pre>
   );
