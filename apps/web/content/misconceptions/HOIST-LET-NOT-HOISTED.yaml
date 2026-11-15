@@ -1,0 +1,11 @@
+id: HOIST-LET-NOT-HOISTED
+belief: let and const do not exist at all before their line, so a read above the line finds an outer variable with the same name.
+predicts: let level = "outer"; function check() { console.log(level); let level = "inner"; } check(); prints outer.
+truth: The inner let creates its binding in the function record during declaration instantiation, before the body runs. Lookup finds that binding first and stops there; it is uninitialized, so the read throws.
+counterexample: "The code above throws ReferenceError: Cannot access 'level' before initialization."
+sources:
+  - https://developer.mozilla.org/en-US/docs/Glossary/Hoisting
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+  - "https://doi.org/10.1145/3386327 (Wirfs-Brock and Eich, JavaScript: The First 20 Years, pp. 111-113)"
+lessons:
+  - js-execution-context

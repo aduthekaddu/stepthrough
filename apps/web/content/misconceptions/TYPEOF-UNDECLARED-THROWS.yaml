@@ -1,0 +1,10 @@
+id: TYPEOF-UNDECLARED-THROWS
+belief: typeof on a name that was never declared throws a ReferenceError, like a normal read.
+predicts: "console.log(typeof ghost); throws ReferenceError: ghost is not defined."
+truth: When a name is not found on the whole chain of records, typeof returns "undefined" instead of throwing. A plain read of the same name throws.
+counterexample: console.log(typeof ghost); prints undefined.
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-typeof-operator-runtime-semantics-evaluation
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+lessons:
+  - js-execution-context

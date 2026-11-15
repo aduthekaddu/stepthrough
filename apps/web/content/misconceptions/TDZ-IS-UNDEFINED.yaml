@@ -1,0 +1,10 @@
+id: TDZ-IS-UNDEFINED
+belief: Reading a let or const above its line gives undefined, the same as var.
+predicts: console.log(total); let total = 200; prints undefined.
+truth: let and const bindings are created uninitialized. Reading an uninitialized binding throws a ReferenceError until the declaration line runs.
+counterexample: "console.log(total); let total = 200; throws ReferenceError: Cannot access 'total' before initialization."
+sources:
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+  - https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-let-and-const-declarations
+lessons:
+  - js-execution-context

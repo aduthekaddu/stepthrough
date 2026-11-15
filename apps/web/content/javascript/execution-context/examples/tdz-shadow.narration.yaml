@@ -1,0 +1,28 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: first, kind: statement }
+    say: "Before line 1, the global level exists but is in its TDZ. check is already a function."
+    expect:
+      - { record: Global, binding: level, decl: let, state: uninitialized }
+      - { record: Global, binding: check, fn: check }
+  - at: { mark: call, kind: statement }
+    say: "Line 1 ran: the global level is now \"outer\"."
+    expect:
+      - { record: Global, binding: level, value: '"outer"' }
+  - at: { mark: read, kind: enter }
+    say: "check was called. Its record already has its own level, created from the let on line 4, and that level is in its TDZ."
+    expect:
+      - { stackDepth: 2, stackTop: check }
+      - { record: "check() call", binding: level, decl: let, state: uninitialized }
+      - { record: Global, binding: level, value: '"outer"' }
+  - at: { kind: return }
+    say: "Line 3 looked up level, found it in check's own record, and the read threw a ReferenceError. The lookup stopped there and never reached the global level."
+    expect:
+      - { stackDepth: 2 }
+      - { console: [] }
+  - at: { kind: throw }
+    say: "Nothing caught the error, so the script stopped. This engine words the message differently from Node; the error type, ReferenceError, is the same."
+    expect:
+      - { stackDepth: 0 }
+      - { uncaught: "ReferenceError: level cannot be used before initialization" }

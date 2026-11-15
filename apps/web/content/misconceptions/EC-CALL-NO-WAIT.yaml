@@ -1,0 +1,11 @@
+id: EC-CALL-NO-WAIT
+belief: When a function calls another function, the caller's next lines can run before the called function has finished.
+predicts: "In a recursive countdown that logs after its recursive call, the outermost call logs first: n=2, n=1, n=0."
+truth: A call suspends the caller's execution context and pushes a new one. The caller resumes only when the new context is removed from the stack, so the deepest call finishes and logs first.
+counterexample: function countdown(n) { var label = "n=" + n; if (n > 0) countdown(n - 1); console.log(label); } countdown(2); prints n=0, n=1, n=2.
+sources:
+  - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-ecmascript-function-objects-call-thisargument-argumentslist
+  - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-prepareforordinarycall
+  - Inferred
+lessons:
+  - js-execution-context

@@ -1,0 +1,31 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: first, kind: statement }
+    say: "The global record has page, a function, and site, still undefined."
+    expect:
+      - { record: Global, binding: site, value: "undefined" }
+      - { record: Global, binding: page, fn: page }
+  - at: { mark: inner, kind: statement }
+    say: "page is running. Its record holds slug and also full, because full is declared inside page. Its outer reference points to the global record."
+    expect:
+      - { stackDepth: 2, stackTop: page }
+      - { record: "page() call", outer: Global }
+      - { record: "page() call", binding: slug, value: '"tdz"' }
+      - { record: "page() call", binding: full, decl: function, fn: full }
+  - at: { mark: lookup, kind: enter }
+    say: "full is running and its own record is empty. slug is one outer step away, in page's record. site is two steps away, in the global record."
+    expect:
+      - { stackDepth: 3, stackTop: full }
+      - { record: "full() call", outer: "page() call" }
+      - { record: "page() call", outer: Global }
+      - { record: Global, outer: null }
+      - { record: Global, binding: site, value: '"stepthrough"' }
+  - at: { kind: return }
+    say: "full returns \"stepthrough/tdz\"."
+    expect:
+      - { stackDepth: 3 }
+  - at: { kind: end }
+    say: "Both calls have finished and the value was printed."
+    expect:
+      - { console: ["stepthrough/tdz"] }

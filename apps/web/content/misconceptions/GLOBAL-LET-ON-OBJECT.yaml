@@ -1,0 +1,10 @@
+id: GLOBAL-LET-ON-OBJECT
+belief: Top-level let and const become properties of the global object, just like var.
+predicts: let b = 2; console.log(globalThis.b); prints 2.
+truth: The global environment record has two parts. var and function declarations go in the object part, which is the global object. let, const and class go in the declarative part, which is not visible as properties.
+counterexample: let b = 2; console.log(globalThis.b); prints undefined in a classic script.
+sources:
+  - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-global-environment-records
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+lessons:
+  - js-execution-context

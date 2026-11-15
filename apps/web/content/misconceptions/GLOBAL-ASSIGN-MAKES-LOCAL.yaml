@@ -1,0 +1,11 @@
+id: GLOBAL-ASSIGN-MAKES-LOCAL
+belief: Assigning to an undeclared name inside a function creates a local variable of that function.
+predicts: function save() { total = 42; } save(); console.log(total); throws ReferenceError, because total was local to save.
+truth: Assignment does not declare anything. In non-strict code, assigning to a name that no record has creates a property on the global object, which outlives the call.
+counterexample: The code above prints 42, and globalThis.total is 42.
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-putvalue
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var
+  - Inferred
+lessons:
+  - js-execution-context

@@ -1,0 +1,271 @@
+# Predict-output gauntlet for lesson 1.2 (spec §7: 15 items, escalating).
+# `output` is the real output of `node -e "<code>"` (a classic script, Node 26.13.1).
+# When a line throws, the output ends with the error name only, on its own line.
+# Every `wrong` answer names the misconception that predicts it (content/misconceptions/<id>.yaml).
+lesson: js-execution-context
+prompt: "What does this print? If a line throws, write only the error name (for example ReferenceError) on its own line, and stop there."
+items:
+  - id: g01-var-early
+    level: 1
+    code: |
+      console.log(score);
+      var score = 10;
+      console.log(score);
+    output: "undefined\n10"
+    wrong:
+      - answer: "10\n10"
+        misconception: HOIST-MOVES-CODE
+        feedback: "Only the binding is made early. The = 10 part is an assignment that runs on line 2, after line 1 has printed."
+      - answer: ReferenceError
+        misconception: EC-TOP-TO-BOTTOM
+        feedback: "score exists before line 1 runs. Declaration instantiation created it and set it to undefined."
+    explain: "Declaration instantiation creates score and sets it to undefined. Line 1 prints that undefined, line 2 assigns 10, and line 3 prints 10."
+
+  - id: g02-function-early
+    level: 1
+    code: |
+      console.log(square(3));
+      function square(n) {
+        return n * n;
+      }
+    output: "9"
+    wrong:
+      - answer: ReferenceError
+        misconception: EC-TOP-TO-BOTTOM
+        feedback: "The engine set up square before line 1 ran, so the name is there when line 1 looks for it."
+      - answer: TypeError
+        misconception: HOIST-FN-AS-VAR
+        feedback: "A function declaration does not start as undefined. Its function object is created during declaration instantiation."
+    explain: "Declaration instantiation creates the function object for square and stores it in the binding before line 1 runs, so the call works."
+
+  - id: g03-let-early
+    level: 1
+    code: |
+      console.log(limit);
+      let limit = 3;
+    output: "ReferenceError"
+    wrong:
+      - answer: undefined
+        misconception: TDZ-IS-UNDEFINED
+        feedback: "That is what var would print. A let binding is created with no value, and reading it before line 2 throws."
+      - answer: "3"
+        misconception: HOIST-MOVES-CODE
+        feedback: "No code moves. Line 2 has not run yet when line 1 reads limit."
+    explain: "limit exists from the start but is uninitialized until line 2 runs. Line 1 reads it inside its temporal dead zone, so Node throws ReferenceError: Cannot access 'limit' before initialization."
+
+  - id: g04-var-in-dead-code
+    level: 2
+    code: |
+      console.log(flag);
+      if (false) {
+        var flag = true;
+      }
+      console.log(flag);
+    output: "undefined\nundefined"
+    wrong:
+      - answer: ReferenceError
+        misconception: EC-TOP-TO-BOTTOM
+        feedback: "Declaration instantiation reads the whole script, including code that will never run. It found var flag and created the binding."
+      - answer: "undefined\ntrue"
+        feedback: "The if (false) body never runs, so the assignment flag = true never happens."
+    explain: "var ignores the if block and belongs to the script's record. The binding is created as undefined before line 1, and because the block never runs, it stays undefined."
+
+  - id: g05-param-and-var
+    level: 2
+    code: |
+      function show(a) {
+        console.log(a);
+        var a = 2;
+        console.log(a);
+      }
+      show(1);
+    output: "1\n2"
+    wrong:
+      - answer: "undefined\n2"
+        misconception: VAR-REDECLARE-RESETS
+        feedback: "The parameter a and var a are one binding. Declaration instantiation does not create it twice, so it keeps the argument 1."
+      - answer: "2\n2"
+        misconception: HOIST-MOVES-CODE
+        feedback: "var a = 2 is an assignment that runs on its own line, after the first console.log."
+    explain: "FunctionDeclarationInstantiation binds the parameter a to 1. var a names a binding that already exists, so nothing new is made. Line 3 then assigns 2."
+
+  - id: g06-function-expression
+    level: 2
+    code: |
+      console.log(typeof run);
+      run();
+      var run = function () {
+        console.log("running");
+      };
+    output: "undefined\nTypeError"
+    wrong:
+      - answer: "function\nrunning"
+        misconception: HOIST-ALL-FUNCTIONS
+        feedback: "Only function declarations get their function object early. This function is a value on the right of =, made when line 3 runs."
+      - answer: ReferenceError
+        misconception: EC-TOP-TO-BOTTOM
+        feedback: "run exists from the start because of var run. It holds undefined, so the error is about calling undefined, not about a missing name."
+    explain: "var run starts as undefined. typeof gives \"undefined\", and calling undefined throws TypeError: run is not a function. The function expression would only be created on line 3."
+
+  - id: g07-const-arrow
+    level: 2
+    code: |
+      const total = add(2, 3);
+      const add = (a, b) => a + b;
+      console.log(total);
+    output: "ReferenceError"
+    wrong:
+      - answer: "5"
+        misconception: HOIST-ALL-FUNCTIONS
+        feedback: "An arrow function is a value created when line 2 runs. Line 1 runs first."
+      - answer: TypeError
+        misconception: TDZ-IS-UNDEFINED
+        feedback: "add is not undefined before line 2. It is a const in its temporal dead zone, and reading it throws a ReferenceError before any call happens."
+    explain: "add is a const binding, created uninitialized. Line 1 reads add while it is in its temporal dead zone: ReferenceError: Cannot access 'add' before initialization."
+
+  - id: g08-class-early
+    level: 3
+    code: |
+      const pet = new Dog("Rex");
+      class Dog {
+        constructor(name) {
+          this.name = name;
+        }
+      }
+      console.log(pet.name);
+    output: "ReferenceError"
+    wrong:
+      - answer: Rex
+        misconception: HOIST-CLASS-LIKE-FUNCTION
+        feedback: "A class declaration is not a function declaration. Its binding is created uninitialized, like let."
+      - answer: TypeError
+        misconception: TDZ-IS-UNDEFINED
+        feedback: "Dog does not hold undefined before its line. Reading it throws a ReferenceError before new is even tried."
+    explain: "class Dog creates a binding that stays in its temporal dead zone until line 2 runs. Line 1 reads Dog first: ReferenceError: Cannot access 'Dog' before initialization."
+
+  - id: g09-read-later
+    level: 3
+    code: |
+      function getRate() {
+        return rate;
+      }
+      const rate = 0.18;
+      console.log(getRate());
+    output: "0.18"
+    wrong:
+      - answer: ReferenceError
+        misconception: TDZ-IS-SPATIAL
+        feedback: "The dead zone is about time. getRate is written above const rate, but it is called on line 5, after line 4 has initialized rate."
+      - answer: undefined
+        feedback: "getRate does not save a copy of rate when it is created. It looks rate up each time it runs, and by then rate is 0.18."
+    explain: "The lookup of rate happens when getRate runs, on line 5. By then line 4 has run and rate is initialized, so the read succeeds."
+
+  - id: g10-shadowed-let
+    level: 3
+    code: |
+      let user = "admin";
+      function whoami() {
+        console.log(user);
+        let user = "guest";
+      }
+      whoami();
+    output: "ReferenceError"
+    wrong:
+      - answer: admin
+        misconception: HOIST-LET-NOT-HOISTED
+        feedback: "The inner let user already exists in whoami's record when line 3 runs. Lookup finds it first and never reaches the global user."
+      - answer: undefined
+        misconception: TDZ-IS-UNDEFINED
+        feedback: "The inner user is in its temporal dead zone, which throws instead of giving undefined."
+      - answer: guest
+        misconception: HOIST-MOVES-CODE
+        feedback: "Line 4 has not run when line 3 reads user."
+    explain: "Calling whoami runs FunctionDeclarationInstantiation, which creates an uninitialized user in the call's record. The lookup on line 3 stops at that record and reads an uninitialized binding: ReferenceError."
+
+  - id: g11-typeof-two-ways
+    level: 3
+    code: |
+      console.log(typeof token);
+      console.log(typeof secret);
+      let secret = "s3";
+    output: "undefined\nReferenceError"
+    wrong:
+      - answer: "undefined\nundefined"
+        misconception: TDZ-TYPEOF-SAFE
+        feedback: "typeof is only safe for names that do not exist. secret exists and is in its temporal dead zone, so reading it throws."
+      - answer: ReferenceError
+        misconception: TYPEOF-UNDECLARED-THROWS
+        feedback: "token is not declared anywhere, so the lookup finds nothing, and typeof returns \"undefined\" for that case."
+    explain: "typeof returns \"undefined\" when a name cannot be resolved at all (token). secret resolves to a real binding, and reading an uninitialized binding throws, even inside typeof."
+
+  - id: g12-global-object
+    level: 4
+    code: |
+      var a = 1;
+      let b = 2;
+      const c = 3;
+      console.log(globalThis.a, globalThis.b, globalThis.c);
+    output: "1 undefined undefined"
+    wrong:
+      - answer: "1 2 3"
+        misconception: GLOBAL-LET-ON-OBJECT
+        feedback: "Only var and function declarations go in the object part of the global record. let and const go in the declarative part, which has no properties."
+      - answer: "undefined undefined undefined"
+        misconception: GLOBAL-NOTHING-ON-OBJECT
+        feedback: "That is how modules behave. In a classic script, a top-level var becomes a property of the global object."
+    explain: "The global environment record has an object part (the global object) for var and function, and a declarative part for let, const and class. Only a is a property of globalThis."
+
+  - id: g13-assignment-chain
+    level: 4
+    code: |
+      function init() {
+        var a = b = 5;
+      }
+      init();
+      console.log(typeof a, typeof b);
+    output: "undefined number"
+    wrong:
+      - answer: "undefined undefined"
+        misconception: GLOBAL-ASSIGN-MAKES-LOCAL
+        feedback: "var only declares a. b = 5 assigns to a name that no record has, and non-strict code turns that into a global object property."
+      - answer: "number number"
+        feedback: "a is declared with var inside init, so it lives in init's record and is gone from view after the call."
+    explain: "The line means var a = (b = 5). b is not declared anywhere, so in sloppy mode the assignment creates globalThis.b. a is local to init's record."
+
+  - id: g14-var-and-function-same-name
+    level: 4
+    code: |
+      console.log(typeof item);
+      var item = "box";
+      function item() {}
+      console.log(typeof item);
+    output: "function\nstring"
+    wrong:
+      - answer: "undefined\nstring"
+        misconception: HOIST-VAR-BEATS-FUNCTION
+        feedback: "When a var and a function share a name, declaration instantiation keeps the function object. var item adds no second binding."
+      - answer: "function\nfunction"
+        misconception: HOIST-FN-LINE-ASSIGNS
+        feedback: "Reaching a function declaration line does nothing. The last change to item was the assignment on line 2."
+      - answer: "string\nstring"
+        misconception: HOIST-MOVES-CODE
+        feedback: "The = \"box\" part runs on line 2, after line 1 has printed."
+    explain: "GlobalDeclarationInstantiation skips var names that are also function names, so item starts as the function. Line 2 assigns \"box\". Line 3 does nothing at run time."
+
+  - id: g15-default-parameters
+    level: 5
+    code: |
+      function pair(a = b, b = 2) {
+        return a + b;
+      }
+      console.log(pair(1));
+      console.log(pair());
+    output: "3\nReferenceError"
+    wrong:
+      - answer: "3\n4"
+        misconception: TDZ-PARAMS-EXEMPT
+        feedback: "Parameters are initialized one at a time, left to right. When a's default reads b, b has not been initialized yet."
+      - answer: "3\nNaN"
+        misconception: TDZ-IS-UNDEFINED
+        feedback: "b is not undefined at that moment. It is uninitialized, and reading it throws."
+    explain: "In pair(1), a gets 1 and its default never runs. In pair(), a's default b runs while b is still uninitialized, which is a dead zone too: ReferenceError: Cannot access 'b' before initialization."

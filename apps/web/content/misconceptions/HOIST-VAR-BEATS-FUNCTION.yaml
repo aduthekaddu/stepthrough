@@ -1,0 +1,10 @@
+id: HOIST-VAR-BEATS-FUNCTION
+belief: When a var and a function declaration use the same name, the var wins during setup, so the name starts as undefined.
+predicts: console.log(typeof item); var item = "box"; function item() {} prints undefined.
+truth: "When declaration instantiation finishes, the binding holds the function object: GlobalDeclarationInstantiation skips var names that are also function names, and FunctionDeclarationInstantiation stores the function objects as its last step. The var line assigns over it later, when it runs."
+counterexample: console.log(typeof item); var item = "box"; function item() {} console.log(typeof item); prints function, then string.
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation
+  - Inferred
+lessons:
+  - js-execution-context

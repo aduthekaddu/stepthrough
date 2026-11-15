@@ -1,0 +1,10 @@
+id: HOIST-FN-LINE-ASSIGNS
+belief: When execution reaches a function declaration line, that line assigns the function to its name (again).
+predicts: In var item = "box"; function item() {} console.log(typeof item); the last line prints function.
+truth: Evaluating a FunctionDeclaration does nothing ("Return empty"). The function object was stored during declaration instantiation, and only later assignments change the binding.
+counterexample: var item = "box"; function item() {} console.log(typeof item); prints string.
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-function-definitions-runtime-semantics-evaluation
+  - Inferred
+lessons:
+  - js-execution-context

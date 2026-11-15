@@ -1,0 +1,10 @@
+id: LOOKUP-MISSING-IS-UNDEFINED
+belief: Reading a name that was never declared gives undefined.
+predicts: console.log(missing); prints undefined.
+truth: If no record on the chain has the name, the reference cannot be resolved and reading it throws a ReferenceError. Only typeof and assignment in non-strict code treat a missing name differently.
+counterexample: "console.log(missing); throws ReferenceError: missing is not defined."
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-getvalue
+  - Inferred
+lessons:
+  - js-execution-context

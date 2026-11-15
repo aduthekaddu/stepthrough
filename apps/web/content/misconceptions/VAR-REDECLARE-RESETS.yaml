@@ -1,0 +1,11 @@
+id: VAR-REDECLARE-RESETS
+belief: A second var declaration of a name, or a var with the same name as a parameter, resets it to undefined.
+predicts: var mode = "dark"; var mode; console.log(mode); prints undefined.
+truth: Declaration instantiation creates one binding per name and never re-creates it. A var without "=" does nothing when its line runs, and a var with the same name as a parameter starts with the argument value.
+counterexample: var mode = "dark"; var mode; console.log(mode); prints dark.
+sources:
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var
+  - https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-variable-statement-runtime-semantics-evaluation
+  - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-functiondeclarationinstantiation
+lessons:
+  - js-execution-context
