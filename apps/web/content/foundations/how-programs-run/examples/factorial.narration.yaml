@@ -1,37 +1,29 @@
 detail: teaching
 granularity: statement
-# occurrence: which matching frame to use when a marked line runs more than once (1-based, default 1).
 steps:
   - at: { mark: start, kind: statement }
     say: "The script is about to call factorial(3). Only the script's frame is on the stack."
     expect:
       - { stackDepth: 1 }
-  - at: { mark: check, kind: enter, occurrence: 1 }
+  - at: { mark: check, kind: enter }
     say: "factorial(3) gets a frame, with n = 3."
     expect:
       - { stackDepth: 2 }
       - { record: "factorial() call", binding: n, value: "3" }
-  - at: { mark: recurse, kind: statement, occurrence: 1 }
+  - at: { mark: recurse, kind: statement }
     say: "n is not 1, so this call needs factorial(2) before it can multiply. It waits here, in the middle of the line."
     expect:
       - { stackDepth: 2 }
-  - at: { mark: check, kind: enter, occurrence: 2 }
-    say: "A second frame for the same function, with its own n = 2. The frame below still holds n = 3."
-    expect:
-      - { stackDepth: 3 }
-      - { record: "factorial() call #2", binding: n, value: "2" }
-      - { record: "factorial() call", binding: n, value: "3" }
-  - at: { mark: check, kind: enter, occurrence: 3 }
-    say: "A third frame, with n = 1. Three calls of factorial are on the stack at once, and none has finished."
-    expect:
-      - { stackDepth: 4 }
-      - { record: "factorial() call #3", binding: n, value: "1" }
   - at: { mark: base-case, kind: statement }
-    say: "n is 1, so this call will return 1 without calling factorial again. This is the base case."
+    say: "Three frames of factorial are on the stack at once, with n = 3, n = 2 and n = 1. This call has n = 1, so it will return 1 without calling again. This is the base case."
     expect:
       - { stackDepth: 4 }
+      - { record: "factorial() call", binding: n, value: "3" }
+      - { record: "factorial() call #2", binding: n, value: "2" }
+      - { record: "factorial() call #3", binding: n, value: "1" }
   - at: { mark: done, kind: statement }
     say: "The results came back in reverse order: 1, then 2 × 1 = 2, then 3 × 2 = 6. Only the script's frame is left."
     expect:
       - { stackDepth: 1 }
       - { record: "Global", binding: result, value: "6" }
+      - { record: "factorial() call", exists: false }

@@ -1,35 +1,30 @@
 detail: teaching
 granularity: statement
-# occurrence: which matching frame to use when a marked line runs more than once (1-based, default 1).
 steps:
   - at: { mark: start-call, kind: statement }
     say: "Only the script's own frame is on the stack. Both functions exist, but neither has run yet."
     expect:
       - { stackDepth: 1 }
-      - { record: "Global", binding: total, value: "<TDZ>" }
+      - { record: "Global", binding: total, value: "uninitialized" }
   - at: { mark: first-call, kind: enter }
     say: "Calling sumOfSquares(3, 4) pushes a new frame on top. Its own box holds a = 3 and b = 4."
     expect:
       - { stackDepth: 2 }
       - { record: "sumOfSquares() call", binding: a, value: "3" }
       - { record: "sumOfSquares() call", binding: b, value: "4" }
-  - at: { mark: in-square, kind: enter, occurrence: 1 }
+  - at: { mark: in-square, kind: enter }
     say: "sumOfSquares is paused in the middle of its first line. square(3) gets its own frame on top, with n = 3."
     expect:
       - { stackDepth: 3 }
       - { record: "square() call", binding: n, value: "3" }
   - at: { mark: second-call, kind: statement }
-    say: "square returned 9 and its frame is gone. The 9 landed in x, and sumOfSquares carries on from where it paused."
+    say: "square returned 9 and its frame is gone. The 9 landed in x. Next, square(4) will get a brand-new frame."
     expect:
       - { stackDepth: 2 }
       - { record: "sumOfSquares() call", binding: x, value: "9" }
-  - at: { mark: in-square, kind: enter, occurrence: 2 }
-    say: "A second call to square gets a brand-new frame, with n = 4. Nothing is left over from the first call."
-    expect:
-      - { stackDepth: 3 }
-      - { record: "square() call #2", binding: n, value: "4" }
+      - { record: "square() call", exists: false }
   - at: { mark: before-sum, kind: statement }
-    say: "Both results are in: x = 9 and y = 16. Only sumOfSquares and the script are on the stack."
+    say: "The second square frame came and went too. Now x = 9 and y = 16, and only sumOfSquares and the script are on the stack."
     expect:
       - { stackDepth: 2 }
       - { record: "sumOfSquares() call", binding: y, value: "16" }
@@ -38,3 +33,4 @@ steps:
     expect:
       - { stackDepth: 1 }
       - { record: "Global", binding: total, value: "25" }
+      - { console: [] }
