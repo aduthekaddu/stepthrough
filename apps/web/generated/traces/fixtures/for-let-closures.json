@@ -752,7 +752,12 @@
     {
       "step": 9,
       "kind": "return",
-      "span": null,
+      "span": {
+        "startLine": 3,
+        "startCol": 18,
+        "endLine": 3,
+        "endCol": 18
+      },
       "stack": [
         {
           "callId": "call0",

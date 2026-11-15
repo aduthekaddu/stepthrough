@@ -13,17 +13,27 @@ async function answerChoice(page: Page, id: string, option: string, confidence: 
   await expect(block.locator('.predict-feedback')).toBeVisible();
 }
 
+// Reads the visit count without ever creating or holding the database: an open with no
+// version would create an empty v1 database, and an unclosed connection blocks the app's
+// own upgrade, so the visit would never be written.
 const storedVisits = (page: Page) =>
   page.evaluate(
     () =>
       new Promise<number>((resolve, reject) => {
         const open = indexedDB.open('stepthrough');
-        open.onerror = () => reject(open.error);
+        open.onupgradeneeded = () => open.transaction?.abort();
+        open.onerror = () => (open.error?.name === 'AbortError' ? resolve(0) : reject(open.error));
         open.onsuccess = () => {
           const db = open.result;
-          if (!db.objectStoreNames.contains('lessonProgress')) return resolve(0);
+          if (!db.objectStoreNames.contains('lessonProgress')) {
+            db.close();
+            return resolve(0);
+          }
           const count = db.transaction('lessonProgress').objectStore('lessonProgress').count();
-          count.onsuccess = () => resolve(count.result);
+          count.onsuccess = () => {
+            db.close();
+            resolve(count.result);
+          };
         };
       }),
   );

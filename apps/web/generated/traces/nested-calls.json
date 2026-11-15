@@ -333,7 +333,12 @@
     {
       "step": 4,
       "kind": "return",
-      "span": null,
+      "span": {
+        "startLine": 2,
+        "startCol": 14,
+        "endLine": 2,
+        "endCol": 14
+      },
       "stack": [
         {
           "callId": "call0",
@@ -715,7 +720,12 @@
     {
       "step": 7,
       "kind": "return",
-      "span": null,
+      "span": {
+        "startLine": 2,
+        "startCol": 14,
+        "endLine": 2,
+        "endCol": 14
+      },
       "stack": [
         {
           "callId": "call0",
@@ -964,7 +974,12 @@
     {
       "step": 9,
       "kind": "return",
-      "span": null,
+      "span": {
+        "startLine": 7,
+        "startCol": 14,
+        "endLine": 7,
+        "endCol": 14
+      },
       "stack": [
         {
           "callId": "call0",

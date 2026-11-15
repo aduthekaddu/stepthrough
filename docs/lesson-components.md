@@ -74,7 +74,7 @@ The build checks every expectation against the generated trace and fails with th
 - `{ stackDepth }`: the script itself counts as 1.
 - `{ console: [...] }`: console output so far.
 
-Record labels: `Global`, `<fn>() call`, `<fn>() call #2`, `head of the loop at line N`, `iteration K of the loop at line N`, `<name>'s own name`, otherwise `block`. Anchor kinds: `enter` (a call after declaration instantiation), `statement`, `return`, `end`.
+Record labels: `Global`, `<fn>() call`, `<fn>() call #2`, `head of the loop at line N`, `iteration K of the loop at line N`, `<name>'s own name`, otherwise `block`. Anchors: `at: { mark, kind, occurrence? }`. Kinds: `enter` (a call after declaration instantiation, including any default-parameter code), `statement`, `return` (on the last line the call ran), and `end` / `throw`, which need no mark. `occurrence: n` picks the n-th matching frame, for recursion and loops.
 
 ## Other components
 

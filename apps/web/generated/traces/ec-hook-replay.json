@@ -1,0 +1,198 @@
+{
+  "id": "ec-hook-replay",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "console.log(price);\nvar price = 100;\nconsole.log(total);\nlet total = 200;\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 19
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "price",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "Declaration instantiation is done and no statement has run. price exists with undefined; total exists with no value."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 2,
+        "endCol": 16
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "price",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [
+        "undefined"
+      ],
+      "narration": "Line 1 read price, found undefined, and printed it."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 19
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "price",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "100"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [
+        "undefined"
+      ],
+      "narration": "Line 2 ran. For a var, the line is only an assignment, so price changed from undefined to 100. Line 3 is about to read total, which still has no value."
+    },
+    {
+      "step": 4,
+      "kind": "throw",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "price",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "100"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [
+        "undefined"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": "ReferenceError: total cannot be used before initialization"
+}

@@ -309,7 +309,12 @@
     {
       "step": 5,
       "kind": "return",
-      "span": null,
+      "span": {
+        "startLine": 4,
+        "startCol": 27,
+        "endLine": 4,
+        "endCol": 27
+      },
       "stack": [
         {
           "callId": "call0",

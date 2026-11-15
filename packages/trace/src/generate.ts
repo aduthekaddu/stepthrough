@@ -368,17 +368,25 @@ export function generateTrace(options: GenerateOptions): Trace {
       kinds: Map<string, DeclKind> | undefined,
     ): Binding[] => {
       const out: Binding[] = [];
+      // Records a call's setup created (parameters, var, top-level let/const) take their
+      // declaration kinds from the function, even when the engine split them apart.
+      const owner = setupOwner.get(env);
       for (const [name, b] of env.bindings) {
         if (
           detail === 'teaching' &&
           name === 'arguments' &&
-          env instanceof FunctionEnvironmentRecord
+          (env instanceof FunctionEnvironmentRecord || owner)
         ) {
           continue;
         }
         const state: BindingState =
           b.initialized && b.value !== undefined ? toValue(b.value) : { kind: 'uninitialized' };
-        const decl: DeclKind = kinds?.get(name) ?? (b.mutable === false ? 'const' : 'let');
+        const ownerKind = owner ? kindsFor(owner).get(name) : undefined;
+        const decl: DeclKind = varRecords.has(env)
+          ? ownerKind === 'function'
+            ? 'function'
+            : 'var'
+          : (kinds?.get(name) ?? ownerKind ?? (b.mutable === false ? 'const' : 'let'));
         out.push({ name, decl, state });
       }
       return out;
@@ -515,6 +523,51 @@ export function generateTrace(options: GenerateOptions): Trace {
     });
   }
 
+  /** Records created by a call's declaration instantiation → that call's function record. */
+  const setupOwner = new Map<EnvironmentRecord, FunctionEnvironmentRecord>();
+  const varRecords = new Set<EnvironmentRecord>();
+  const noteSetup = (ctx: ExecutionContext) => {
+    for (let env: EnvironmentRecord | null = ctx.LexicalEnvironment; env; env = env.OuterEnv) {
+      if (env instanceof FunctionEnvironmentRecord) {
+        for (
+          let e: EnvironmentRecord | null = ctx.LexicalEnvironment;
+          e && e !== env;
+          e = e.OuterEnv
+        ) {
+          setupOwner.set(e, env);
+        }
+        // With parameter expressions var names get their own record (spec
+        // FunctionDeclarationInstantiation step 28); a name there is a var even if a
+        // parameter has the same name.
+        if (ctx.VariableEnvironment !== env) varRecords.add(ctx.VariableEnvironment);
+        return;
+      }
+    }
+  };
+  const lastNode = new Map<ExecutionContext, ParseNode>();
+  const pendingEnter = new Set<ExecutionContext>();
+  const inParameters = (ctx: ExecutionContext, node: ParseNode): boolean => {
+    // FormalParameters is a list of parameter nodes with no location of its own.
+    const params = (ctx.Function as EngineObject).FormalParameters as unknown;
+    const list = (Array.isArray(params) ? params : params ? [params] : []) as ParseNode[];
+    const first = list[0] ? spanOf(list[0]) : null;
+    const last = list.at(-1) ? spanOf(list.at(-1) ?? null) : null;
+    const n = spanOf(node);
+    if (!first || !last || !n) return false;
+    const p = {
+      startLine: first.startLine,
+      startCol: first.startCol,
+      endLine: last.endLine,
+      endCol: last.endCol,
+    };
+    const before = (l1: number, c1: number, l2: number, c2: number) =>
+      l1 < l2 || (l1 === l2 && c1 <= c2);
+    return (
+      before(p.startLine, p.startCol, n.startLine, n.startCol) &&
+      before(n.endLine, n.endCol, p.endLine, p.endCol)
+    );
+  };
+
   const agent = new Agent({
     onNodeEvaluation(node: ParseNode) {
       nodeCount += 1;
@@ -532,8 +585,19 @@ export function generateTrace(options: GenerateOptions): Trace {
           });
         }
       }
-      if (noteContext(ctx) && ctx.Function instanceof ObjectValue) snapshot('enter', node);
-      else if (STATEMENT_NODES.has(node.type)) snapshot('statement', node);
+      lastNode.set(ctx, node);
+      const isNew = noteContext(ctx);
+      if (isNew && ctx.Function instanceof ObjectValue && inParameters(ctx, node)) {
+        // Default-parameter code runs before the parameters are all bound; wait for it.
+        pendingEnter.add(ctx);
+      } else if (isNew && ctx.Function instanceof ObjectValue) {
+        noteSetup(ctx);
+        snapshot('enter', node);
+      } else if (pendingEnter.has(ctx) && !inParameters(ctx, node)) {
+        pendingEnter.delete(ctx);
+        noteSetup(ctx);
+        snapshot('enter', node);
+      } else if (STATEMENT_NODES.has(node.type)) snapshot('statement', node);
       else if (granularity === 'expression' && EXPRESSION_NODES.has(node.type)) {
         snapshot('expression', node);
       }
@@ -553,7 +617,8 @@ export function generateTrace(options: GenerateOptions): Trace {
       isECMAScriptFunctionObject(top.Function) &&
       callIds.has(top)
     ) {
-      snapshot('return', null);
+      // The return frame sits on the last line the call ran, so narration can anchor to it.
+      snapshot('return', lastNode.get(top) ?? null);
     }
     return popContext(ctx);
   };

@@ -70,7 +70,7 @@ function-expression:
   introducedIn: js-execution-context
 strict-mode:
   term: strict mode
-  definition: "A stricter set of rules turned on by a \"use strict\" line at the start of a script or function, and always on inside modules and classes. Code without it is informally called sloppy mode."
+  definition: 'A stricter set of rules turned on by a "use strict" line at the start of a script or function, and always on inside modules and classes. Code without it is informally called sloppy mode.'
   aliases: [sloppy mode]
   spec: strict mode code (11.2.2); non-strict code
   introducedIn: js-execution-context

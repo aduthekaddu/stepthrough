@@ -53,7 +53,7 @@ facts:
     text: "Declarative GetBindingValue: If the binding exists but is uninitialized a ReferenceError is thrown, regardless of the value of strict."
     url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-declarative-environment-records-getbindingvalue-n-s
   - id: f-typeof
-    text: "typeof: if the operand is an unresolvable reference, return \"undefined\". Otherwise call GetValue, which throws for an uninitialized binding."
+    text: 'typeof: if the operand is an unresolvable reference, return "undefined". Otherwise call GetValue, which throws for an uninitialized binding.'
     url: https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-typeof-operator-runtime-semantics-evaluation
   - id: f-putvalue
     text: "PutValue on an unresolvable reference: if strict, throw a ReferenceError; else Set(globalObj, name, value, false)."
@@ -104,7 +104,7 @@ facts:
     text: "Wirfs-Brock and Eich, JavaScript: The First 20 Years (HOPL 2020), pp. 111-113: Waldemar Horwat listed four semantics for a name used above its block-level declaration: A1 lexical dead zone, A2 lexical window, B1 temporal dead zone, B2 temporal window. A2 and B2 let one name mean different bindings at different points or times; A1 prevents mutually recursive functions. TC39 chose B1. Rules: one binding per name in a scope; let, const, class, import, block functions and parameters are dead until initialized; accessing or assigning an uninitialized binding is a runtime error. Global object properties cannot be marked uninitialized, so global let, const and class are not global object properties."
     url: https://doi.org/10.1145/3386327
   - id: f-node-messages
-    text: "Measured in Node 26.13.1: reading a let/const/class in its TDZ throws \"ReferenceError: Cannot access 'x' before initialization\"; reading an undeclared name throws \"ReferenceError: x is not defined\"; calling undefined throws \"TypeError: x is not a function\". engine262 (the trace engine) words the TDZ error \"x cannot be used before initialization\". The message text is engine-specific."
+    text: 'Measured in Node 26.13.1: reading a let/const/class in its TDZ throws "ReferenceError: Cannot access ''x'' before initialization"; reading an undeclared name throws "ReferenceError: x is not defined"; calling undefined throws "TypeError: x is not a function". engine262 (the trace engine) words the TDZ error "x cannot be used before initialization". The message text is engine-specific.'
     url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_lexical_declaration_before_init
   - id: f-module-var
     text: "Measured in Node 26.13.1: inside an ES module, var x = 1; console.log(globalThis.x) prints undefined; as a classic script (node -e) it prints 1."
@@ -118,34 +118,170 @@ facts:
 
 vocabulary:
   - { term: program, status: from fnd-how-programs-run }
-  - { term: engine, status: from fnd-how-programs-run, reminder: "the program that runs JavaScript, such as V8 inside Node and Chrome" }
-  - { term: call stack, status: from fnd-how-programs-run, reminder: "the list of function calls that have started and not finished, newest on top" }
+  - {
+      term: engine,
+      status: from fnd-how-programs-run,
+      reminder: "the program that runs JavaScript, such as V8 inside Node and Chrome",
+    }
+  - {
+      term: call stack,
+      status: from fnd-how-programs-run,
+      reminder: "the list of function calls that have started and not finished, newest on top",
+    }
   - { term: stack frame, status: from fnd-how-programs-run }
   - { term: value, status: from js-values }
   - { term: binding, status: from js-values, reminder: "a name paired with a value" }
   - { term: object, status: from js-values }
-  - { term: typeof, status: from js-values, reminder: "the operator that returns a value's type as a string" }
-  - { term: declaration, id: declaration, status: new, segment: s02-setup-first, definition: "Code that creates a name: var, let, const, function or class, or a function's parameters." }
-  - { term: environment record, id: environment-record, status: new, segment: s03-records, spec: Environment Record, definition: "A table of bindings; one for the script and one per function call." }
-  - { term: execution context, id: execution-context, status: new, segment: s04-context, spec: execution context, definition: "What the engine keeps for one running piece of code: which function, how far it has got, which records it uses." }
-  - { term: function environment record, id: function-environment, status: new, segment: s04-context, spec: Function Environment Record, definition: "The record made for one call of a function." }
-  - { term: outer reference, id: outer-reference, status: new, segment: s06-lookup, spec: "[[OuterEnv]]", definition: "The link from a record to the record around it." }
-  - { term: scope chain, id: scope-chain, status: new (teaching name), segment: s06-lookup, definition: "The chain of records joined by outer references that a lookup walks." }
-  - { term: global environment record, id: global-environment, status: new, segment: s07-global, spec: Global Environment Record, definition: "The outermost record, with an object part and a declarative part." }
-  - { term: global object, id: global-object, status: new, segment: s07-global, definition: "The object behind global var and function names; globalThis." }
-  - { term: declaration instantiation, id: declaration-instantiation, status: new, segment: s08-instantiation, spec: "GlobalDeclarationInstantiation, FunctionDeclarationInstantiation", definition: "The setup step before the first statement. Teaching name: creation phase." }
-  - { term: hoisting, id: hoisting, status: new (teaching name), segment: s09-hoisting, definition: "The visible effect of declaration instantiation." }
-  - { term: temporal dead zone, id: tdz, status: new, segment: s10-tdz, spec: "uninitialized binding", definition: "The time a let/const/class binding exists without a value." }
-  - { term: function expression, id: function-expression, status: new, segment: s14-functions, spec: FunctionExpression, definition: "A function written as a value; created when its expression runs." }
-  - { term: strict mode, id: strict-mode, status: new, segment: s15-strict, spec: strict mode code, definition: "Stricter rules from \"use strict\", modules and classes; the rest is sloppy mode." }
-  - { term: implicit global, id: implicit-global, status: new, segment: s15-strict, definition: "A global object property created by assigning to an undeclared name in sloppy mode." }
-  - { term: block environment record, status: forward reference to js-closures (lesson 1.3), segment: s10-tdz }
+  - {
+      term: typeof,
+      status: from js-values,
+      reminder: "the operator that returns a value's type as a string",
+    }
+  - {
+      term: declaration,
+      id: declaration,
+      status: new,
+      segment: s02-setup-first,
+      definition: "Code that creates a name: var, let, const, function or class, or a function's parameters.",
+    }
+  - {
+      term: environment record,
+      id: environment-record,
+      status: new,
+      segment: s03-records,
+      spec: Environment Record,
+      definition: "A table of bindings; one for the script and one per function call.",
+    }
+  - {
+      term: execution context,
+      id: execution-context,
+      status: new,
+      segment: s04-context,
+      spec: execution context,
+      definition: "What the engine keeps for one running piece of code: which function, how far it has got, which records it uses.",
+    }
+  - {
+      term: function environment record,
+      id: function-environment,
+      status: new,
+      segment: s04-context,
+      spec: Function Environment Record,
+      definition: "The record made for one call of a function.",
+    }
+  - {
+      term: outer reference,
+      id: outer-reference,
+      status: new,
+      segment: s06-lookup,
+      spec: "[[OuterEnv]]",
+      definition: "The link from a record to the record around it.",
+    }
+  - {
+      term: scope chain,
+      id: scope-chain,
+      status: new (teaching name),
+      segment: s06-lookup,
+      definition: "The chain of records joined by outer references that a lookup walks.",
+    }
+  - {
+      term: global environment record,
+      id: global-environment,
+      status: new,
+      segment: s07-global,
+      spec: Global Environment Record,
+      definition: "The outermost record, with an object part and a declarative part.",
+    }
+  - {
+      term: global object,
+      id: global-object,
+      status: new,
+      segment: s07-global,
+      definition: "The object behind global var and function names; globalThis.",
+    }
+  - {
+      term: declaration instantiation,
+      id: declaration-instantiation,
+      status: new,
+      segment: s08-instantiation,
+      spec: "GlobalDeclarationInstantiation, FunctionDeclarationInstantiation",
+      definition: "The setup step before the first statement. Teaching name: creation phase.",
+    }
+  - {
+      term: hoisting,
+      id: hoisting,
+      status: new (teaching name),
+      segment: s09-hoisting,
+      definition: "The visible effect of declaration instantiation.",
+    }
+  - {
+      term: temporal dead zone,
+      id: tdz,
+      status: new,
+      segment: s10-tdz,
+      spec: "uninitialized binding",
+      definition: "The time a let/const/class binding exists without a value.",
+    }
+  - {
+      term: function expression,
+      id: function-expression,
+      status: new,
+      segment: s14-functions,
+      spec: FunctionExpression,
+      definition: "A function written as a value; created when its expression runs.",
+    }
+  - {
+      term: strict mode,
+      id: strict-mode,
+      status: new,
+      segment: s15-strict,
+      spec: strict mode code,
+      definition: 'Stricter rules from "use strict", modules and classes; the rest is sloppy mode.',
+    }
+  - {
+      term: implicit global,
+      id: implicit-global,
+      status: new,
+      segment: s15-strict,
+      definition: "A global object property created by assigning to an undeclared name in sloppy mode.",
+    }
+  - {
+      term: block environment record,
+      status: forward reference to js-closures (lesson 1.3),
+      segment: s10-tdz,
+    }
 
 misconceptions:
-  main: [EXC-TOP-TO-BOTTOM, EXC-HOIST-MOVES-CODE, EXC-TDZ-IS-UNDEFINED, EXC-HOIST-LET-NOT-HOISTED, EXC-TDZ-IS-SPATIAL, EXC-HOIST-ALL-FUNCTIONS, EXC-GLOBAL-LET-ON-OBJECT, EXC-GLOBAL-ASSIGN-MAKES-LOCAL]
-  secondary: [EXC-HOIST-FN-AS-VAR, EXC-LOCALS-PERSIST, EXC-CALL-NO-WAIT, EXC-LOOKUP-MISSING-IS-UNDEFINED, EXC-TYPEOF-UNDECLARED-THROWS, EXC-GLOBAL-NOTHING-ON-OBJECT, EXC-TDZ-TYPEOF-SAFE, EXC-GLOBAL-ASSIGN-ALWAYS-WORKS]
+  main:
+    [
+      EXC-TOP-TO-BOTTOM,
+      EXC-HOIST-MOVES-CODE,
+      EXC-TDZ-IS-UNDEFINED,
+      EXC-HOIST-LET-NOT-HOISTED,
+      EXC-TDZ-IS-SPATIAL,
+      EXC-HOIST-ALL-FUNCTIONS,
+      EXC-GLOBAL-LET-ON-OBJECT,
+      EXC-GLOBAL-ASSIGN-MAKES-LOCAL,
+    ]
+  secondary:
+    [
+      EXC-HOIST-FN-AS-VAR,
+      EXC-LOCALS-PERSIST,
+      EXC-CALL-NO-WAIT,
+      EXC-LOOKUP-MISSING-IS-UNDEFINED,
+      EXC-TYPEOF-UNDECLARED-THROWS,
+      EXC-GLOBAL-NOTHING-ON-OBJECT,
+      EXC-TDZ-TYPEOF-SAFE,
+      EXC-GLOBAL-ASSIGN-ALWAYS-WORKS,
+    ]
   added_after_review: [EXC-IMPLICIT-NOT-PROPERTY, EXC-LOOKUP-AT-DEFINITION]
-  gauntlet_only: [EXC-VAR-REDECLARE-RESETS, EXC-HOIST-CLASS-LIKE-FUNCTION, EXC-HOIST-VAR-BEATS-FUNCTION, EXC-HOIST-FN-LINE-ASSIGNS, EXC-TDZ-PARAMS-EXEMPT]
+  gauntlet_only:
+    [
+      EXC-VAR-REDECLARE-RESETS,
+      EXC-HOIST-CLASS-LIKE-FUNCTION,
+      EXC-HOIST-VAR-BEATS-FUNCTION,
+      EXC-HOIST-FN-LINE-ASSIGNS,
+      EXC-TDZ-PARAMS-EXEMPT,
+    ]
   notes: "Entries whose sources say Inferred are hypotheses until Aditya's logged answers confirm them."
 
 segments:
@@ -155,7 +291,12 @@ segments:
     terms_used: []
     words: 40-80
     code: examples in the Predict (hook)
-    interaction: { kind: predict, id: hook, targets: [EXC-HOIST-MOVES-CODE, EXC-TOP-TO-BOTTOM, EXC-TDZ-IS-UNDEFINED] }
+    interaction:
+      {
+        kind: predict,
+        id: hook,
+        targets: [EXC-HOIST-MOVES-CODE, EXC-TOP-TO-BOTTOM, EXC-TDZ-IS-UNDEFINED],
+      }
     note: "Reveal real output; defer the explanation to s09 and s10."
   - id: s02-setup-first
     goal: "The engine sets up every declared name before the first line runs"
@@ -171,7 +312,15 @@ segments:
     terms_introduced: [environment-record]
     terms_used: [declaration, binding]
     words: 120-170
-    visual: { component: Viz, example: ec-global-setup, view: scope, gate: call-early, pauseAt: [1], new_parts: [record box, binding rows, decl kind label, uninitialized state] }
+    visual:
+      {
+        component: Viz,
+        example: ec-global-setup,
+        view: scope,
+        gate: call-early,
+        pauseAt: [1],
+        new_parts: [record box, binding rows, decl kind label, uninitialized state],
+      }
     interaction: { kind: step, id: viz-global-setup }
     doubt: "Is the record a real thing in memory?"
   - id: s04-context
@@ -179,9 +328,21 @@ segments:
     terms_introduced: [execution-context, function-environment]
     terms_used: [environment-record, call stack]
     words: 150-220
-    visual: { component: Viz, example: ec-first-call, view: scope, pauseAt: [2], new_parts: [stack region, function record] }
+    visual:
+      {
+        component: Viz,
+        example: ec-first-call,
+        view: scope,
+        pauseAt: [2],
+        new_parts: [stack region, function record],
+      }
     interaction:
-      - { kind: predict, id: call-order, targets: [EXC-CALL-NO-WAIT], note: "concrete case first: a call pauses the caller" }
+      - {
+          kind: predict,
+          id: call-order,
+          targets: [EXC-CALL-NO-WAIT],
+          note: "concrete case first: a call pauses the caller",
+        }
       - { kind: step, id: viz-first-call }
     doubt: "Is an execution context the same thing as a stack frame from lesson 0.1?"
   - id: s05-each-call
@@ -190,14 +351,28 @@ segments:
     terms_used: [execution-context, function-environment, call stack]
     words: 90-140
     interaction: { kind: predict, id: countdown, targets: [EXC-LOCALS-PERSIST, EXC-CALL-NO-WAIT] }
-    visual: { component: Viz, example: ec-countdown, view: scope, gate: countdown, pauseAt: [7, 12] }
+    visual:
+      { component: Viz, example: ec-countdown, view: scope, gate: countdown, pauseAt: [7, 12] }
   - id: s06-lookup
     goal: "A lookup walks outer references until it finds the name or runs out of records"
     terms_introduced: [outer-reference, scope-chain]
     terms_used: [environment-record, typeof]
     words: 140-200
-    interaction: { kind: predict, id: lookup, targets: [EXC-LOOKUP-MISSING-IS-UNDEFINED, EXC-TYPEOF-UNDECLARED-THROWS] }
-    visual: { component: Viz, example: ec-lookup, view: scope, gate: lookup, pauseAt: [4], new_parts: [outer arrow] }
+    interaction:
+      {
+        kind: predict,
+        id: lookup,
+        targets: [EXC-LOOKUP-MISSING-IS-UNDEFINED, EXC-TYPEOF-UNDECLARED-THROWS],
+      }
+    visual:
+      {
+        component: Viz,
+        example: ec-lookup,
+        view: scope,
+        gate: lookup,
+        pauseAt: [4],
+        new_parts: [outer arrow],
+      }
     doubt: "Why does the outer of full point to page and not to whoever called it?"
   - id: s07-global
     goal: "The global record has two parts, and only var and function land on the global object"
@@ -205,8 +380,15 @@ segments:
     terms_used: [environment-record, declaration]
     words: 150-220
     interaction:
-      - { kind: predict, id: globals, targets: [EXC-GLOBAL-LET-ON-OBJECT, EXC-GLOBAL-NOTHING-ON-OBJECT] }
-      - { kind: run, code: "let b = 2; b, globalThis.b, 'b' in globalThis prints 2 undefined false" }
+      - {
+          kind: predict,
+          id: globals,
+          targets: [EXC-GLOBAL-LET-ON-OBJECT, EXC-GLOBAL-NOTHING-ON-OBJECT],
+        }
+      - {
+          kind: run,
+          code: "let b = 2; b, globalThis.b, 'b' in globalThis prints 2 undefined false",
+        }
     doubt: "Why would the language keep two kinds of global names?"
   - id: s08-instantiation
     goal: "Declaration instantiation gives each declaration kind its own starting state"
@@ -214,7 +396,13 @@ segments:
     terms_used: [declaration, environment-record, execution-context]
     words: 180-240
     code: "table of kinds; runnable var redeclare (var color twice prints red)"
-    interaction: { kind: predict, id: unreachable, targets: [EXC-TOP-TO-BOTTOM, EXC-HOIST-FN-AS-VAR], transfer: true }
+    interaction:
+      {
+        kind: predict,
+        id: unreachable,
+        targets: [EXC-TOP-TO-BOTTOM, EXC-HOIST-FN-AS-VAR],
+        transfer: true,
+      }
   - id: s09-hoisting
     goal: "Hoisting is a teaching name for the effects of declaration instantiation; no code moves"
     terms_introduced: [hoisting]
@@ -228,7 +416,12 @@ segments:
     terms_introduced: [tdz]
     terms_used: [declaration-instantiation, outer-reference]
     words: 150-210
-    interaction: { kind: predict, id: tdz-shadow, targets: [EXC-HOIST-LET-NOT-HOISTED, EXC-TDZ-IS-UNDEFINED, EXC-HOIST-MOVES-CODE] }
+    interaction:
+      {
+        kind: predict,
+        id: tdz-shadow,
+        targets: [EXC-HOIST-LET-NOT-HOISTED, EXC-TDZ-IS-UNDEFINED, EXC-HOIST-MOVES-CODE],
+      }
     visual: { component: Viz, example: ec-tdz-shadow, view: scope, gate: tdz-shadow, pauseAt: [3] }
     note: "One sentence: blocks get their own records too (lesson 1.3); runnable block example."
   - id: s11-typeof
@@ -236,7 +429,12 @@ segments:
     terms_introduced: []
     terms_used: [tdz, scope-chain, typeof]
     words: 90-140
-    interaction: { kind: predict, id: tdz-typeof, targets: [EXC-TDZ-TYPEOF-SAFE, EXC-TYPEOF-UNDECLARED-THROWS] }
+    interaction:
+      {
+        kind: predict,
+        id: tdz-typeof,
+        targets: [EXC-TDZ-TYPEOF-SAFE, EXC-TYPEOF-UNDECLARED-THROWS],
+      }
   - id: s12-temporal
     goal: "The dead zone is about when code runs, not where it is written"
     terms_introduced: []
@@ -251,7 +449,10 @@ segments:
     terms_used: [tdz, global-object, environment-record]
     words: 180-250
     interaction:
-      - { kind: run, code: "isEven/isOdd const arrows that call each other print true (why option 1 was rejected)" }
+      - {
+          kind: run,
+          code: "isEven/isOdd const arrows that call each other print true (why option 1 was rejected)",
+        }
       - { kind: explain, id: why-tdz }
     doubt: "Would it not be simpler to give let undefined, like var?"
   - id: s14-functions
@@ -259,15 +460,25 @@ segments:
     terms_introduced: [function-expression]
     terms_used: [declaration-instantiation, tdz]
     words: 140-200
-    interaction: { kind: predict, id: fn-forms, targets: [EXC-HOIST-ALL-FUNCTIONS, EXC-HOIST-FN-AS-VAR, EXC-TOP-TO-BOTTOM] }
-    visual: { component: Viz, example: ec-function-forms, view: scope, gate: fn-forms, pauseAt: [1] }
+    interaction:
+      {
+        kind: predict,
+        id: fn-forms,
+        targets: [EXC-HOIST-ALL-FUNCTIONS, EXC-HOIST-FN-AS-VAR, EXC-TOP-TO-BOTTOM],
+      }
+    visual:
+      { component: Viz, example: ec-function-forms, view: scope, gate: fn-forms, pauseAt: [1] }
   - id: s15-strict
     goal: "Assigning to an undeclared name creates a global in sloppy mode and throws in strict mode"
     terms_introduced: [strict-mode, implicit-global]
     terms_used: [scope-chain, global-object]
     words: 160-230
     interaction:
-      - { kind: predict, id: sloppy, targets: [EXC-GLOBAL-ASSIGN-MAKES-LOCAL, EXC-LOOKUP-MISSING-IS-UNDEFINED] }
+      - {
+          kind: predict,
+          id: sloppy,
+          targets: [EXC-GLOBAL-ASSIGN-MAKES-LOCAL, EXC-LOOKUP-MISSING-IS-UNDEFINED],
+        }
       - { kind: predict, id: strict, modify: true, targets: [EXC-GLOBAL-ASSIGN-ALWAYS-WORKS] }
     visual: { component: Viz, example: ec-implicit-global, view: scope, gate: sloppy, pauseAt: [2] }
   - id: s16-misconceptions
@@ -288,13 +499,20 @@ segments:
     interaction: { kind: explain, id: explain-back }
   - id: s21-cards
     goal: "Five review cards across formats"
-    cards: [card-predict-new-surface, card-discriminate-var, card-discriminate-let, card-why-tdz, card-trace-instantiation]
+    cards:
+      [
+        card-predict-new-surface,
+        card-discriminate-var,
+        card-discriminate-let,
+        card-why-tdz,
+        card-trace-instantiation,
+      ]
 
 predict_count:
-  lesson: 14   # hook, call-early, call-order, countdown, lookup, globals, unreachable, tdz-shadow, tdz-typeof, temporal, temporal-moved, fn-forms, sloppy, strict
+  lesson: 14 # hook, call-early, call-order, countdown, lookup, globals, unreachable, tdz-shadow, tdz-typeof, temporal, temporal-moved, fn-forms, sloppy, strict
   note: "Above the recipe's 8 to 12: the brief's scope needs every one, and the 250-word interaction rule needed call-order. The lab adds 15 more."
-  next_frame_pauses: 9   # global-setup [1], first-call [2], countdown [7, 12], lookup [4], hook-replay [1], tdz-shadow [3], function-forms [1], implicit-global [2]
-  explains: 3            # why-tdz, one-model, explain-back
+  next_frame_pauses: 9 # global-setup [1], first-call [2], countdown [7, 12], lookup [4], hook-replay [1], tdz-shadow [3], function-forms [1], implicit-global [2]
+  explains: 3 # why-tdz, one-model, explain-back
   gauntlet: 15
 
 review_changes:

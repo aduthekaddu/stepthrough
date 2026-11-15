@@ -84,4 +84,26 @@ describe('narration expectations', () => {
       /a\.n is 2, expected 1/,
     );
   });
+  it('anchors the end frame without a mark and the n-th call by occurrence', () => {
+    const src =
+      'function fact(n) {\n  return n <= 1 ? 1 : n * fact(n - 1); // @mark body\n}\nfact(3);';
+    const { code: c, marks: m } = stripMarks(src);
+    const f = generateTrace({ id: 'rec', source: c }).frames;
+    const bound = bindNarration(
+      f,
+      [
+        {
+          at: { mark: 'body', kind: 'enter', occurrence: 3 },
+          say: 'third call',
+          expect: [{ stackDepth: 4 }],
+        },
+        { at: { kind: 'end' }, say: 'done' },
+      ],
+      m,
+    );
+    expect(bound.filter((x) => x.narration).map((x) => x.narration)).toEqual([
+      'third call',
+      'done',
+    ]);
+  });
 });

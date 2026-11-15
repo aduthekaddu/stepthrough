@@ -239,3 +239,27 @@ describe('labels and stack links', () => {
     }
   });
 });
+
+describe('functions with default parameters', () => {
+  const t = trace('function f(a, b = () => a) {\n  var a = 9;\n  return b();\n}\nf(1);');
+  const enter = t.frames.find((f) => f.kind === 'enter' && f.stack.at(-1)?.fn === 'f') as Frame;
+  const kinds = (frame: Frame) =>
+    frame.envs.flatMap((e) => e.bindings.map((b) => `${b.decl} ${b.name}`));
+
+  it('enters after the default-parameter code ran, with every parameter bound', () => {
+    expect(kinds(enter)).toContain('param b');
+    const bBinding = enter.envs.flatMap((e) => e.bindings).find((b) => b.name === 'b');
+    expect(bBinding?.state.kind).toBe('ref');
+  });
+  it('keeps the var record separate and labels its names var, even when a parameter shares the name', () => {
+    expect(kinds(enter)).toContain('var a');
+    expect(kinds(enter)).toContain('param a');
+  });
+  it('hides arguments in teaching detail', () => {
+    expect(kinds(enter).some((k) => k.endsWith(' arguments'))).toBe(false);
+  });
+  it('return frames carry the line the call ended on', () => {
+    const ret = t.frames.find((f) => f.kind === 'return' && f.stack.at(-1)?.fn === 'f');
+    expect(ret?.span?.startLine).toBe(3);
+  });
+});

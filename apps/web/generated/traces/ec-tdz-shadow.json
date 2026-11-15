@@ -1,0 +1,321 @@
+{
+  "id": "ec-tdz-shadow",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "let level = \"outer\";\nfunction check() {\n  console.log(level);\n  let level = \"inner\";\n}\ncheck();\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "check",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "check",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Before line 1, the global level exists but is in its TDZ. check is already a function."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 6,
+        "startCol": 1,
+        "endLine": 6,
+        "endCol": 8
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "check",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"outer\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "check",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 1 ran: the global level is now \"outer\"."
+    },
+    {
+      "step": 3,
+      "kind": "enter",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "check",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "check",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"outer\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "check() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "check",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "check was called. Its record already has its own level, created from the let on line 4, and it is in its TDZ. Line 3 will look up level, find this one first, and the read will throw a ReferenceError. The global level is never reached."
+    },
+    {
+      "step": 4,
+      "kind": "return",
+      "span": {
+        "startLine": 3,
+        "startCol": 15,
+        "endLine": 3,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "check",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "check",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"outer\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "check() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "check",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 5,
+      "kind": "throw",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "check",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "level",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"outer\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "check",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    }
+  ],
+  "uncaught": "ReferenceError: level cannot be used before initialization"
+}

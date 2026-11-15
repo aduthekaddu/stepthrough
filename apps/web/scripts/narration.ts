@@ -120,7 +120,17 @@ export const NarrationFile = z.strictObject({
   steps: z
     .array(
       z.strictObject({
-        at: z.strictObject({ mark: z.string().min(1), kind: FrameKindSchema }),
+        // `end` and `throw` happen once, so they need no mark; other kinds name the marked
+        // line. `occurrence` picks the n-th matching frame (recursion, loops).
+        at: z
+          .strictObject({
+            mark: z.string().min(1).optional(),
+            kind: FrameKindSchema,
+            occurrence: z.number().int().min(1).optional(),
+          })
+          .refine((a) => a.mark !== undefined || a.kind === 'end' || a.kind === 'throw', {
+            message: 'a mark is required unless kind is end or throw',
+          }),
         say: z.string().min(1),
         expect: z.array(Expectation).optional(),
       }),
@@ -140,10 +150,19 @@ export function bindNarration(
 ): Frame[] {
   const bound = frames.map((frame) => ({ ...frame }));
   for (const { at, say, expect = [] } of steps) {
-    const line = marks.get(at.mark);
-    if (line === undefined) throw new Error(`narration names unknown mark "${at.mark}"`);
-    const frame = bound.find((f) => f.kind === at.kind && f.span?.startLine === line);
-    if (!frame) throw new Error(`no ${at.kind} frame starts on line ${line} (mark "${at.mark}")`);
+    const line = at.mark === undefined ? undefined : marks.get(at.mark);
+    if (at.mark !== undefined && line === undefined) {
+      throw new Error(`narration names unknown mark "${at.mark}"`);
+    }
+    const n = at.occurrence ?? 1;
+    const frame = bound.filter(
+      (f) => f.kind === at.kind && (line === undefined || f.span?.startLine === line),
+    )[n - 1];
+    if (!frame) {
+      throw new Error(
+        `no ${at.kind} frame #${n}${line === undefined ? '' : ` on line ${line} (mark "${at.mark}")`}`,
+      );
+    }
     frame.narration = say;
     const broken = expect.map((e) => checkExpectation(frame, e)).filter((m) => m !== null);
     if (broken.length) {

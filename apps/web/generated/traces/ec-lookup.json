@@ -1,0 +1,659 @@
+{
+  "id": "ec-lookup",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "var site = \"stepthrough\";\nfunction page(slug) {\n  function full() {\n    return site + \"/\" + slug;\n  }\n  return full();\n}\nconsole.log(page(\"tdz\"));\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 25
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The global record has page, a function, and site, still undefined."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 8,
+        "startCol": 1,
+        "endLine": 8,
+        "endCol": 25
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "site now holds \"stepthrough\". The next step calls page."
+    },
+    {
+      "step": 3,
+      "kind": "enter",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 5,
+        "endCol": 3
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "page",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "page() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "slug",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"tdz\""
+              }
+            },
+            {
+              "name": "full",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "full",
+          "arrow": false,
+          "envId": "env1"
+        }
+      ],
+      "console": [],
+      "narration": "page was called. Its record holds slug and also full, already a function, because full is declared inside page. The record's outer reference points to the global record."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 6,
+        "startCol": 3,
+        "endLine": 6,
+        "endCol": 16
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "page",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "page() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "slug",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"tdz\""
+              }
+            },
+            {
+              "name": "full",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "full",
+          "arrow": false,
+          "envId": "env1"
+        }
+      ],
+      "console": [],
+      "narration": "page is about to call full."
+    },
+    {
+      "step": 5,
+      "kind": "enter",
+      "span": {
+        "startLine": 4,
+        "startCol": 5,
+        "endLine": 4,
+        "endCol": 29
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "page",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "full",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "page() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "slug",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"tdz\""
+              }
+            },
+            {
+              "name": "full",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "full() call",
+          "parentId": "env1",
+          "bindings": []
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "full",
+          "arrow": false,
+          "envId": "env1"
+        }
+      ],
+      "console": [],
+      "narration": "full is running. It declares nothing, so its record shows no bindings. slug is one outer step away, in page's record. site is two steps away, in the global record."
+    },
+    {
+      "step": 6,
+      "kind": "return",
+      "span": {
+        "startLine": 4,
+        "startCol": 25,
+        "endLine": 4,
+        "endCol": 25
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "page",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "full",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "page() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "slug",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"tdz\""
+              }
+            },
+            {
+              "name": "full",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "full() call",
+          "parentId": "env1",
+          "bindings": []
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "full",
+          "arrow": false,
+          "envId": "env1"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 7,
+      "kind": "return",
+      "span": {
+        "startLine": 6,
+        "startCol": 10,
+        "endLine": 6,
+        "endCol": 10
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "page",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "page() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "slug",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"tdz\""
+              }
+            },
+            {
+              "name": "full",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "full",
+          "arrow": false,
+          "envId": "env1"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 8,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "page",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "site",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"stepthrough\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "page",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "stepthrough/tdz"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}
