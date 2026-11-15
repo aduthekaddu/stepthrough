@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.env*
+.audit/
+research/design/shots/
+research/design/dl/
+research/design/scripts/
+research/design/text/
+.DS_Store
