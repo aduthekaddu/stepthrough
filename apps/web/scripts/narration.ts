@@ -1,4 +1,4 @@
-import type { Frame } from '@stepthrough/trace';
+import type { Binding, Frame } from '@stepthrough/trace';
 import { z } from 'zod';
 
 const MARK = /\s*\/\/\s*@mark\s+(\S+)\s*$/;
@@ -32,6 +32,56 @@ const FrameKindSchema = z.enum([
   'throw',
 ]);
 
+/**
+ * Hand-written facts about one step, derived from the spec rather than from the generator,
+ * so a wrong trace fails the build. A binding value is the primitive's text ("0", "\"hi\""),
+ * "uninitialized" for the TDZ, or "function name" / "array" / "object" for a reference.
+ */
+const Expectation = z.union([
+  z.strictObject({ record: z.string().min(1), binding: z.string().min(1), value: z.string() }),
+  z.strictObject({ stackDepth: z.number().int().min(0) }),
+  z.strictObject({ record: z.string().min(1), exists: z.boolean() }),
+  z.strictObject({ console: z.array(z.string()) }),
+]);
+export type Expectation = z.infer<typeof Expectation>;
+
+function describeValue(frame: Frame, state: Binding['state']): string {
+  if (state.kind === 'uninitialized') return 'uninitialized';
+  if (state.kind === 'primitive') return state.text;
+  const obj = frame.heap.find((h) => h.id === state.heapId);
+  if (!obj) return 'ref';
+  return obj.kind === 'function' ? `function ${obj.name}` : obj.kind;
+}
+
+/** Returns why the frame breaks the expectation, or null when it holds. */
+export function checkExpectation(frame: Frame, e: Expectation): string | null {
+  if ('stackDepth' in e) {
+    return frame.stack.length === e.stackDepth
+      ? null
+      : `stack depth is ${frame.stack.length}, expected ${e.stackDepth}`;
+  }
+  if ('console' in e) {
+    const actual = JSON.stringify(frame.console);
+    return actual === JSON.stringify(e.console)
+      ? null
+      : `console is ${actual}, expected ${JSON.stringify(e.console)}`;
+  }
+  const record = frame.envs.find((r) => r.label === e.record);
+  if ('exists' in e) {
+    return Boolean(record) === e.exists
+      ? null
+      : `record "${e.record}" ${record ? 'exists' : 'is missing'}`;
+  }
+  if (!record)
+    return `no record "${e.record}" (records: ${frame.envs.map((r) => r.label).join(', ')})`;
+  const binding = record.bindings.find((b) => b.name === e.binding);
+  if (!binding) return `no binding ${e.binding} in "${e.record}"`;
+  const actual = describeValue(frame, binding.state);
+  return actual === e.value
+    ? null
+    : `${e.binding} in "${e.record}" is ${actual}, expected ${e.value}`;
+}
+
 export const NarrationFile = z.strictObject({
   detail: z.enum(['teaching', 'spec']).default('teaching'),
   granularity: z.enum(['statement', 'expression']).default('statement'),
@@ -40,9 +90,7 @@ export const NarrationFile = z.strictObject({
       z.strictObject({
         at: z.strictObject({ mark: z.string().min(1), kind: FrameKindSchema }),
         say: z.string().min(1),
-        // TODO(lesson pipeline): check each expectation against the bound frame and fail the
-        // build on a mismatch. Parsed here so a malformed list already fails.
-        expect: z.array(z.record(z.string(), z.unknown())).optional(),
+        expect: z.array(Expectation).optional(),
       }),
     )
     .default([]),
@@ -59,12 +107,18 @@ export function bindNarration(
   marks: ReadonlyMap<string, number>,
 ): Frame[] {
   const bound = frames.map((frame) => ({ ...frame }));
-  for (const { at, say } of steps) {
+  for (const { at, say, expect = [] } of steps) {
     const line = marks.get(at.mark);
     if (line === undefined) throw new Error(`narration names unknown mark "${at.mark}"`);
     const frame = bound.find((f) => f.kind === at.kind && f.span?.startLine === line);
     if (!frame) throw new Error(`no ${at.kind} frame starts on line ${line} (mark "${at.mark}")`);
     frame.narration = say;
+    const broken = expect.map((e) => checkExpectation(frame, e)).filter((m) => m !== null);
+    if (broken.length) {
+      throw new Error(
+        `step ${frame.step} (mark "${at.mark}") breaks its expectations: ${broken.join('; ')}`,
+      );
+    }
   }
   return bound;
 }
