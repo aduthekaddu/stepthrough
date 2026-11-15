@@ -7,6 +7,7 @@ const config: NextConfig = {
   images: { unoptimized: true },
   reactStrictMode: true,
   pageExtensions: ['ts', 'tsx', 'md', 'mdx'],
+  transpilePackages: ['@stepthrough/sandbox'],
 };
 
 const withMDX = createMDX({

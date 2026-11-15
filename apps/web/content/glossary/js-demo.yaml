@@ -1,0 +1,16 @@
+# Terms for the component demo lesson. Ids carry a demo- prefix so they never collide
+# with the real lessons' terms.
+demo-reference:
+  term: reference
+  definition: A value that points at an object instead of holding the object itself. Two names can hold references to the same object.
+  introducedIn: js-demo
+demo-typeof:
+  term: typeof
+  definition: An operator that returns a string naming the type of a value, such as "number", "string" or "object".
+  aliases: [typeof operator]
+  spec: The typeof Operator
+  introducedIn: js-demo
+demo-sandbox:
+  term: sandbox
+  definition: A separate, walled-off place where code runs, so it cannot change or freeze the page that started it.
+  introducedIn: js-demo

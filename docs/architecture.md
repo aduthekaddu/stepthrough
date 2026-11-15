@@ -14,7 +14,8 @@ apps/web                    Next.js 16 App Router, static export
   components/lesson         Predict, Term, Sidenote, Callout, Code, Card, ExplainBack, InterviewQ
   components/viz            MemoryDiagram, CallStack + EnvChain (consume a Trace)
   content/<track>/<lesson>/ index.mdx, outline.yaml, examples/*.js
-  content/glossary.yaml     every technical term, its definition and the lesson that introduces it
+  content/glossary/         every technical term, its definition and the lesson that introduces it
+                            (one <lesson-id>.yaml per lesson; content/glossary.yaml also read)
   content/misconceptions/   registry of wrong beliefs, each with what it predicts
 packages/trace              Trace types and the engine262 generator
 packages/sandbox            Worker runner for runnable code
@@ -54,7 +55,7 @@ The prose explains each new idea in visible words before naming it. `<Term>` the
 
 ## Learner state
 
-Dexie (IndexedDB): `predictions` (lesson, predict id, answer, confidence, correct, misconception id, at), `cards` (FSRS state), `reviews`, `explanations`, `lessonProgress`. Lesson state is derived (`locked | available | inProgress | done | dueForReview`). Export and import is one versioned JSON file.
+Dexie (IndexedDB), shapes in `apps/web/lib/learner.ts`: `predictions` (lesson, predict id, answer, confidence, correct, misconception id, at; the first commit is final), `cards` (id, lesson, kind, front, back, created; FSRS state comes with the review page), `reviews` (with the review page), `explanations`, `lessonProgress` (visits and the expertise fast-path choice `undecided | summary | full`). Lesson state is derived (`locked | available | inProgress | done | dueForReview`). Export and import is one versioned JSON file.
 
 ## Sandbox
 

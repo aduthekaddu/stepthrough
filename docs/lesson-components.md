@@ -43,7 +43,7 @@ The learner commits an answer and a confidence (`sure`, `think-so`, `guessing`) 
 <Term id="environment-record">environment record</Term>
 ```
 
-Definition comes from `content/glossary.yaml`. The prose around it must already explain the idea; the popover is a reminder.
+Definition comes from `content/glossary.yaml` or a per-lesson file `content/glossary/<lesson-id>.yaml` (`<term-id>: { term, definition, aliases?, spec?, introducedIn }`); an unknown id or a term defined twice fails the build. The prose around it must already explain the idea; the popover is a reminder.
 
 ## Viz
 
