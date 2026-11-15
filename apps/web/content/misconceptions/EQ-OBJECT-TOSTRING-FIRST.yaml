@@ -1,0 +1,10 @@
+id: EQ-OBJECT-TOSTRING-FIRST
+belief: When == compares an object with a primitive, it turns the object into its string with toString.
+predicts: An object whose valueOf returns 100 and toString returns "Rs 100" is == "Rs 100" and not == 100.
+truth: "== calls ToPrimitive with no hint, which behaves like hint number: valueOf is tried first and toString only if valueOf returns an object. Template literals and String() ask for a string, so they call toString first."
+counterexample: const p = { valueOf() { return 100; }, toString() { return "Rs 100"; } }; console.log(p == 100, p == "Rs 100") prints true false.
+sources:
+  - https://tc39.es/ecma262/#sec-toprimitive
+  - https://tc39.es/ecma262/#sec-ordinarytoprimitive
+lessons:
+  - js-values

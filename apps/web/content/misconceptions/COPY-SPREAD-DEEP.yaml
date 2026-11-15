@@ -1,0 +1,10 @@
+id: COPY-SPREAD-DEEP
+belief: Spread ({ ...obj }) or Object.assign makes a complete, independent copy, nested objects included.
+predicts: Pushing to copy.players leaves original.players unchanged.
+truth: Spread makes one new outer object and copies each property value. A nested object's value is a reference, so the nested object is shared. This is a shallow copy.
+counterexample: "const o = { list: [1] }; const c = { ...o }; c.list.push(2); console.log(o.list.length) prints 2."
+sources:
+  - https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+lessons:
+  - js-values

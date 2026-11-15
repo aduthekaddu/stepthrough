@@ -1,0 +1,26 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: start, kind: statement }
+    say: "Two names, no objects yet."
+    expect:
+      - { record: Global, binding: original, value: "uninitialized" }
+      - { record: Global, binding: copy, value: "uninitialized" }
+  - at: { mark: before-spread, kind: statement }
+    say: "The literal made two objects: the outer object, and an array that its players property points to."
+    expect:
+      - { record: Global, binding: original, value: "object" }
+      - { record: Global, binding: copy, value: "uninitialized" }
+  - at: { mark: two-boxes, kind: statement }
+    say: "The spread made one new outer object and copied each property's value into it, and since the value of players is an arrow, both outer objects now point to the same array."
+    expect:
+      - { record: Global, binding: original, value: "object" }
+      - { record: Global, binding: copy, value: "object" }
+  - at: { mark: after-name, kind: statement }
+    say: "copy.name = \"go\" changed a property of the new outer object only, so original still says \"chess\"."
+    expect:
+      - { record: Global, binding: copy, value: "object" }
+  - at: { mark: done, kind: statement }
+    say: "copy.players.push(\"Chen\") followed the shared arrow and mutated the one array both objects use."
+    expect:
+      - { console: [] }

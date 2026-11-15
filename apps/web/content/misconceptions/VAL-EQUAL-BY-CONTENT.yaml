@@ -1,0 +1,10 @@
+id: VAL-EQUAL-BY-CONTENT
+belief: === on two objects compares their contents.
+predicts: "[] === [] and { n: 1 } === { n: 1 } are true."
+truth: Objects are compared by identity. Two separately made objects are never ===, whatever they contain.
+counterexample: console.log([] === []) prints false.
+sources:
+  - https://tc39.es/ecma262/#sec-identity
+  - https://tc39.es/ecma262/#sec-samevaluenonnumber
+lessons:
+  - js-values

@@ -1,0 +1,10 @@
+id: VAL-CONST-FREEZES
+belief: An object stored in a const binding cannot be changed.
+predicts: Setting a property on a const object is rejected, so the old property value stays (or a TypeError is thrown at the property write).
+truth: "const makes the binding immutable: it can never be reassigned. The object it refers to can still be mutated. Object.freeze is what makes an object read-only, and only one level deep."
+counterexample: "const s = { theme: 'light' }; s.theme = 'dark'; console.log(s.theme) prints dark."
+sources:
+  - https://progmiscon.org/misconceptions/JavaScript/ConstReferenceImpliesImmutability/
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
+lessons:
+  - js-values

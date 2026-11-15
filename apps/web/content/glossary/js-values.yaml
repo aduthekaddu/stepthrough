@@ -1,0 +1,90 @@
+value:
+  term: value
+  definition: One piece of data a program works with, such as 42, "hi", true or an object.
+  aliases: [values]
+  spec: ECMAScript language value
+  introducedIn: js-values
+primitive:
+  term: primitive
+  definition: Any value that is not an object, so undefined, null, a boolean, a number, a bigint, a string or a symbol. It can never be changed.
+  aliases: [primitives]
+  spec: primitive value
+  introducedIn: js-values
+object:
+  term: object
+  definition: A value that holds a collection of properties. Arrays and functions are objects too. An object can be changed, and each one has its own identity.
+  aliases: [objects]
+  spec: Object type
+  introducedIn: js-values
+typeof:
+  term: typeof
+  definition: An operator that returns a string naming a value's type. It has two oddities. typeof null is "object", and any function gives "function".
+  aliases: []
+  spec: The typeof Operator (13.5.3)
+  introducedIn: js-values
+binding:
+  term: binding
+  definition: A name together with the value it holds right now. Lesson 1.2 shows the record where bindings live.
+  aliases: [bindings]
+  spec: binding (in an Environment Record)
+  introducedIn: js-values
+immutable:
+  term: immutable
+  definition: Cannot be changed after it is made. Every primitive value is immutable.
+  aliases: []
+  introducedIn: js-values
+reference:
+  term: reference
+  definition: What a binding or a property holds when its value is an object. It is a way to reach that object, drawn as an arrow, and not a copy of it. The spec's Reference Record is a different idea.
+  aliases: [references]
+  introducedIn: js-values
+identity:
+  term: identity
+  definition: The hidden mark that makes each object unique, so under === an object is equal only to itself. Numbers, strings, booleans, bigints, null and undefined have no identity; symbols are the one primitive that does.
+  aliases: []
+  spec: Identity (5.2.8)
+  introducedIn: js-values
+mutation:
+  term: mutation
+  definition: Changing an object in place, such as setting a property or pushing to an array. Every binding that refers to that object sees the change.
+  aliases: [mutate, mutates, mutated, mutating]
+  introducedIn: js-values
+strict-equality:
+  term: strict equality
+  definition: The === comparison. Values of different types are never equal. Numbers compare by value, except NaN. Strings compare by their characters. Objects compare by identity.
+  aliases: [strictly equal]
+  spec: IsStrictlyEqual
+  introducedIn: js-values
+nan:
+  term: NaN
+  definition: The one Number value that means "not a number". It is the only value that is not === to itself.
+  aliases: []
+  spec: NaN (Number type)
+  introducedIn: js-values
+same-value:
+  term: SameValue
+  definition: The comparison Object.is uses. It works like === except that NaN equals NaN and +0 does not equal -0.
+  aliases: [same-value equality]
+  spec: SameValue
+  introducedIn: js-values
+loose-equality:
+  term: loose equality
+  definition: The == comparison. If the two sides have different types, it converts one side, step by step, and compares again.
+  aliases: [loosely equal]
+  spec: IsLooselyEqual
+  introducedIn: js-values
+coercion:
+  term: coercion
+  definition: Teaching name for a type conversion that an operator does for you, such as ToNumber inside ==. It is not one single spec operation.
+  aliases: [type coercion, coerce, coerces, coerced]
+  introducedIn: js-values
+shallow-copy:
+  term: shallow copy
+  definition: A new outer object whose properties hold the same values as the original. Nested objects are shared, not copied.
+  aliases: [shallow copies]
+  introducedIn: js-values
+deep-copy:
+  term: deep copy
+  definition: A copy in which every nested object is copied too, so changing an object in the copy never changes an object in the original.
+  aliases: [deep copies]
+  introducedIn: js-values

@@ -1,0 +1,817 @@
+---
+id: js-values
+track: javascript
+title: Values and references
+minutes: 90
+prereqs: [fnd-how-programs-run]
+outcomes:
+  - Draw what each binding points to after assignment, mutation, reassignment and a function call, and predict what every other name sees
+  - Explain ===, == and Object.is by walking their spec algorithms (IsStrictlyEqual, IsLooselyEqual with ToPrimitive, SameValue), including NaN and the two zeros
+  - Tell a shallow copy from a deep copy, and implement deepEqual and deepClone that handle cycles, Dates, Maps and Sets
+sources:
+  - https://tc39.es/ecma262/#sec-ecmascript-language-types
+  - https://tc39.es/ecma262/#sec-identity
+  - https://tc39.es/ecma262/#sec-islooselyequal
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness
+  - https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+  - https://v8.dev/blog/pointer-compression
+interviewTags: [frontend, fullstack, javascript-fundamentals]
+status: draft
+verifiedAt: 2026-11
+---
+
+<Segment id="s01-hook" goal="Passing an object to a function, changing it, then reassigning the parameter gives a result most people do not expect">
+<Predict
+  id="hook"
+  prompt="What does this print?"
+  code={`function rename(user) {
+  user.name = "Riya";
+  user = { name: "Kabir" };
+}
+const player = { name: "Aditya" };
+rename(player);
+console.log(player.name);`}
+  answer="b"
+  options={[
+    { id: "a", text: "Aditya", misconception: "VAL-ASSIGN-COPIES-OBJECT", feedback: "You expected rename to work on its own copy, so nothing it did could reach player. But the first line inside rename did reach it: the real output is Riya. Segment 10 steps through this exact call." },
+    { id: "b", text: "Riya", feedback: "Right. The change to user.name reached player, and the line user = { name: 'Kabir' } did not. Segment 10 shows why, step by step." },
+    { id: "c", text: "Kabir", misconception: "VAL-PASS-BY-REFERENCE", feedback: "You expected user to be a second name for player itself, so pointing user somewhere new would move player too. It does not: the real output is Riya. Segment 10 steps through this exact call." }
+  ]}
+  explain="Keep your answer in mind. By segment 10 you will be able to explain this output line by line."
+/>
+Commit to an answer before you look further. The real output appears as soon as you answer. The explanation waits until segment 10, because it needs a few ideas that we build first.
+
+</Segment>
+
+<Segment id="s02-values" goal="Everything a program works with is a value, and the spec puts every value in one of eight types: seven primitive types and Object">
+
+## Eight kinds of data
+
+Take any single piece of data a program works with: `42`, `"hi"`, `true`, or a whole `{ name: "Asha" }`. Each one is called a <Term id="value">value</Term>. The ECMAScript specification (we will call it the spec from now on) calls it an "ECMAScript language value". Everything the engine, the program that runs JavaScript, computes with is a value.
+
+The spec puts every value into exactly one of eight types. Seven of them are Undefined, Null, Boolean, Number, BigInt, String and Symbol. (Type names are written with a capital letter, like Number; the values themselves appear in code, like `42`.) A value of one of these seven types is called a <Term id="primitive">primitive</Term>.
+
+The eighth kind is different. It is a container that holds a collection of properties, each one a name with something stored under it. A value of this kind is called an <Term id="object">object</Term>, and the spec names its type Object. The rule is short: any value that is not an object is a primitive.
+
+Why split the world in two? Because the two kinds behave differently when you copy them, change them and compare them. That difference is what this whole lesson is about.
+
+<Code runnable code={`console.log(undefined, null, true, 42, 10n, "hi", Symbol("id"));
+console.log({ name: "Asha" }, [1, 2], function greet() {});`} />
+
+<Sidenote>Spec 6.1: "The ECMAScript language types are Undefined, Null, Boolean, String, Symbol, Number, BigInt, and Object." And: "An ECMAScript language value that is not an Object is a primitive value." [tc39.es/ecma262, 6.1](https://tc39.es/ecma262/#sec-ecmascript-language-types)</Sidenote>
+
+Two of these types may be new to you. A bigint, written with an `n` at the end (`10n`), is a whole number of any size. A symbol, made by `Symbol("id")`, is a unique token, mostly used as a property name that cannot clash with any other; the text in brackets is only a label.
+
+<Code runnable code={`console.log(2 ** 64, 2n ** 64n); // → 18446744073709552000 18446744073709551616n`} />
+
+A Number is a 64-bit floating-point value, like Java's `double`, so very large whole numbers lose their last digits. A bigint keeps every digit.
+
+The first line of the earlier box printed one primitive of each of the seven types. `undefined` is what `let x;` gives `x` when no value is written, and what reading a missing property gives. `null` is the value you write on purpose to say "no object here"; the spec describes it as "the intentional absence of any object value".
+
+The second line prints three objects. You may ask: arrays and functions feel like their own types, are they not? No. The spec has no Array type and no Function type. An array is an object with numbered properties and a `length`. A function is an object that can also be called; the spec says "All functions in ECMAScript are members of the Object type."
+
+</Segment>
+
+<Segment id="s03-typeof" goal="typeof names a value's type as a string, with two oddities: null gives object and functions give function">
+
+## Asking for the type
+
+When code runs, you often need to ask "what kind of value is this?". JavaScript has an operator for that. You write it before a value, and it returns a string that names the value's type. This operator is called <Term id="typeof">typeof</Term>. Predict what it says for these three values.
+
+<Predict
+  id="typeof"
+  prompt="What does this print?"
+  code={`console.log(typeof null, typeof [1, 2], typeof function () {});`}
+  answer="a"
+  options={[
+    { id: "a", text: "object object function", feedback: "Right. null is a primitive, but typeof reports it as object; arrays are objects; functions are objects that typeof reports as function because they can be called." },
+    { id: "b", text: "null object function", misconception: "VAL-TYPEOF-NULL", feedback: "A very reasonable guess, since null has its own type in the spec. But typeof null is object, a result kept from the first version of JavaScript. The text below explains where it comes from." },
+    { id: "c", text: "object array function", misconception: "VAL-TYPEOF-ARRAY", feedback: "There is no array type in JavaScript. An array is an object, so typeof gives object. To test for an array, use Array.isArray." }
+  ]}
+  explain="typeof follows a fixed table in the spec: null gives object, callable objects give function, and every other object gives object."
+/>
+The spec gives `typeof` a fixed table. `undefined` gives `"undefined"`, a boolean `"boolean"`, a number `"number"`, a bigint `"bigint"`, a string `"string"` and a symbol `"symbol"`. Then come the two oddities.
+
+First, `null` gives `"object"`, even though `null` is a primitive. You may ask: if `null` is not an object, why does `typeof` say it is? MDN tells the history. In the first implementation of JavaScript, a value was stored as a type tag (a small number saying what kind of value it is) plus the data. The tag for objects was `0`. `null` was stored as the null pointer, memory address zero (`0x00` on most machines), so it carried the object tag. A fix that would make `typeof null` return `"null"` was proposed for the language and rejected. So the old result stayed. The spec still lists `null` as a primitive.
+
+Second, functions give `"function"`. They are objects, but the spec checks for one extra ability, an internal method called `[[Call]]`, and reports objects that have it as `"function"`. (The spec writes an object's hidden internal parts in double brackets; your code cannot read them directly.) Every other object, arrays included, gives `"object"`. To test for an array, use `Array.isArray(value)`.
+
+One more useful fact: `typeof` on a name that was never declared returns `"undefined"` instead of throwing an error. A `let` or `const` name read before its line runs is a different case: that throws, and lesson 1.2 explains why.
+
+Here is the whole table in one run. A class is a function too (lesson 1.5), so it also gives `"function"`.
+
+<Code runnable code={`console.log(typeof undefined, typeof true, typeof 42, typeof 10n, typeof "hi", typeof Symbol("id"), typeof null); // → undefined boolean number bigint string symbol object
+console.log(typeof {}, typeof [], typeof function () {}, typeof class {}); // → object object function function`} />
+
+<Sidenote>Spec 13.5.3.1: "If value is null, return "object"." and "If value has a [[Call]] internal method, return "function"." Browsers add one more case: the old `document.all` object gives `"undefined"`. [typeof in the spec](https://tc39.es/ecma262/#sec-typeof-operator), [MDN on typeof null](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null)</Sidenote>
+
+</Segment>
+
+<Segment id="s04-bindings" goal="A binding is a name that holds a value; let b = a gives b the value a has now, and nothing links the two names afterwards">
+
+## Names hold values
+
+A program needs a way to give a value a name, so it can use the value again later. The pair of a name and the value it holds right now is called a <Term id="binding">binding</Term>. In everyday speech, "variable" means the same thing. `let a = 5;` creates a binding: the name `a`, holding `5`. In the spec, bindings live inside a structure called an Environment Record; lesson 1.2 is about that structure.
+
+Dan Abramov's course Just JavaScript draws a variable as a "wire" from the name to a value. He says himself that "A 'wire' is not a JavaScript concept"; it is a picture to think with. This lesson draws the same idea as rows in a box, and the diagram below is the first one you will step through. Its parts:
+
+- The box labelled **Global** lists the names declared at the top level of this script, one row per name.
+- A primitive is written inside its row.
+- Before its line runs, a `let` name already has a row but holds nothing at all, not even `undefined`; reading it then would throw an error. The diagram shows this as "uninitialized". Lesson 1.2 explains why.
+
+The diagram stops before `a = 6` and asks what changes next. Decide before you step.
+
+<Viz example="values-primitive-copy" view="memory" pauseAt={[3]} title="Copying a primitive" />
+
+`let b = a` read the value of `a` at that moment, `5`, and gave `b` that value. Then `a = 6` changed only the row for `a`.
+
+You may ask: doesn't `b = a` tie `b` to `a`, like a formula in a spreadsheet cell? No. `=` reads the right side once, when the line runs, and stores the result. Nothing remembers where the value came from.
+
+Why are primitives drawn inside the row? It is a drawing choice that keeps the picture small. It is not a claim about where an engine keeps the `5` in memory, the computer's working storage. Segment 11 comes back to this.
+
+</Segment>
+
+<Segment id="s05-immutable" goal="A primitive value can never be changed; code that seems to change one makes a new value and gives a binding that new value">
+
+## Values that never change
+
+Can you change the number `5` itself, so that every `5` in the program becomes something else? Of course not. The same is true of every primitive. A value that cannot be changed after it is made is called <Term id="immutable">immutable</Term>, and every primitive value is immutable. Run this code, which tries to change a string and a number.
+
+<Code runnable code={`let word = "cat";
+word[0] = "b";
+console.log(word); // → cat
+console.log(word.toUpperCase()); // → CAT
+console.log(word); // → cat
+let count = 1;
+count = count + 1;
+console.log(count); // → 2`} />
+
+`word[0] = "b"` did nothing. A string cannot be changed, so the write is thrown away. It fails silently because every example in this lesson runs in sloppy mode, the old default rules for a plain script. Strict mode is a stricter set of rules that you turn on with `"use strict"` (modules and class bodies are always strict). There the same line throws `TypeError: Cannot assign to read only property '0' of string 'cat'`; TypeError is one of JavaScript's built-in error types, like a Java exception class.
+
+`word.toUpperCase()` did not change `word` either. It built a new string, `"CAT"`, and returned it. No string method changes the original string. But how can a primitive have a method at all? When you read a property of a string, JavaScript wraps the string, for that one moment, in a temporary String object that has the methods. MDN calls it a wrapper object. The wrapper is thrown away afterwards; the string inside never changes.
+
+You may say: but `count = count + 1` clearly changes `count`! It changes which value the binding holds. The number `1` itself never changed. The right side computed a new number, `2`, and `=` gave the binding that new value. Changing a binding and changing a value are two different things, and keeping them apart is the key to the rest of this lesson.
+
+<Sidenote>MDN: "All types except Object define immutable values" and "JavaScript strings are immutable." [MDN, JavaScript data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Data_structures)</Sidenote>
+
+</Segment>
+
+<Segment id="s06-references" goal="An object lives on its own and a binding holds a reference to it, so let b = a copies the reference and both names reach one object">
+
+## Two names, one object
+
+This is the same move as `let b = a` in segment 4, but now `a` starts with an object. Predict the output, then step through the diagram.
+
+<Predict
+  id="alias"
+  kind="text"
+  prompt="Type exactly what this prints."
+  code={`let a = { n: 1 };
+let b = a;
+b.n = 2;
+console.log(a.n);`}
+  answer="2"
+  wrong={[
+    { match: "1", misconception: "VAL-ASSIGN-COPIES-OBJECT", feedback: "You read let b = a as making a second object, so changing b could not touch a. Only one object was ever made, by the literal { n: 1 }. let b = a copied what a holds, and the diagram below shows what that is." }
+  ]}
+  explain="One object literal makes one object. let b = a gives b what a holds, so a and b reach the same object, and a change through b is seen through a."
+/>
+The diagram below has two new parts. An object is drawn as its own box on the right, outside the Global box. A row that holds an object does not contain it; the row holds an arrow to the box.
+
+<Viz example="values-alias" view="memory" gate="alias" pauseAt={[3]} title="Two names, one object" />
+
+That arrow is the heart of this lesson. In the spec, assigning or passing an object never makes a new object: the very same object is what arrives. What travels between names is a way to reach that one object. This way to reach an object is called a <Term id="reference">reference</Term>, and the diagram draws it as an arrow. The arrow pictures behaviour, not memory layout.
+
+Now the steps make sense. The object literal `{ n: 1 }`, an object written directly in code, made one object. `let b = a` gave `b` the value of `a`, exactly as with `5` in segment 4, but this value is an object, so `b` now holds a reference to the same object. Two arrows, one object. `b.n = 2` followed the arrow in `b` and changed the object at its end, which is the same object `a` reaches.
+
+You may ask: so does `let b = a` copy the object or not? It does not. `=` never copies an object; only the reference is copied.
+
+<Sidenote>Spec 5.2.8: references to objects "must be explicitly passed from one place to another". The spec's "Reference Record" ([6.2.5](https://tc39.es/ecma262/#sec-reference-record-specification-type)) is a different idea.</Sidenote>
+
+</Segment>
+
+<Segment id="s07-identity" goal="Every object has its own identity, so two objects with equal contents are still two objects, while primitives have no identity">
+
+## Same contents, different objects
+
+Two object boxes can hold the same data and still be two boxes. Each object carries a hidden mark that no other object has, and that mark never changes; it is not a property, so you cannot read it. The spec calls it <Term id="identity">identity</Term>. For objects, `===` asks one question: are both sides the same object? Run this and compare.
+
+<Code runnable code={`const a = { n: 1 };
+const b = { n: 1 };
+const c = a;
+console.log(a === b); // → false
+console.log(a === c); // → true
+console.log("hi" === "hi"); // → true
+console.log(Symbol("id") === Symbol("id")); // → false`} />
+
+`a` and `b` are two objects with equal contents, so `false`. `a` and `c` hold references to one object, so `true`.
+
+Most primitives have no identity. Two numbers are equal when they are the same number (segment 12 shows two special cases), so one `5` is as good as any other `5`, and two `"hi"` strings are equal because they have the same characters. The spec lists the values without identity: `undefined`, `null`, booleans, numbers, bigints and strings. Symbols are the one primitive with identity: each symbol is unique, although it can never be changed. (The exception is `Symbol.for("key")`, which returns one shared symbol per key.) That is why each call to `Symbol("id")` gives a new, different symbol.
+
+You may ask: if `a` and `b` look exactly alike, in what way are they different? Set `a.n = 5` and look at `b.n`: it is still `1`. Two identities mean two separate things that can change apart.
+
+Coming from Java: for objects, `===` works like Java's `==`, which is true only when "both refer to the same object". Strings are different. In Java, two distinct `String` objects with the same text are not `==`, and you need `s.equals(t)`. In JavaScript, `===` on strings already compares the text.
+
+<Sidenote>Spec 5.2.8: "each value with identity is unique and therefore only equal to itself." [Identity](https://tc39.es/ecma262/#sec-identity). Java: [JLS 15.21.3](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.21.3).</Sidenote>
+
+</Segment>
+
+<Segment id="s08-mutation" goal="Mutation changes an object and every binding that refers to it sees the change; reassignment moves one binding's reference and changes no object">
+
+## Changing an object versus moving a name
+
+<Predict
+  id="reassign"
+  kind="text"
+  prompt="This is the code from segment 6 with one line changed. Type exactly what it prints."
+  code={`let a = { n: 1 };
+let b = a;
+b = { n: 2 };
+console.log(a.n);`}
+  answer="1"
+  wrong={[
+    { match: "2", misconception: "VAL-REASSIGN-MUTATES", feedback: "You read b = { n: 2 } as changing the object that a and b shared. It does not touch that object. It makes a new object and moves only b's arrow to it, so a still reaches the old object with n: 1. Step the diagram below and watch which arrow moves." }
+  ]}
+  explain="A bare name on the left of = moves that name's arrow. A property on the left, like b.n, changes the object at the end of the arrow."
+/>
+The diagram below runs a longer script that does both kinds of `=` in turn: `b.n = 2` as in segment 6, then `b = { n: 3 }`, then `b.n = 4`.
+
+<Viz example="values-reassign" view="memory" gate="reassign" pauseAt={[4]} title="Changing an object, then moving a name" />
+
+When the left side of `=` is a property, like `b.n`, JavaScript follows the arrow in `b` and changes the object at its end, in place. Setting a property, deleting one (`delete b.n`), or pushing to an array (`list.push(x)`) all work this way. This is called <Term id="mutation">mutation</Term>. The object itself changed, so every binding with an arrow to it sees the change. That is why `a.n` became `2` in segment 6.
+
+When the left side is a bare name, like `b`, only the row for `b` changes: its arrow now points at a different object. No object changed. This is called reassignment. The question above had only a reassignment, no `b.n = 2`, so `a.n` stayed `1`.
+
+You may ask: both lines use `=`, so why do they do different things? Because the left side decides where the value goes. The spec first evaluates the left side to find the place to store into (a binding, or a property of some object), then evaluates the right side, then stores that value in the place.
+
+<Sidenote>Spec 13.15.2, simple assignment: evaluate the left side to a Reference Record (the spec's internal record of where to store, not our arrow), evaluate the right side to a value, then `PutValue` stores it. [Assignment](https://tc39.es/ecma262/#sec-assignment-operators-runtime-semantics-evaluation)</Sidenote>
+
+</Segment>
+
+<Segment id="s09-const" goal="const stops a binding from being reassigned; it does not stop the object it refers to from being mutated">
+
+## What `const` protects
+
+A `const` binding can never be reassigned. But what about the object it refers to? This code mutates the object first, then tries to reassign the binding. Predict the output.
+
+<Predict
+  id="const"
+  prompt="What does this print?"
+  code={`const settings = { theme: "light" };
+settings.theme = "dark";
+let result = "ok";
+try {
+  settings = { theme: "blue" };
+} catch (error) {
+  result = error.name;
+}
+console.log(settings.theme, result);`}
+  answer="a"
+  options={[
+    { id: "a", text: "dark TypeError", feedback: "Right. The property change is a mutation and is allowed; the reassignment of a const binding throws a TypeError." },
+    { id: "b", text: "light TypeError", misconception: "VAL-CONST-FREEZES", feedback: "You expected const to protect the object, so the theme would stay light. const protects only the binding: it can never point anywhere else. The object itself can still be mutated, so theme became dark." },
+    { id: "c", text: "blue ok", misconception: "VAL-CONST-OBJECT-REASSIGNABLE", feedback: "You expected const to matter only for primitives, so a const holding an object could be pointed at a new one. Every const binding is immutable. The reassignment throws TypeError: Assignment to constant variable." }
+  ]}
+  explain="const makes the binding immutable. It says nothing about the object the binding refers to."
+/>
+`const` creates an immutable binding. In the diagrams' terms, it locks the arrow in the `settings` row. Reassigning `settings` would move that arrow, so JavaScript throws a `TypeError` (Node, the runtime you use outside the browser, says "Assignment to constant variable."). The object at the end of the arrow was never protected, so `settings.theme = "dark"` worked. MDN puts it in one line: `const` creates "immutable bindings, not immutable values".
+
+<Sidenote>In spec terms, `const` creates its binding with the operation CreateImmutableBinding, and the operation SetMutableBinding throws a TypeError for an immutable binding. [Spec 9.1.1.1.5](https://tc39.es/ecma262/#sec-declarative-environment-records-setmutablebinding-n-v-s), [MDN const](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const)</Sidenote>
+
+If you want an object whose properties cannot change, `Object.freeze` does that. It is shallow: it freezes one object's own properties, not the objects they refer to. It also cannot stop a Map or a Set from changing its entries, because entries are not properties.
+
+<Code runnable code={`const config = Object.freeze({ port: 3000, db: { host: "localhost" } });
+config.port = 9999;
+config.db.host = "prod";
+console.log(config.port); // → 3000
+console.log(config.db.host); // → prod`} />
+
+The write to `port` was ignored, because this runs in sloppy mode; in strict mode it would throw and stop the script. The write to `db.host` went through, because `db` points to a second object that nobody froze.
+
+You may ask: then what is `const` good for? It tells every reader that this name points to the same object for its whole life. That rules out a whole class of bugs where some line far away points the name somewhere else.
+
+</Segment>
+
+<Segment id="s10-passing" goal="A call gives each parameter the argument's value, so for an object the function gets a copy of the reference, exactly as Java does">
+
+## Back to the puzzle: passing an object
+
+Now you have every piece you need for the opening puzzle. When a function is called, the spec first works out the value of each argument. Then each parameter becomes a new binding that holds one of those values. For a plain parameter like `user`, that works just like `=`.
+
+The diagram adds one part. During the call, a second box appears with the call's own names. It belongs to the call's stack frame, the record a function call gets while it runs. When the call ends, its frame leaves the stack and the box disappears. (Lesson 1.3 shows functions that keep a finished call's names reachable.) Any object that nothing points to any more is dropped from the picture; the garbage collector, the part of the engine that frees memory nothing can reach, may reclaim it later. The diagram runs the puzzle code with one extra line, `return user.name;`, to give a step right after the reassignment. Watch which arrow moves.
+
+<Viz example="values-pass-object" view="memory" gate="hook" pauseAt={[4, 5]} title="Passing an object to a function" />
+
+<ExplainBack
+  id="e1-hook"
+  prompt="In one or two sentences: why did player.name become Riya and not Kabir?"
+  rubric={[
+    "The parameter user starts with a copy of player's reference, so both reach the same object.",
+    "user.name = \"Riya\" is a mutation of that shared object, so player sees it.",
+    "user = { name: \"Kabir\" } is a reassignment that moves only user's reference."
+  ]}
+/>
+
+Calling `rename(player)` copied the value of `player`, a reference, into the new binding `user`. Two arrows, one object. `user.name = "Riya"` is a mutation, so it changed the shared object. `user = { name: "Kabir" }` is a reassignment, so it moved only the arrow in the call's box. When the call ended, that box went away, and `player` still pointed to the original object, now named `"Riya"`.
+
+You may ask: isn't this pass-by-reference, then? No. In true pass-by-reference, as with C++ reference parameters, `user` would be another name for the variable `player` itself. Then `user = { name: "Kabir" }` would move `player` too, and the output would be `Kabir`. JavaScript always passes the value. An object is never copied on the way in: the parameter gets its own copy of the reference, so it reaches the same object.
+
+For objects, Java works exactly the same way (strings differ: Java strings are objects, JavaScript strings are primitives). The Java tutorial says reference parameters "are also passed into methods by value", so "the passed-in reference still references the same object as before", while "the values of the object's fields can be changed in the method". Same rule, same diagram.
+
+<Sidenote>Spec 13.3.8.1: evaluating the arguments produces "a List of ECMAScript language values". [ArgumentListEvaluation](https://tc39.es/ecma262/#sec-runtime-semantics-argumentlistevaluation). Java: [Passing information to a method](https://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html).</Sidenote>
+
+<Predict
+  id="pass"
+  prompt="New code, same rule. What does this print?"
+  code={`function addItem(list) {
+  list.push("tea");
+  list = ["coffee"];
+  list.push("milk");
+  return list.length;
+}
+const cart = ["bread"];
+const count = addItem(cart);
+console.log(cart, count);`}
+  answer="a"
+  options={[
+    { id: "a", text: "[ 'bread', 'tea' ] 2", feedback: "Right. The first push mutated the caller's array through the copied reference. After list = [\"coffee\"], list points to a new array, so the second push and the length belong to that new array." },
+    { id: "b", text: "[ 'bread' ] 2", misconception: "VAL-ASSIGN-COPIES-OBJECT", feedback: "You expected addItem to get its own copy of the array, so the caller's cart could not change. The parameter starts with a copy of the reference, not of the array, so list.push(\"tea\") changed cart." },
+    { id: "c", text: "[ 'coffee', 'milk' ] 2", misconception: "VAL-PASS-BY-REFERENCE", feedback: "You expected list to be another name for cart itself, so list = [\"coffee\"] would replace cart. It only moves the parameter's own reference. cart still points to the first array, which got \"tea\"." }
+  ]}
+  explain="A parameter is a new binding that starts with a copy of the argument's value. For an object, that value is a reference."
+/>
+</Segment>
+
+<Segment id="s11-engine-detail" goal="The spec never says where values are stored; primitives on the stack and objects on the heap describes some engines and the JVM, not JavaScript">
+
+## Where values live: the spec is silent
+
+Many tutorials and Java courses teach a rule of thumb: primitives live on the stack (the call stack of frames from lesson 0.1), and objects live on the heap, the large memory region where data is allocated while the program runs. Check that rule against the spec.
+
+<Predict
+  id="stack-heap"
+  prompt="Inside a function, let count = 5; runs. What does the ECMAScript specification say about where that 5 is kept?"
+  answer="c"
+  options={[
+    { id: "a", text: "On the stack, because 5 is a primitive.", misconception: "MEM-PRIMITIVES-ON-STACK", feedback: "This is a very common rule of thumb, and many Java courses teach it. But it is not in the JavaScript spec: the spec never talks about a stack or a heap for storing values. The text below shows where the rule of thumb really comes from." },
+    { id: "b", text: "On the heap, because everything in JavaScript is an object.", misconception: "VAL-EVERYTHING-IS-OBJECT", feedback: "Two problems. 5 is a primitive, not an object (segment 2). And the spec never mentions a heap at all. Where values live is left to each engine." },
+    { id: "c", text: "Nothing. The spec has no heap and leaves storage to each engine.", feedback: "Right. The spec only describes what a program can observe. Where values sit in memory is an engine decision." }
+  ]}
+  explain="The spec defines behaviour, not memory layout. Stack and heap are engine words."
+/>
+The word "heap" appears zero times in the ECMAScript spec (we counted the full current text, 2026-11-15). Its "execution context stack" (the spec's call stack, lesson 1.2) tracks running code, not stored values. The spec describes only what a program can observe, so each engine may store values however is fastest.
+
+V8, the engine in Chrome and Node, shows one engine's choice. Its blog says "JavaScript values in V8 are represented as objects and allocated on the V8 heap", except small integers, "stored directly in the tagged value" (a slot holding a small number or a pointer). So in V8 even a string, a primitive, lives on the heap.
+
+You may ask: then why did my Java course teach stack and heap? Because the JVM spec defines them. It says the JVM "has a heap" for "all class instances and arrays", and each frame "has its own array of local variables". Even there the rule covers only local variables: a primitive in an object's field or in an array lives inside that object, on the heap.
+
+Our diagram draws primitives in rows because it pictures behaviour, not memory. A number has no identity and cannot change, so no program can tell a copied `5` from a shared `5`. An object can be mutated, so its arrows matter.
+
+</Segment>
+
+<Segment id="s12-strict-equality" goal="=== runs IsStrictlyEqual: different types are never equal, numbers compare by value except NaN, strings by their characters, objects by identity">
+
+## The full rule behind `===`
+
+Now the whole rule. `===` compares two values and never converts either one to another type. This comparison is called <Term id="strict-equality">strict equality</Term>. Predict all four results.
+
+<Predict
+  id="strict"
+  prompt="What does this print?"
+  code={`const x = 0 / 0;
+console.log(x === x, 0 === -0, "chess" === "ch" + "ess", [] === []);`}
+  answer="a"
+  options={[
+    { id: "a", text: "false true true false", feedback: "Right. 0 / 0 is NaN, which is never ===; the two zeros are equal under ===; strings compare by characters; two arrays are two objects." },
+    { id: "b", text: "true true true false", misconception: "NUM-NAN-SELF-EQUAL", feedback: "You expected any value to equal itself. 0 / 0 produces NaN, and the rule for numbers says NaN is not equal to anything, itself included. The text below walks the rule." },
+    { id: "c", text: "false true false false", misconception: "EQ-STRINGS-BY-IDENTITY", feedback: "In Java, == on two String objects asks whether they are the same object, so a string built at run time can differ from a literal. JavaScript strings are primitives with no identity, so === compares their characters." },
+    { id: "d", text: "false true true true", misconception: "VAL-EQUAL-BY-CONTENT", feedback: "You expected === to compare the arrays' contents. For objects, === asks only whether both sides are the same object (segment 7). [] and [] are two objects." }
+  ]}
+  explain="IsStrictlyEqual: different types are never equal; numbers use Number::equal, where NaN never matches and +0 equals -0; strings compare by characters; objects by identity."
+/>
+The spec names the algorithm IsStrictlyEqual. It has three steps:
+
+1. If the two values have different types, return `false`.
+2. If both are numbers, use the number rule, `Number::equal` (the spec writes number-only operations as `Number::name`).
+3. Otherwise use `SameValueNonNumber`: `undefined` equals `undefined`, `null` equals `null`, bigints match when they are the same whole number, booleans match when both are true or both false, and strings match when they have the same length and the same 16-bit code units in the same places (for everyday text, the same characters). Everything else, which means objects and symbols, is "compared by identity".
+
+That explains three answers. The two strings have the same characters. `[]` and `[]` are two objects. `0 === -0` is `true` because the number rule says `+0` and `-0` are equal. The first answer needs one more idea.
+
+Some calculations have no numeric answer at all: `0 / 0`, `Number("abc")`, `Math.sqrt(-1)`. Numbers are floating point, like Java's `double`, so these do not throw. JavaScript returns one special Number value that means "not a number". It is called <Term id="nan">NaN</Term>. It usually spreads: most arithmetic with it gives it again (one exception: `NaN ** 0` is `1`). The number rule says: if either side is NaN, return `false`.
+
+<Code runnable code={`console.log(0 / 0, Number("abc"), Math.sqrt(-1), 0 * Infinity); // → NaN NaN NaN NaN
+console.log(NaN + 1, NaN === NaN); // → NaN false
+console.log(Number.isNaN(NaN), Number.isNaN("abc"), isNaN("abc")); // → true false true`} />
+
+So `x === x` is false when `x` is NaN, and NaN is the only value for which that happens.
+
+You may ask: why would a value not be equal to itself? MDN says this rule is not JavaScript's invention; it comes from IEEE 754, the floating-point standard that JavaScript numbers follow. One way to see why it is reasonable (a way to think about it, not history): NaN can come from very different failed calculations, so calling two of them equal would claim something nobody knows. To test for it, use `Number.isNaN(x)`. The older global `isNaN` converts its argument first, so `isNaN("abc")` is `true`.
+
+<Sidenote>Spec 7.2.14 IsStrictlyEqual and 6.1.6.1.13 Number::equal: "If x is NaN, return false." [IsStrictlyEqual](https://tc39.es/ecma262/#sec-isstrictlyequal), [MDN NaN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)</Sidenote>
+
+</Segment>
+
+<Segment id="s13-same-value" goal="Object.is runs SameValue, which differs from === only for NaN and the two zeros; includes, Map and Set use SameValueZero">
+
+## `Object.is` and the two zeros
+
+Strict equality has two quirks with numbers: NaN is not equal to NaN, and `+0` equals `-0`. Sometimes you want a check with no exceptions, one that says "these are exactly the same value". The spec has one, called <Term id="same-value">SameValue</Term>, and `Object.is(a, b)` runs it. It is IsStrictlyEqual with a different number rule: NaN equals NaN, and `+0` does not equal `-0`.
+
+You may ask: why does JavaScript have two zeros at all? Numbers follow IEEE 754, which has a positive and a negative zero. The sign can carry information: `1 / -0` is `-Infinity`, and `Math.round(-0.4)` gives `-0`, which still records that the value came from the negative side.
+
+<Code runnable code={`console.log(Object.is(NaN, 0 / 0)); // → true
+console.log(Object.is(0, -0)); // → false
+console.log(1 / 0, 1 / -0); // → Infinity -Infinity
+console.log([NaN].includes(NaN)); // → true
+console.log([NaN].indexOf(NaN)); // → -1
+console.log(new Set([0, -0, NaN, NaN]).size); // → 2`} />
+
+A third comparison rule, SameValueZero, is SameValue except that `+0` and `-0` count as equal. `arr.includes(x)` (does the array contain `x`?), `Map` and `Set` use it. A Set holds unique values and a Map holds key-value pairs, like Java's HashSet and HashMap. So `includes` finds NaN, and the Set keeps one zero and one NaN. `arr.indexOf(x)` (where is `x`, or -1) uses `===`, so it never finds NaN.
+
+Which one should you use? MDN: "Strict equality is almost always the correct comparison operation to use." `Object.is` matters when NaN or `-0` matters. React, the UI library, uses it to decide whether state changed (segment 20).
+
+<Sidenote>Spec 20.1.2.15: Object.is returns "SameValue(value1, value2)". SameValue "differs from the IsStrictlyEqual Algorithm by treating all NaN values as equivalent and by differentiating +0 from -0". [SameValue](https://tc39.es/ecma262/#sec-samevalue), [MDN equality](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness)</Sidenote>
+
+</Segment>
+
+<Segment id="s14-loose-equality" goal="== runs IsLooselyEqual, an ordered list of rules that either converts one side and compares again or decides directly, and uses === once the types match">
+
+## `==` converts before it compares
+
+JavaScript has a second equality operator, `==`. When the two sides have different types, it does not give up the way `===` does. It walks an ordered list of rules: most convert one side to another type and compare again, and a few decide the answer directly. This is called <Term id="loose-equality">loose equality</Term>, and the spec algorithm is IsLooselyEqual. A conversion that an operator does for you, without you asking, is usually called <Term id="coercion">coercion</Term>. That is a teaching name; the spec has no single operation by that name, only specific ones like ToNumber, which turns a value into a number. Predict these four.
+
+<Predict
+  id="loose"
+  prompt="What does this print?"
+  code={`console.log(null == undefined, null == 0, "" == 0, "0" == false);`}
+  answer="a"
+  options={[
+    { id: "a", text: "true false true true", feedback: "Right. null only loosely equals undefined; the empty string converts to 0; and false converts to 0 before \"0\" does." },
+    { id: "b", text: "true true true true", misconception: "EQ-NULL-LOOSE-ZERO", feedback: "You expected == to turn null into 0. No step of IsLooselyEqual converts null, so null == 0 falls through to the last step, return false. The step list below shows it." },
+    { id: "c", text: "true false true false", misconception: "EQ-BOOLEAN-TRUTHINESS", feedback: "You read \"0\" == false as asking whether \"0\" is falsy, and \"0\" is truthy. But == never asks about truthiness. It turns false into the number 0, then \"0\" into 0, and 0 equals 0." }
+  ]}
+  explain="IsLooselyEqual converts one side at a time (a boolean to a number, a string to a number, an object to a primitive) until the types match, and treats null and undefined as equal only to each other."
+/>
+IsLooselyEqual is a list of rules, checked in order. The spec writes most rules twice, once for each order of the two sides, so for the same two values `a == b` and `b == a` give the same result. Below, each pair is one rule, with the spec's step numbers in brackets.
+
+1. Same type: return the result of IsStrictlyEqual (step 1).
+2. One side `null` and the other `undefined`: return `true` (steps 2 and 3).
+3. A browser-only rule for the old `document.all` object, kept for very old web pages; you can ignore it (step 4).
+4. A number and a string: convert the string with ToNumber, then compare again (steps 5 and 6).
+5. A bigint and a string: convert the string to a bigint (if it is not a valid bigint, return `false`), then compare again (steps 7 and 8).
+6. A boolean on either side: convert it with ToNumber (`false` becomes `0`, `true` becomes `1`), then compare again (steps 9 and 10).
+7. An object and a string, number, bigint or symbol: convert the object with ToPrimitive (next segment), then compare again (steps 11 and 12).
+8. A bigint and a finite number: compare their mathematical values (step 13).
+9. Nothing matched: return `false` (step 14).
+
+Rules 4, 6, 7 and 8 at work:
+
+<Code runnable code={`console.log(1n == 1, "1" == 1, true == 1, [2] == 2); // → true true true true`} />
+
+ToNumber turns `null` into `0` when it is asked. But no rule above ever asks it about `null`. So `null == 0` reaches rule 9 and is false, while `null == undefined` stops at rule 2. `"" == 0` uses rule 4: the empty string becomes `0`. `"0" == false` uses rule 6 (`false` becomes `0`), then rule 4 (`"0"` becomes `0`), then `0 === 0`.
+
+You may ask: isn't `x == false` a way to ask whether `x` is falsy? No. Truthiness, whether `if` treats a value as true, is a different conversion, ToBoolean, used by `if`, `while` and `!`. `==` never uses it. `"0"` is truthy, yet `"0" == false` is `true`.
+
+<ExplainBack
+  id="e2-zero-false"
+  prompt='In one sentence: why is "0" == false true, even though "0" is truthy?'
+  rubric={[
+    "== turns the boolean side into a number, so false becomes 0.",
+    "The string \"0\" is then converted with ToNumber to 0, and 0 equals 0.",
+    "== never asks whether a value is truthy; that is ToBoolean, used by if."
+  ]}
+/>
+
+MDN's advice is short: "In most cases, using loose equality is discouraged." The one common use is `x == null`. It is true when `x` is `null` (rule 1) or `undefined` (rule 2), and false for every other value, because no other rule matches and rule 9 returns false. (In browsers, rule 3 also makes it true for `document.all`.)
+
+<Sidenote>[7.2.13 IsLooselyEqual](https://tc39.es/ecma262/#sec-islooselyequal), [7.1.4 ToNumber](https://tc39.es/ecma262/#sec-tonumber).</Sidenote>
+
+</Segment>
+
+<Segment id="s15-to-primitive" goal="When == meets an object and a string, number, bigint or symbol, ToPrimitive turns the object into a primitive; without a Symbol.toPrimitive method that means valueOf then toString, or toString first when a string is wanted">
+
+## How `==` turns an object into a primitive
+
+Rule 7 says an object compared with a string, number, bigint or symbol is first turned into a primitive. (Against a boolean, rule 6 turns the boolean into a number first. Against `null` or `undefined`, nothing converts and the answer is false.) Every object inherits default `valueOf` and `toString` methods for this; the `price` object defines its own. Which one does `==` use, and which one does a template literal use?
+
+<Predict
+  id="to-primitive"
+  prompt="What does this print?"
+  code={`const price = {
+  valueOf() {
+    return 100;
+  },
+  toString() {
+    return "Rs 100";
+  },
+};
+console.log(price == 100, price == "Rs 100", \`\${price}\`);`}
+  answer="a"
+  options={[
+    { id: "a", text: "true false Rs 100", feedback: "Right. == gives no hint, so valueOf runs first and price becomes 100. The template literal asks for a string, so toString runs first there." },
+    { id: "b", text: "false true Rs 100", misconception: "EQ-OBJECT-TOSTRING-FIRST", feedback: "You expected == to turn the object into its string. With no hint, ToPrimitive behaves like hint number and tries valueOf first, which returns 100. So price == 100 is true and price == \"Rs 100\" compares 100 with \"Rs 100\", which is false." },
+    { id: "c", text: "false false Rs 100", misconception: "EQ-OBJECT-NEVER-LOOSE-EQUAL", feedback: "You expected an object never to be == to a primitive, as with ===. But IsLooselyEqual converts the object with ToPrimitive first, and here that gives 100." }
+  ]}
+  explain="For an object without a Symbol.toPrimitive method, ToPrimitive with no hint (as in ==) tries valueOf, then toString. With hint string (as in a template literal) it tries toString, then valueOf."
+/>
+The spec algorithm is ToPrimitive. If the object has a `Symbol.toPrimitive` method, that method alone decides, and it must return a primitive or a `TypeError` is thrown. Otherwise ToPrimitive calls OrdinaryToPrimitive with a hint, a word that says what kind of primitive is wanted:
+
+- hint "string": try `toString`, then `valueOf`;
+- hint "number": try `valueOf`, then `toString`.
+
+The first method that returns a primitive wins. If neither does, it throws a `TypeError`.
+
+You may ask: why `valueOf` first for `==`? Because `==` gives no hint. A `Symbol.toPrimitive` method would receive the hint "default"; without one, the spec falls back to "number". So `price` became `100` in both comparisons: `price == 100` is true and `price == "Rs 100"` compares `100` with `"Rs 100"`, which is false. A template literal (a string in backticks with `${...}` slots) converts with ToString, which asks for hint "string", so `toString` ran first and gave `Rs 100`.
+
+<Code runnable code={`console.log([] == false); // → true
+console.log([1, 2] == "1,2"); // → true
+const when = new Date(0);
+console.log(when == when.getTime()); // → false
+console.log(when == when.toString()); // → true`} />
+
+Plain objects and arrays inherit a `valueOf` that returns the object itself, which is not a primitive. So for them `toString` decides, and an array's `toString` joins its items with commas. Walk `[] == false`: rule 6 turns `false` into `0`; rule 7 turns `[]` into `""`; rule 4 turns `""` into `0`; `0 === 0`.
+
+Dates, JavaScript's date objects, are the main exception (Symbol wrapper objects, which you will rarely meet, are the other). The spec says Dates "treat the absence of a hint as if the hint were string", so a Date in `==` becomes its long string form, and `when == when.getTime()` is false.
+
+<Sidenote>[ToPrimitive 7.1.1](https://tc39.es/ecma262/#sec-toprimitive) and [OrdinaryToPrimitive 7.1.1.1](https://tc39.es/ecma262/#sec-ordinarytoprimitive). ToString of an object calls ToPrimitive with hint string ([7.1.19](https://tc39.es/ecma262/#sec-tostring)).</Sidenote>
+
+</Segment>
+
+<Segment id="s16-shallow-copy" goal="Spread and Object.assign({}, source) make one new outer object and copy each own enumerable property's value, so nested objects stay shared">
+
+## Copying one level
+
+A data property, the usual kind, works like a binding: it holds a primitive or a reference. That is all you need to predict what the spread syntax `{ ...original }` does to an object that contains an array.
+
+<Predict
+  id="shallow"
+  prompt="What does this print?"
+  code={`const original = { name: "chess", players: ["Asha", "Ben"] };
+const copy = { ...original };
+copy.name = "go";
+copy.players.push("Chen");
+console.log(original.name, original.players.length);`}
+  answer="a"
+  options={[
+    { id: "a", text: "chess 3", feedback: "Right. The spread made a new outer object, so the name change stayed on the copy. The players array was shared, so push changed it for both." },
+    { id: "b", text: "chess 2", misconception: "COPY-SPREAD-DEEP", feedback: "You expected the spread to copy everything, the array included. It copies each property's value, and the value of players is a reference. Both objects share one array, so push changed it for original too." },
+    { id: "c", text: "go 3", misconception: "COPY-SPREAD-ALIAS", feedback: "You expected copy to be another name for original, like let copy = original. The spread made a new object, so copy.name = \"go\" changed only the copy. Only the nested array is shared." }
+  ]}
+  explain="Spread makes one new object and copies each property's value. Nested objects are reached by reference, so they are shared."
+/>
+<Viz example="values-shallow-copy" view="memory" gate="shallow" pauseAt={[4]} title="A copy that shares its array" />
+
+The spread made one new outer object, with its own identity. Then it copied each property's value into it. The value of `name` is a string, so the copy got the string. The value of `players` is a reference, so the copy got the reference, and both outer objects now point to one array. `copy.name = "go"` changed only the new outer object. `push` followed the shared reference and mutated the one array.
+
+A new outer object whose properties hold the same values as the original, so that nested objects are shared and not copied, is called a <Term id="shallow-copy">shallow copy</Term>. MDN says every standard built-in copy operation makes one: spread, `Object.assign`, `Array.prototype.slice`, `concat` and `Array.from`. Two details: spread and `Object.assign` copy only the object's own enumerable properties, and `Object.assign(target, source)` writes into `target` and returns it, so pass a new `{}` as the target when you want a copy.
+
+<Code runnable code={`const target = { a: 1 };
+const result = Object.assign(target, { b: 2 });
+console.log(result === target, target); // → true { a: 1, b: 2 }
+const copy = Object.assign({}, target);
+console.log(copy === target); // → false`} />
+
+You may ask: is a shallow copy a copy or not? The top level is a real, new object. Everything below the first level is shared.
+
+<Sidenote>MDN: "all standard built-in object-copy operations (spread syntax, Array.prototype.concat(), Array.prototype.slice(), Array.from(), and Object.assign()) create shallow copies". [Shallow copy](https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy), [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)</Sidenote>
+
+</Segment>
+
+<Segment id="s17-deep-copy" goal="A deep copy copies every nested object too; structuredClone does it, keeps cycles and shared references, but rejects functions and drops class prototypes">
+
+## Copying all the way down
+
+Sometimes you want a copy where every nested object is copied too, so that changing any object in the copy never changes an object in the original. That is called a <Term id="deep-copy">deep copy</Term>. Browsers and Node provide one as a built-in function, `structuredClone`. It is a feature of the host (the browser or Node around the engine), not of the JavaScript language. Here `data` holds a class instance and one object stored under two names. (`instanceof` checks whether `Point.prototype` is in the object's prototype chain; for now read it as "was this made by `Point`?". Lesson 1.5 explains it.)
+
+<Predict
+  id="structured"
+  prompt="What does this print?"
+  code={`class Point {
+  constructor(x) {
+    this.x = x;
+  }
+}
+const shared = { tag: "A" };
+const data = { p: new Point(1), left: shared, right: shared };
+const clone = structuredClone(data);
+console.log(clone.p instanceof Point, clone.left === clone.right, clone.left === shared);`}
+  answer="a"
+  options={[
+    { id: "a", text: "false true false", feedback: "Right. The prototype is not copied, so clone.p is a plain object; the shared object is copied once and both properties point to that copy; the copy is a new object." },
+    { id: "b", text: "true true false", misconception: "COPY-CLONE-KEEPS-CLASS", feedback: "You expected the clone to stay a Point. The structured clone algorithm does not copy the prototype chain, so the copy is a plain object with x: 1. Your own deepClone in the lab keeps it." },
+    { id: "c", text: "false false false", misconception: "COPY-CLONE-SPLITS-SHARED", feedback: "You expected each appearance of shared to be copied separately. structuredClone remembers every object it has already copied and reuses that copy, so left and right still point to one object." }
+  ]}
+  explain="structuredClone keeps a map of objects it has already copied, so sharing and cycles survive. It does not copy prototypes, and it refuses functions."
+/>
+`clone.p instanceof Point` is false. For a plain object or a class instance, the structured clone algorithm copies the own enumerable properties with string keys, but "the prototype chain is not walked or duplicated" (the prototype chain is the line of objects an object inherits methods from, lesson 1.5), so `clone.p` is a plain object with `x: 1`. Built-in types it supports, such as Date, Map and Set, do come back as the same built-in type.
+
+`clone.left === clone.right` is true. While it walks the input, `structuredClone` keeps a map from each object it has already copied to its copy. When it meets `shared` a second time, it reuses the copy. The same map is what lets it copy a cycle, an object that refers back to itself, without looping forever. `clone.left === shared` is false, because the copy is a new object.
+
+It has limits. It throws a `DataCloneError` for functions and for symbol values. A getter, a property computed by a function, is read once and its value stored as a plain property; setters, symbol-keyed properties and class private fields are not copied.
+
+You may ask: why not use `JSON.parse(JSON.stringify(x))`? JSON is a text format that knows only strings, numbers, booleans, `null`, arrays and plain objects, so anything else must change or vanish. Run it and see.
+
+<Code runnable code={`const event = { at: new Date(0), score: NaN, note: undefined, tags: new Set(["a"]) };
+console.log(JSON.parse(JSON.stringify(event))); // → { at: '1970-01-01T00:00:00.000Z', score: null, tags: {} }
+const loop = { name: "loop" };
+loop.self = loop;
+try {
+  JSON.stringify(loop);
+} catch (error) {
+  console.log(error.name); // → TypeError
+}
+try {
+  structuredClone({ run() {} });
+} catch (error) {
+  console.log(error.name); // → DataCloneError
+}`} />
+
+The Date became a string, NaN became `null`, the key holding `undefined` vanished, the Set became an empty object, and the cycle threw.
+
+<Sidenote>MDN, [The structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm): "It clones by recursing through the input object while maintaining a map of previously visited references". MDN, [Deep copy](https://developer.mozilla.org/en-US/docs/Glossary/Deep_copy): structuredClone "isn't a feature of the JavaScript language itself".</Sidenote>
+
+</Segment>
+<Segment id="s18-misconceptions" goal="The wrong models from this lesson, each with its smallest counterexample">
+
+## Misconceptions
+
+Each line is a wrong model, the smallest code that breaks it, and the segment that shows why.
+
+- **"`let b = a` copies the object."** `let a = { n: 1 }; let b = a; b.n = 2;` leaves `a.n` at 2. Only the reference is copied (s06).
+- **"Reassigning a name changes the object it used to point to."** After `b = { n: 2 }`, `a.n` is still 1. Reassignment moves one arrow and changes no object (s08).
+- **"`const` makes the object read-only."** `const s = {}; s.theme = "dark";` works. Only the binding is immutable; `Object.freeze` protects an object's properties, one level deep (s09).
+- **"A parameter is another name for the caller's variable."** `user = { name: "Kabir" }` inside `rename` does not move `player`. The parameter starts with a copy of the reference (s10).
+- **"Primitives live on the stack, objects on the heap, by rule."** The spec never mentions a heap; V8 keeps strings on its heap (s11).
+- **"Every value equals itself."** `NaN === NaN` is false; use `Number.isNaN` (s12).
+- **"`===` on strings checks identity, as in Java."** Strings have no identity, so two strings with the same code units are always `===` (s12).
+
+<Code runnable code={`let a = { n: 1 }; let b = a; b.n = 2;
+console.log(a.n); // → 2
+let c = { n: 1 }; let d = c; d = { n: 2 };
+console.log(c.n); // → 1
+const s = { theme: "light" }; s.theme = "dark";
+console.log(s.theme); // → dark
+const x = 0 / 0;
+console.log(x === x, "ch" + "ess" === "chess", [] === []); // → false true false
+console.log(null == 0, "0" == false); // → false true
+const o = { list: [1] }; const copy = { ...o }; copy.list.push(2);
+console.log(o.list.length); // → 2`} />
+
+- **"`===` compares objects by contents."** `[] === []` is false (s07, s12).
+- **"`x == false` asks whether `x` is falsy."** `"0" == false` is true, though `"0"` is truthy. `==` turns the boolean into a number (s14).
+- **"`null == 0` because `null` becomes 0."** No rule of IsLooselyEqual converts `null`, so the answer is false (s14).
+- **"Spread copies everything."** Nested objects stay shared; a spread is a shallow copy (s16).
+- **"`structuredClone` keeps classes and splits shared objects."** It drops custom class prototypes and keeps shared objects shared (s17).
+
+</Segment>
+<Segment id="s19-lab" goal="Build deepEqual and deepClone, and compare deepClone with structuredClone">
+
+## Lab: `deepEqual`, `deepClone` and `structuredClone`
+
+The lab is separate from the 90 minutes of the lesson; plan about 60 minutes. It lives in `lab/` next to this lesson. The tests use Vitest, a test runner like JUnit, and the lab's README gives three hints for each task.
+
+1. **`deepEqual(a, b)`**, a completion task (part of the code is given). Primitives compare with `Object.is`; different prototypes are never equal; Dates compare by time, Maps by entries, Sets by members; cycles must not loop forever.
+2. **`deepClone(value)`**, a Parsons problem (put given lines of code in order; three lines are wrong models from this lesson), then extend it to Dates, Maps and Sets. Unlike `structuredClone`, it keeps class prototypes and shares functions.
+3. **What `structuredClone` keeps**: predict six facts, then let the tests check you.
+
+The README states every rule and where it differs from Node's `assert.deepStrictEqual` and from `structuredClone`.
+
+<ExplainBack
+  id="e3-before-lab"
+  prompt="Before you start: in one sentence, why must deepClone remember every object it has already copied?"
+  rubric={[
+    "So an object that appears twice is copied once and stays shared in the clone.",
+    "So a cycle, an object that refers back to itself, does not make the clone loop forever.",
+    "The copy must be remembered before its children are cloned."
+  ]}
+/>
+
+</Segment>
+
+<Segment id="s20-in-the-wild" goal="React state, Zod and a chess board show the same rules in code Aditya writes">
+
+## In the wild
+
+**React.** When you call a `useState` setter, React compares the new value with the current one using `Object.is`. The React docs: "If the new value you provide is identical to the current state, as determined by an Object.is comparison, React will skip re-rendering the component and its children." So `obj.x = 10; setObj(obj);` does not re-render. The mutation already happened, but `setObj` got the same reference back, so `Object.is` says nothing changed and React skips the update. Now the state object and the screen disagree. The fix from the same page is a new object: `setObj({ ...obj, x: 10 })`. That copy is shallow, so for nested state you copy each level you change, as the next example shows. React treats state as read-only: replace it, do not mutate it.
+
+**A chess board.** A shallow copy hides a second trap when state is nested. In a chess app like your LiveChess, a board is often an array of rows.
+
+<Code runnable code={`const board = [["", ""], ["", ""]];
+const next = [...board];
+next[0][1] = "K";
+console.log(board[0][1]); // → K
+console.log(next === board, next[0] === board[0]); // → false true`} />
+
+`[...board]` made a new outer array, but every row is shared, so setting a square on `next` changed the old board too. React would see a new outer array and re-render, but your history of past positions would be silently wrong. Copy the row you change as well: `next[0] = [...board[0]]`, then set the square.
+
+**Zod.** In DevSecret you validate input with Zod. Its docs say that if the input is valid, "Zod returns a strongly-typed deep clone of the input". For an object schema, the object you get back is a new object, not the one you passed in. Fields typed `z.any()` or `z.unknown()` are the exception: we checked with the Zod in this repository, and they pass the same reference straight through.
+
+**Java.** Java's `a == b` on objects is JavaScript's `===`: identity. Java's `a.equals(b)` is a method each class can override to compare contents. JavaScript objects have no such built-in method, so code that needs to compare contents uses a library function or writes one, like the lab's `deepEqual`.
+
+</Segment>
+<Segment id="s21-interview" goal="Three interview questions, each with what a strong answer contains">
+
+## Interview lens
+
+These come up in frontend and full-stack rounds, often as "what does this print?" followed by "why?". Answer out loud first, then check the rubric.
+
+<InterviewQ
+  id="iq-equality"
+  question="What is the difference between == and ===? Is there ever a good reason to use ==?"
+  rubric={[
+    "=== (IsStrictlyEqual) never converts: different types give false, numbers compare by value with NaN unequal to everything, strings by their characters, objects by identity.",
+    "== (IsLooselyEqual) converts first: null and undefined only equal each other (ignoring the legacy document.all in browsers), a string or a boolean is turned into a number, an object compared with a string, number, bigint or symbol is turned into a primitive with ToPrimitive (its Symbol.toPrimitive method if it has one, otherwise valueOf, then toString).",
+    "Gives a concrete surprise and walks it, such as \"0\" == false being true because false becomes 0 and \"0\" becomes 0.",
+    "Names the one common use of ==: x == null, which is true only for null and undefined.",
+    "Mentions Object.is (SameValue) as the third comparison, which differs from === only for NaN and -0."
+  ]}
+/>
+
+<InterviewQ
+  id="iq-pass"
+  question="Is JavaScript pass-by-value or pass-by-reference? Prove your answer with a short piece of code."
+  rubric={[
+    "Every argument is passed by value; when the value is an object, the value is a reference, so the parameter starts with a copy of the reference.",
+    "Code where the function mutates the object (the caller sees the change) and then reassigns the parameter (the caller does not see it).",
+    "Explains that true pass-by-reference would let the function rebind the caller's variable, which JavaScript cannot do.",
+    "Notes that Java behaves the same way for object references."
+  ]}
+/>
+
+<InterviewQ
+  id="iq-clone"
+  question="How would you deep clone an object? What can go wrong with the common approaches?"
+  rubric={[
+    "Spread and Object.assign are shallow: nested objects stay shared.",
+    "JSON.parse(JSON.stringify(x)) turns Dates into strings, NaN into null, drops properties holding undefined or functions (inside arrays they become null), turns Maps and Sets into {}, and throws on cycles.",
+    "structuredClone keeps cycles, shared references, Dates, Maps and Sets, but throws DataCloneError on functions and symbol values, drops custom class prototypes, setters and symbol-keyed properties, and turns getters into plain values (built-ins like Date and Map come back as themselves); it is a host API, not part of the language.",
+    "A hand-written clone needs a map from original to copy, filled before the children are cloned, to survive cycles and keep shared objects shared."
+  ]}
+/>
+
+</Segment>
+
+<Segment id="s22-explain-back" goal="Explain values and references to a junior in three sentences">
+
+## Explain it back
+
+<ExplainBack
+  id="explain-values"
+  prompt="Explain to a junior developer, in three or four sentences, what happens when you run let b = a; then b.x = 1; then b = {}; where a holds an object. Include what a === b gives after each line."
+  rubric={[
+    "A binding holds a value; when the value is an object, the binding holds a reference to it.",
+    "let b = a copies the reference, so both names reach one object and a === b is true.",
+    "b.x = 1 is a mutation of that one object, so a sees it too, and a === b is still true.",
+    "b = {} is a reassignment: only b's reference moves to a new object, a is unchanged, and a === b becomes false because === compares objects by identity."
+  ]}
+/>
+
+</Segment>
+
+<Segment id="s23-cards" goal="Five review cards for spaced repetition">
+
+## Cards
+
+<Card
+  id="card-assign-new-array"
+  kind="predict"
+  front={`const team = { members: ["Ira"] };
+const backup = Object.assign({}, team);
+backup.members = [...backup.members, "Om"];
+console.log(team.members.length);`}
+  back="Prints 1. backup.members = ... puts a new array on the copy; the original array was never mutated. (Compare with the push card.)"
+/>
+
+<Card
+  id="card-push-shared-array"
+  kind="predict"
+  front={`const team = { members: ["Ira"] };
+const backup = Object.assign({}, team);
+backup.members.push("Om");
+console.log(team.members.length);`}
+  back="Prints 2. Object.assign makes a shallow copy, so both objects share one members array, and push mutates it. (Compare with the new-array card.)"
+/>
+
+<Card
+  id="card-why-pass"
+  kind="explain"
+  front="A function receives an object as a parameter. Why can it change the object's properties for the caller, but not make the caller's variable point to a different object?"
+  back="The parameter is a new binding that starts with a copy of the caller's reference. Following that reference reaches the shared object, so mutations show; reassigning the parameter moves only its own reference."
+/>
+
+<Card
+  id="card-nan-zero"
+  kind="predict"
+  front={`const scores = [NaN, 0];
+console.log(scores.indexOf(NaN), scores.includes(NaN), Object.is(scores[1], -0));`}
+  back="Prints -1 true false. indexOf uses === (NaN never matches), includes uses SameValueZero (NaN matches), Object.is uses SameValue (+0 and -0 differ)."
+/>
+
+<Card
+  id="card-implement-clone"
+  kind="recall"
+  front="From memory, write deepClone for plain objects and arrays that keeps cycles, using a Map called copies from each original object to its copy. Which line must come before the loop over the keys, and why?"
+  back="copies.set(original, copy) must run before the children are cloned, so a child that points back to the original finds the copy instead of starting the clone again forever."
+/>
+
+</Segment>

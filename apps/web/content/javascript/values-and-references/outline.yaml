@@ -1,0 +1,386 @@
+frontmatter:
+  id: js-values
+  track: javascript
+  title: Values and references
+  minutes: 90
+  prereqs: [fnd-how-programs-run]
+  outcomes:
+    - Draw what each binding points to after assignment, mutation, reassignment and a function call, and predict what every other name sees
+    - Explain ===, == and Object.is by walking their spec algorithms (IsStrictlyEqual, IsLooselyEqual with ToPrimitive, SameValue), including NaN and the two zeros
+    - Tell a shallow copy from a deep copy, and implement deepEqual and deepClone that handle cycles, Dates, Maps and Sets
+  sources:
+    - https://tc39.es/ecma262/#sec-ecmascript-language-types
+    - https://tc39.es/ecma262/#sec-identity
+    - https://tc39.es/ecma262/#sec-islooselyequal
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness
+    - https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+    - https://v8.dev/blog/pointer-compression
+  interviewTags: [frontend, fullstack, javascript-fundamentals]
+  status: draft
+  verifiedAt: 2026-11
+
+# Every behaviour the lesson relies on, with where it was read (fetched 2026-11-15).
+facts:
+  - id: language-types
+    text: "6.1: 'The ECMAScript language types are Undefined, Null, Boolean, String, Symbol, Number, BigInt, and Object.' 'An ECMAScript language value that is not an Object is a primitive value.'"
+    url: https://tc39.es/ecma262/#sec-ecmascript-language-types
+  - id: object-type
+    text: "6.1.7: 'Each instance of the Object type ... represents a collection of properties.' 'All functions in ECMAScript are members of the Object type.'"
+    url: https://tc39.es/ecma262/#sec-object-type
+  - id: null-type
+    text: "6.1.2: 'The Null type has exactly one value, called null, representing the intentional absence of any object value.' 6.1.1: Undefined has exactly one value, undefined."
+    url: https://tc39.es/ecma262/#sec-ecmascript-language-types-null-type
+  - id: number-type
+    text: "6.1.6.1: Number values are IEEE 754-2019 binary64 doubles; all NaN bit patterns are one NaN value to JS code; 'there is both a positive zero and a negative zero', produced by +0 and -0."
+    url: https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
+  - id: mdn-immutable
+    text: "MDN Data structures: 'All types except Object define immutable values represented directly at the lowest level of the language. We refer to values of these types as primitive values.' 'JavaScript strings are immutable.' 'In JavaScript, objects are the only mutable values.'"
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Data_structures
+  - id: typeof-algorithm
+    text: "13.5.3.1: typeof returns 'undefined' for an unresolvable reference; null -> 'object'; String 'string'; Symbol 'symbol'; Boolean 'boolean'; Number 'number'; BigInt 'bigint'; an Object with a [[Call]] internal method -> 'function'; other objects -> 'object'."
+    url: https://tc39.es/ecma262/#sec-typeof-operator
+  - id: typeof-null-history
+    text: "MDN typeof: in the first implementation values were a type tag plus a value; the object tag was 0; null was the NULL pointer (0x00), so it had tag 0 and typeof null is 'object'. A fix (typeof null === 'null') was proposed via opt-in and rejected."
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+  - id: wires
+    text: "Just JavaScript ep. 3 (Dan Abramov): 'Variables are not values.' 'A “wire” is not a JavaScript concept—but it helps us imagine how variables point to values.' 'We can’t change primitive values.' On calls: 'We pass the current value of the pet variable.'"
+    url: https://justjavascript.com/learn/03-values-and-variables
+  - id: identity
+    text: "5.2.8: 'each value with identity is unique and therefore only equal to itself.' 'references to these values must be explicitly passed from one place to another.' 'Some values with identity are mutable ... causing all holders of the value to observe the new characteristics.' Without identity: undefined, null, Booleans, Strings, Numbers, BigInts. With identity: Objects and Symbols not produced by Symbol.for."
+    url: https://tc39.es/ecma262/#sec-identity
+  - id: reference-record
+    text: "6.2.5: the spec's 'Reference Record' is 'a resolved name or (possibly not-yet-resolved) property binding' used to explain delete, typeof, assignment. It is not the everyday word 'reference' (an arrow to an object)."
+    url: https://tc39.es/ecma262/#sec-reference-record-specification-type
+  - id: assignment
+    text: "13.15.2: for `LeftHandSideExpression = AssignmentExpression`, evaluate the left side to a reference (a name or a property), evaluate the right side with GetValue, then PutValue(leftRef, rightValue). The right side's value is what is stored; for an object that value is the object itself, by identity, never a copy."
+    url: https://tc39.es/ecma262/#sec-assignment-operators-runtime-semantics-evaluation
+  - id: const-binding
+    text: "const declarations call CreateImmutableBinding(name, true); 9.1.1.1.5 SetMutableBinding: for an immutable binding 'If strict is true, throw a TypeError exception', and a binding created with strict true is a strict binding, so assignment to a const always throws."
+    url: https://tc39.es/ecma262/#sec-declarative-environment-records-setmutablebinding-n-v-s
+  - id: mdn-const
+    text: "MDN const: 'create immutable bindings, not immutable values'. Node message: 'TypeError: Assignment to constant variable.'"
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const
+  - id: arguments
+    text: "13.3.8.1 ArgumentListEvaluation 'returns ... a List of ECMAScript language values'; the parameters are bound to those values."
+    url: https://tc39.es/ecma262/#sec-runtime-semantics-argumentlistevaluation
+  - id: java-pass
+    text: "Oracle Java tutorial: 'Reference data type parameters, such as objects, are also passed into methods by value. This means that when the method returns, the passed-in reference still references the same object as before. However, the values of the object's fields can be changed in the method'."
+    url: https://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html
+  - id: java-equality
+    text: "JLS 15.21.3: 'the result of == is true if the operand values are both null or both refer to the same object or array'; for two distinct String objects with the same characters == is false; 'The contents of two strings s and t can be tested for equality by the method invocation s.equals(t).'"
+    url: https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.21.3
+  - id: no-heap-in-spec
+    text: "The word 'heap' appears 0 times in the full ECMAScript spec text (tc39.es/ecma262, fetched 2026-11-15, counted by script); 'execution context stack' appears 54 times and is about running code, not storing values."
+    url: https://tc39.es/ecma262/
+  - id: v8-values
+    text: "V8 blog, Pointer compression: 'JavaScript values in V8 are represented as objects and allocated on the V8 heap.' Small integers: 'the value of an integer can be stored directly in the tagged value, without having to allocate additional storage for it.'"
+    url: https://v8.dev/blog/pointer-compression
+  - id: jvm-heap
+    text: "JVM spec 2.5.3: 'The Java Virtual Machine has a heap that is shared among all Java Virtual Machine threads. The heap is the run-time data area from which memory for all class instances and arrays is allocated.' 2.6: 'Each frame has its own array of local variables'."
+    url: https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html#jvms-2.5.3
+  - id: is-strictly-equal
+    text: "7.2.14 IsStrictlyEqual: 1. If SameType(x, y) is false, return false. 2. If x is a Number, return Number::equal(x, y). 3. Return SameValueNonNumber(x, y)."
+    url: https://tc39.es/ecma262/#sec-isstrictlyequal
+  - id: number-equal
+    text: "6.1.6.1.13 Number::equal: If x is NaN, return false. If y is NaN, return false. If x is y, return true. +0/-0 in either order return true. Otherwise false."
+    url: https://tc39.es/ecma262/#sec-numeric-types-number-equal
+  - id: same-value-non-number
+    text: "7.2.11 SameValueNonNumber: undefined/null -> true; BigInt -> BigInt::equal; String -> same length and same code units in the same positions; Boolean -> both true or both false; 'NOTE: All other ECMAScript language values are compared by identity.'"
+    url: https://tc39.es/ecma262/#sec-samevaluenonnumber
+  - id: nan-ieee
+    text: "MDN NaN: 'NaN compares unequal (via ==, !=, ===, and !==) to any other value — including to another NaN value.' 'NaN and its behaviors are not invented by JavaScript. Its semantics in floating point arithmetic (including that NaN !== NaN) are specified by IEEE 754.' Operations returning NaN: failed number conversion, Math.sqrt(-1), 0 * Infinity, NaN-contagion, invalid Date. indexOf cannot find NaN; includes can."
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+  - id: same-value
+    text: "7.2.9 SameValue: same as IsStrictlyEqual except Number::sameValue: NaN and NaN -> true; +0 and -0 -> false. 20.1.2.15: Object.is(value1, value2) returns SameValue(value1, value2). 7.2.10 SameValueZero treats +0 and -0 as equal and NaN equal to NaN."
+    url: https://tc39.es/ecma262/#sec-samevalue
+  - id: same-value-zero-users
+    text: "MDN Equality: SameValueZero is 'used by Array.prototype.includes(), TypedArray.prototype.includes(), as well as Map and Set methods for comparing key equality.' 'Strict equality is almost always the correct comparison operation to use.' 'In most cases, using loose equality is discouraged.'"
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness
+  - id: is-loosely-equal
+    text: "7.2.13 IsLooselyEqual: 1 same type -> IsStrictlyEqual. 2-3 null/undefined pair -> true. 4 [[IsHTMLDDA]] (document.all, browsers only). 5-6 Number vs String -> ToNumber the string. 7-8 BigInt vs String. 9-10 a Boolean side -> ToNumber it. 11-12 Object vs String/Number/BigInt/Symbol -> ToPrimitive the object. 13 BigInt vs finite Number by math value. 14 Return false. 13.11.1: == calls IsLooselyEqual(rightValue, leftValue); every rule comes in a mirrored pair, so operand order does not change results (Note 1: A == B is equivalent to B == A except in the order of evaluation)."
+    url: https://tc39.es/ecma262/#sec-islooselyequal
+  - id: to-number
+    text: "7.1.4 ToNumber: undefined -> NaN; null or false -> +0; true -> 1; String -> StringToNumber; Object -> ToPrimitive(arg, number) then ToNumber."
+    url: https://tc39.es/ecma262/#sec-tonumber
+  - id: to-primitive
+    text: "7.1.1 ToPrimitive: if the object has a Symbol.toPrimitive method, call it with hint 'default'/'string'/'number'; otherwise, if preferredType is not present set it to number and call OrdinaryToPrimitive. 7.1.1.1: hint string tries toString then valueOf; otherwise valueOf then toString; the first that returns a non-object wins; else TypeError. Note: only Dates and Symbol objects override it; 'Dates treat the absence of a hint as if the hint were string.'"
+    url: https://tc39.es/ecma262/#sec-toprimitive
+  - id: to-string
+    text: "7.1.19 ToString of an Object: ToPrimitive(arg, string). Template literal substitutions are converted with ToString (13.2.8.6)."
+    url: https://tc39.es/ecma262/#sec-tostring
+  - id: shallow-copy
+    text: "MDN Shallow copy: 'a copy whose properties share the same references ... as those of the source object'. 'all standard built-in object-copy operations (spread syntax, Array.prototype.concat(), Array.prototype.slice(), Array.from(), and Object.assign()) create shallow copies'."
+    url: https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy
+  - id: object-assign
+    text: "MDN Object.assign: copies all enumerable own properties (String and Symbol keys); uses [[Get]] and [[Set]] so getters and setters run; 'If the source value is a reference to an object, it only copies the reference value.'"
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
+  - id: deep-copy
+    text: "MDN Deep copy: 'a copy whose properties do not share the same references'. JSON round trip fails for functions, Symbols, recursive data. 'structuredClone() isn't a feature of the JavaScript language itself — instead it's a feature of browsers and other JavaScript hosts'."
+    url: https://developer.mozilla.org/en-US/docs/Glossary/Deep_copy
+  - id: structured-clone
+    text: "MDN Structured clone algorithm: functions throw DataCloneError; DOM nodes throw; RegExp lastIndex, property descriptors, getters/setters are not preserved; 'The prototype chain is not walked or duplicated'; class private elements not duplicated; supports Array, Date, Map, Set, plain Object, primitives except symbol, RegExp, Error types, typed arrays; keeps a map of visited references to handle cycles. MDN structuredClone: example keeps clone.itself === clone."
+    url: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+  - id: node-deep-strict
+    text: "Node assert.deepStrictEqual comparison details: 'Primitive values are compared using Object.is().' '[[Prototype]] of objects are compared using the === operator.' 'Only enumerable \"own\" properties are considered.' 'Map keys and Set items are compared unordered.' 'Recursion stops when both sides differ or either side encounters a circular reference.'"
+    url: https://nodejs.org/api/assert.html#assertdeepstrictequalactual-expected-message
+  - id: react-object-is
+    text: "react.dev useState: 'If the new value you provide is identical to the current state, as determined by an Object.is comparison, React will skip re-rendering the component and its children.' Mutating obj then setObj(obj) 'Doesn't do anything'; 'you should replace it rather than mutate your existing objects'."
+    url: https://react.dev/reference/react/useState
+  - id: zod-clone
+    text: "zod.dev basics: 'If it's valid, Zod returns a strongly-typed deep clone of the input.'"
+    url: https://zod.dev/basics
+  - id: progmiscon
+    text: "progmiscon JavaScript: AssignmentCopiesObject 'Assignment copies the object'; ConstReferenceImpliesImmutability 'An object referred to by a const variable is an immutable object'."
+    url: https://progmiscon.org/misconceptions/JavaScript/
+
+vocabulary:
+  - { id: value, status: new, segment: s02-values, definition: "One piece of data a program works with, such as 42, \"hi\", true or an object.", spec: "ECMAScript language value" }
+  - { id: primitive, status: new, segment: s02-values, definition: "Any value that is not an object: undefined, null, a boolean, a number, a bigint, a string or a symbol. It cannot be changed.", spec: "primitive value" }
+  - { id: object, status: new, segment: s02-values, definition: "A value that holds a collection of properties. Arrays and functions are objects. Objects can be changed, and each one has its own identity.", spec: "Object type" }
+  - { id: typeof, status: new, segment: s03-typeof, definition: "An operator that returns a string naming a value's type. Two oddities: typeof null is \"object\", and functions give \"function\".", spec: "The typeof Operator (13.5.3)" }
+  - { id: binding, status: new, segment: s04-bindings, definition: "A name together with the value it holds right now. Lesson 1.2 shows where bindings live.", spec: "binding in an Environment Record" }
+  - { id: immutable, status: new, segment: s05-immutable, definition: "Cannot be changed after it is made. Every primitive value is immutable." }
+  - { id: reference, status: new, segment: s06-references, definition: "What a binding or a property holds when its value is an object: a way to reach that object, drawn as an arrow. It is not a copy of the object. (The spec's Reference Record is a different idea.)" }
+  - { id: identity, status: new, segment: s07-identity, definition: "The hidden mark that makes each object unique, so an object is equal under === only to itself.", spec: "Identity (5.2.8)" }
+  - { id: mutation, status: new, segment: s08-mutation, definition: "Changing an object in place, such as setting a property or pushing to an array. Every binding that refers to that object sees the change." }
+  - { id: strict-equality, status: new, segment: s12-strict-equality, definition: "The === comparison. Different types are never equal; numbers compare by value except NaN; strings compare by their characters; objects compare by identity.", spec: "IsStrictlyEqual" }
+  - { id: nan, status: new, segment: s12-strict-equality, definition: "NaN, the one Number value that means \"not a number\". It is the only value that is not === to itself.", spec: "NaN (Number type)" }
+  - { id: same-value, status: new, segment: s13-same-value, definition: "The comparison Object.is uses. Like === except that NaN equals NaN and +0 does not equal -0.", spec: "SameValue" }
+  - { id: loose-equality, status: new, segment: s14-loose-equality, definition: "The == comparison. If the two sides have different types, it converts one side, step by step, then compares again.", spec: "IsLooselyEqual" }
+  - { id: coercion, status: new, segment: s14-loose-equality, definition: "Teaching name for a conversion from one type to another that an operator does for you, such as ToNumber inside ==. Not a single spec operation." }
+  - { id: shallow-copy, status: new, segment: s16-shallow-copy, definition: "A new outer object whose properties hold the same values as the original, so nested objects are shared, not copied." }
+  - { id: deep-copy, status: new, segment: s17-deep-copy, definition: "A copy in which every nested object is copied too, so changing the copy never changes the original." }
+  # From 0.1 (fnd-how-programs-run): one-clause reminder on first use, plain text (their glossary entries live in lesson 0.1).
+  - { id: memory, status: from fnd-how-programs-run, first_use: s04-bindings, reminder: "memory, the computer's working storage where a running program keeps its data" }
+  - { id: engine, status: from fnd-how-programs-run, first_use: s02-values, reminder: "the engine, the program that runs JavaScript (V8 in Chrome and Node)" }
+  - { id: stack-frame, status: from fnd-how-programs-run, first_use: s10-passing, reminder: "a stack frame, the record a function call gets while it runs" }
+  - { id: heap, status: from fnd-how-programs-run, first_use: s11-engine-detail, reminder: "the heap, the memory region for data that must outlive a single call" }
+  - { id: garbage-collection, status: from fnd-how-programs-run, first_use: s10-passing, reminder: "the garbage collector, the part of the engine that frees memory nothing can reach" }
+
+misconceptions:
+  core: [VAL-ASSIGN-COPIES-OBJECT, VAL-PASS-BY-REFERENCE, VAL-REASSIGN-MUTATES, VAL-CONST-FREEZES, MEM-PRIMITIVES-ON-STACK, NUM-NAN-SELF-EQUAL, EQ-BOOLEAN-TRUTHINESS, COPY-SPREAD-DEEP]
+  secondary: [VAL-TYPEOF-NULL, VAL-TYPEOF-ARRAY, VAL-CONST-OBJECT-REASSIGNABLE, VAL-EVERYTHING-IS-OBJECT, EQ-STRINGS-BY-IDENTITY, VAL-EQUAL-BY-CONTENT, EQ-NULL-LOOSE-ZERO, EQ-OBJECT-TOSTRING-FIRST, EQ-OBJECT-NEVER-LOOSE-EQUAL, COPY-SPREAD-ALIAS, COPY-CLONE-KEEPS-CLASS, COPY-CLONE-SPLITS-SHARED]
+  note: "Core ids carry the outcomes. Secondary ids are distractor-level beliefs, each exposed by one Predict option; the inferred ones are marked in their registry files."
+
+design_decisions:
+  - "Hook: pass an object, mutate it, then reassign the parameter. It splits the two main wrong models (copy vs true pass-by-reference) and Aditya meets the same rule in Java, so s10 can resolve it with a Java contrast."
+  - "Primitives are drawn inside their binding row and objects as separate boxes with arrows. This is the trace format's drawing choice; s04 and s11 say it is a drawing, not where an engine stores values."
+  - "Narration expectations use only the shapes the build checks: { record, binding, value } (value is the primitive text, \"uninitialized\", or \"object\" / \"array\" / \"function <name>\" for a reference), { stackDepth }, { record, exists }, { console }. These cannot say that two bindings share one object or what a property holds; the observable result of each example is pinned by its Predict answer (content-check runs it) instead. Every step needs a mark, and end and return frames have no source line, so they cannot be narrated; values-pass-object.js adds return user.name; to get a frame right after the reassignment."
+  - "Every snippet runs as a classic script (node -e), matching the trace generator and the browser sandbox. The string index write in s05 is silently ignored in sloppy mode and throws in strict mode; both are shown."
+  - "12 Predicts (the brief's upper bound), plus 6 next-frame pauses in 5 traces and 3 mid-lesson explain prompts (s10, s14, s19)."
+  - "Added after review: runnable blocks in s02 (Number vs bigint precision), s14 (rules 4, 6, 7 and 8 at work) and s16 (Object.assign writes into its target), each a real interaction that also keeps prose runs under 250 words."
+
+segments:
+  - id: s01-hook
+    goal: "Passing an object to a function, changing it, then reassigning the parameter gives a result most people do not expect"
+    terms_introduced: []
+    terms_used: []
+    words: 20-50
+    code: "function rename(user) { user.name = 'Riya'; user = { name: 'Kabir' }; } const player = { name: 'Aditya' }; rename(player); console.log(player.name);"
+    visual: null
+    interaction: { kind: predict, id: hook, answer: "Riya", options: ["Aditya -> VAL-ASSIGN-COPIES-OBJECT", "Riya (correct)", "Kabir -> VAL-PASS-BY-REFERENCE"] }
+    doubt: null
+    reveal: "Show the real output; defer the explanation to s10."
+
+  - id: s02-values
+    goal: "Everything a program works with is a value, and the spec puts every value in one of eight types: seven primitive types and Object"
+    terms_introduced: [value, primitive, object]
+    terms_used: [engine]
+    words: 130-170
+    code: "runnable: console.log of one value of each primitive type, then an object, an array and a function"
+    visual: null
+    interaction: { kind: run }
+    doubt: "Arrays and functions feel like their own types. Are they not?"
+    facts: [language-types, object-type, null-type, mdn-immutable]
+
+  - id: s03-typeof
+    goal: "typeof names a value's type as a string, with two oddities: null gives \"object\" and functions give \"function\""
+    terms_introduced: [typeof]
+    terms_used: [value, primitive, object]
+    words: 120-170
+    code: "console.log(typeof null, typeof [1, 2], typeof function () {});"
+    interaction: { kind: predict, id: typeof, answer: "object object function", options: ["object object function (correct)", "null object function -> VAL-TYPEOF-NULL", "object array function -> VAL-TYPEOF-ARRAY"] }
+    doubt: "If null is not an object, why does typeof say it is?"
+    facts: [typeof-algorithm, typeof-null-history]
+
+  - id: s04-bindings
+    goal: "A binding is a name that holds a value; let b = a gives b the value a has now, and nothing links the two names afterwards"
+    terms_introduced: [binding]
+    terms_used: [value, primitive, memory]
+    words: 130-170
+    code: examples/values-primitive-copy.js
+    visual: { component: MemoryDiagram, example: values-primitive-copy, new_parts: [global-box, binding-row, inline-primitive], pauseAt: [3] }
+    interaction: { kind: predict-next-frame, at_step: 3, question: "What changes when a = 6 runs?" }
+    doubt: "Doesn't b = a tie b to a, like a formula in a spreadsheet?"
+    teaching_model: "Abramov's 'wire' is a teaching word, not a JS term (he says so). The spec word is binding."
+    facts: [wires]
+
+  - id: s05-immutable
+    goal: "A primitive value can never be changed; code that seems to change one makes a new value and points a binding at it"
+    terms_introduced: [immutable]
+    terms_used: [primitive, binding, value]
+    words: 110-150
+    code: "runnable: word[0] = 'b' is ignored; toUpperCase returns a new string; x = x + 1 rebinding"
+    interaction: { kind: run }
+    doubt: "But count = count + 1 changes count!"
+    facts: [mdn-immutable, wires]
+
+  - id: s06-references
+    goal: "An object lives on its own and a binding holds a reference to it, so let b = a copies the reference and both names reach one object"
+    terms_introduced: [reference]
+    terms_used: [object, binding, value]
+    words: 120-170
+    code: examples/values-alias.js
+    interaction: { kind: predict, id: alias, type: text, answer: "2", wrong: ["1 -> VAL-ASSIGN-COPIES-OBJECT"] }
+    visual: { component: MemoryDiagram, example: values-alias, gate: alias, new_parts: [object-box, reference-arrow], pauseAt: [3] }
+    doubt: "So does let b = a copy the object or not?"
+    facts: [assignment, identity, reference-record]
+
+  - id: s07-identity
+    goal: "Every object has its own identity, so two objects with equal contents are still two objects, while primitives have no identity"
+    terms_introduced: [identity]
+    terms_used: [object, primitive, reference]
+    words: 120-170
+    code: "runnable: {n:1} === {n:1} false; a === c true; 'hi' === 'hi' true; Symbol('id') === Symbol('id') false"
+    interaction: { kind: run }
+    doubt: "If a and b look exactly alike, in what way are they different?"
+    java: "Like Java's == on two new objects; unlike Java, JS strings have no identity, so === compares their characters."
+    facts: [identity, java-equality]
+
+  - id: s08-mutation
+    goal: "Mutation changes an object and every binding that refers to it sees the change; reassignment moves one binding's reference and changes no object"
+    terms_introduced: [mutation]
+    terms_used: [object, binding, reference]
+    words: 120-170
+    code: "modify of s06: b = { n: 2 } instead of b.n = 2; then examples/values-reassign.js"
+    interaction: { kind: predict, id: reassign, type: text, answer: "1", wrong: ["2 -> VAL-REASSIGN-MUTATES"], role: "modify and predict again" }
+    visual: { component: MemoryDiagram, example: values-reassign, gate: reassign, pauseAt: [4] }
+    doubt: "Both lines use =. Why do they do different things?"
+    facts: [assignment]
+
+  - id: s09-const
+    goal: "const stops a binding from being reassigned; it does not stop the object it refers to from being mutated"
+    terms_introduced: []
+    terms_used: [binding, mutation, immutable, object]
+    words: 120-170
+    code: "const settings = { theme: 'light' }; settings.theme = 'dark'; try { settings = {...} } catch ...; console.log(settings.theme, result)"
+    interaction: { kind: predict, id: const, answer: "dark TypeError", options: ["dark TypeError (correct)", "light TypeError -> VAL-CONST-FREEZES", "blue ok -> VAL-CONST-OBJECT-REASSIGNABLE"] }
+    doubt: "Then what is const good for?"
+    facts: [const-binding, mdn-const, progmiscon]
+    extra: "Object.freeze makes one object immutable, and only one level deep (runnable: config.db.host still changes)."
+
+  - id: s10-passing
+    goal: "A call gives each parameter the argument's value, so for an object the function gets a copy of the reference, exactly as Java does"
+    terms_introduced: []
+    terms_used: [reference, binding, mutation, stack-frame, garbage-collection]
+    words: 150-210
+    code: examples/values-pass-object.js (the hook plus a final return user.name line), then the cart transfer snippet
+    visual: { component: MemoryDiagram, example: values-pass-object, gate: hook, new_parts: [call-box, stack-depth], pauseAt: [4, 5] }
+    interaction: { kind: predict, id: pass, answer: "[ 'bread', 'tea' ] 2", options: ["[ 'bread', 'tea' ] 2 (correct)", "[ 'bread' ] 2 -> VAL-ASSIGN-COPIES-OBJECT", "[ 'coffee', 'milk' ] 2 -> VAL-PASS-BY-REFERENCE"], role: transfer }
+    explain: { id: e1-hook, prompt: "In one or two sentences, why did player.name become Riya and not Kabir?", rubric: ["user gets a copy of the reference, so it reaches the same object", "user.name = ... mutates that shared object", "user = {...} only moves the parameter's reference"] }
+    doubt: "Isn't this pass-by-reference, then?"
+    java: "Oracle tutorial: reference parameters are passed by value. Same rule, same diagram."
+    facts: [arguments, java-pass, wires]
+
+  - id: s11-engine-detail
+    goal: "The spec never says where values are stored; \"primitives on the stack, objects on the heap\" describes some engines and the JVM, not JavaScript"
+    terms_introduced: []
+    terms_used: [primitive, object, identity, heap, engine]
+    words: 140-200
+    code: null
+    interaction: { kind: predict, id: stack-heap, answer: "spec-silent", options: ["on the stack because 5 is a primitive -> MEM-PRIMITIVES-ON-STACK", "on the heap because everything in JavaScript is an object -> VAL-EVERYTHING-IS-OBJECT", "the spec does not say; each engine chooses (correct)"] }
+    doubt: "Then why did my Java course teach stack and heap?"
+    boundary: "This is the lesson's main model boundary: the diagram is a picture of behaviour, not of memory layout."
+    facts: [no-heap-in-spec, v8-values, jvm-heap, identity]
+
+  - id: s12-strict-equality
+    goal: "=== runs IsStrictlyEqual: different types are never equal, numbers compare by value except NaN, strings by their characters, objects by identity"
+    terms_introduced: [strict-equality, nan]
+    terms_used: [identity, primitive, object]
+    words: 160-220
+    code: "const x = 0 / 0; console.log(x === x, 0 === -0, 'chess' === 'ch' + 'ess', [] === []);"
+    interaction: { kind: predict, id: strict, answer: "false true true false", options: ["false true true false (correct)", "true true true false -> NUM-NAN-SELF-EQUAL", "false true false false -> EQ-STRINGS-BY-IDENTITY", "false true true true -> VAL-EQUAL-BY-CONTENT"] }
+    doubt: "Why would a value not be equal to itself?"
+    facts: [is-strictly-equal, number-equal, same-value-non-number, nan-ieee, java-equality]
+
+  - id: s13-same-value
+    goal: "Object.is runs SameValue, which differs from === only for NaN and the two zeros; includes, Map and Set use SameValueZero"
+    terms_introduced: [same-value]
+    terms_used: [strict-equality, nan]
+    words: 120-170
+    code: "runnable: Object.is(NaN, 0/0), Object.is(0, -0), 1 / -0, [NaN].includes(NaN), [NaN].indexOf(NaN), new Set([0, -0, NaN, NaN]).size"
+    interaction: { kind: run }
+    doubt: "Why does JavaScript need two different zeros?"
+    facts: [same-value, number-type, same-value-zero-users]
+
+  - id: s14-loose-equality
+    goal: "== runs IsLooselyEqual, an ordered list of rules that either converts one side and compares again or decides directly, and uses === once the types match"
+    terms_introduced: [loose-equality, coercion]
+    terms_used: [strict-equality, nan, primitive]
+    words: 170-230
+    code: "console.log(null == undefined, null == 0, '' == 0, '0' == false);"
+    interaction: { kind: predict, id: loose, answer: "true false true true", options: ["true false true true (correct)", "true true true true -> EQ-NULL-LOOSE-ZERO", "true false true false -> EQ-BOOLEAN-TRUTHINESS"] }
+    explain: { id: e2-zero-false, prompt: "In one sentence, why is \"0\" == false true even though \"0\" is truthy?", rubric: ["the boolean side becomes a number: false becomes 0", "the string \"0\" becomes the number 0", "== never asks whether a value is truthy"] }
+    doubt: "Isn't x == false just a way to ask whether x is falsy?"
+    facts: [is-loosely-equal, to-number, same-value-zero-users]
+
+  - id: s15-to-primitive
+    goal: "When == meets an object and a string, number, bigint or symbol, ToPrimitive turns the object into a primitive; without a Symbol.toPrimitive method that means valueOf then toString, or toString first when a string is wanted"
+    terms_introduced: []
+    terms_used: [loose-equality, coercion, object, primitive]
+    words: 150-210
+    code: "price object with valueOf 100 and toString 'Rs 100'; then runnable [] == false walkthrough"
+    interaction: { kind: predict, id: to-primitive, answer: "true false Rs 100", options: ["true false Rs 100 (correct)", "false true Rs 100 -> EQ-OBJECT-TOSTRING-FIRST", "false false Rs 100 -> EQ-OBJECT-NEVER-LOOSE-EQUAL"], role: transfer }
+    doubt: "Why valueOf first?"
+    facts: [to-primitive, to-string, is-loosely-equal]
+
+  - id: s16-shallow-copy
+    goal: "Spread and Object.assign({}, source) make one new outer object and copy each own enumerable property's value, so nested objects stay shared"
+    terms_introduced: [shallow-copy]
+    terms_used: [object, reference, mutation]
+    words: 120-170
+    code: examples/values-shallow-copy.js
+    interaction: { kind: predict, id: shallow, answer: "chess 3", options: ["chess 3 (correct)", "chess 2 -> COPY-SPREAD-DEEP", "go 3 -> COPY-SPREAD-ALIAS"] }
+    visual: { component: MemoryDiagram, example: values-shallow-copy, gate: shallow, new_parts: [nested-reference], pauseAt: [4] }
+    doubt: "Is a shallow copy a copy or not?"
+    facts: [shallow-copy, object-assign]
+
+  - id: s17-deep-copy
+    goal: "A deep copy copies every nested object too; structuredClone does it, keeps cycles and shared references, but rejects functions and drops class prototypes"
+    terms_introduced: [deep-copy]
+    terms_used: [shallow-copy, reference, identity]
+    words: 150-210
+    code: "class Point; shared object used twice; structuredClone; then runnable JSON round-trip losses and DataCloneError"
+    interaction: { kind: predict, id: structured, answer: "false true false", options: ["false true false (correct)", "true true false -> COPY-CLONE-KEEPS-CLASS", "false false false -> COPY-CLONE-SPLITS-SHARED"] }
+    doubt: "Why not JSON.parse(JSON.stringify(x))?"
+    facts: [deep-copy, structured-clone]
+
+  - id: s18-misconceptions
+    goal: "The wrong models from this lesson, each with the smallest counterexample"
+    words: 150-230
+    interaction: { kind: card }
+
+  - id: s19-lab
+    goal: "Build deepEqual and deepClone, and compare deepClone with structuredClone"
+    words: 100-160
+    interaction: { kind: run }
+    lab: lab/README.md
+
+  - id: s20-in-the-wild
+    goal: "React state, Zod and a chess board show the same rules in code Aditya writes"
+    words: 150-220
+    code: "runnable: shallow board copy bug"
+    interaction: { kind: run }
+    facts: [react-object-is, zod-clone, java-equality]
+
+  - id: s21-interview
+    goal: "Three interview questions with rubrics"
+    interaction: { kind: interview }
+
+  - id: s22-explain-back
+    goal: "Explain values and references to a junior in three sentences"
+    interaction: { kind: explain }
+
+  - id: s23-cards
+    goal: "Five review cards"
+    interaction: { kind: card }

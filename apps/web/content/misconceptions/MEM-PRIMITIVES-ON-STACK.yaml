@@ -1,0 +1,11 @@
+id: MEM-PRIMITIVES-ON-STACK
+belief: It is a rule of JavaScript that primitive values live on the stack and objects live on the heap.
+predicts: The spec says a primitive in a local variable is stored on the stack.
+truth: The ECMAScript spec never says where values are stored; the word "heap" does not appear in it. Storage is an engine choice. V8 allocates JavaScript values as objects on its heap, except small integers, which it stores directly in the tagged slot.
+counterexample: 'V8 blog: "JavaScript values in V8 are represented as objects and allocated on the V8 heap." A string is a primitive, yet V8 keeps it on its heap.'
+sources:
+  - https://tc39.es/ecma262/
+  - https://v8.dev/blog/pointer-compression
+  - https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html#jvms-2.5.3
+lessons:
+  - js-values

@@ -1,0 +1,11 @@
+id: VAL-PASS-BY-REFERENCE
+belief: A parameter is another name for the caller's variable (true pass-by-reference), so assigning a new object to the parameter changes the caller's variable.
+predicts: "After `function f(p) { p = { name: 'Kabir' }; } f(player);`, player.name is 'Kabir'."
+truth: The parameter is a separate binding that starts with a copy of the caller's value. Reassigning it moves only the parameter's reference. Java behaves the same way.
+counterexample: "function f(p) { p = { n: 2 }; } const o = { n: 1 }; f(o); console.log(o.n) prints 1."
+sources:
+  - https://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html
+  - https://tc39.es/ecma262/#sec-runtime-semantics-argumentlistevaluation
+  - Common belief; not in a study-based catalog. Confirm from Aditya's answers.
+lessons:
+  - js-values
