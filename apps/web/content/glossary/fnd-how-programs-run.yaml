@@ -1,0 +1,104 @@
+program:
+  term: program
+  definition: A list of instructions that tells a computer what to do.
+  aliases: [programs]
+  introducedIn: fnd-how-programs-run
+source-code:
+  term: source code
+  definition: The text of a program as a person writes it, in a language like JavaScript, Java or C.
+  aliases: []
+  introducedIn: fnd-how-programs-run
+cpu:
+  term: CPU
+  definition: The chip that carries out a program's instructions, one after another. Short for central processing unit.
+  aliases: [processor, CPUs]
+  introducedIn: fnd-how-programs-run
+machine-code:
+  term: machine code
+  definition: Instructions written as numbers in the format one CPU family understands. It is the only form a CPU can run directly.
+  aliases: []
+  introducedIn: fnd-how-programs-run
+byte:
+  term: byte
+  definition: Eight bits, so 256 possible patterns. Read as an unsigned number, one byte holds 0 to 255.
+  aliases: [bytes]
+  introducedIn: fnd-how-programs-run
+compiler:
+  term: compiler
+  definition: A program that translates code into another form, such as machine code or bytecode, before that code runs.
+  aliases: [compilers]
+  introducedIn: fnd-how-programs-run
+memory:
+  term: memory
+  definition: "The computer's working storage (RAM): a long row of bytes the CPU can read and write while programs run."
+  aliases: [RAM]
+  introducedIn: fnd-how-programs-run
+address:
+  term: address
+  definition: The number that names one byte's position in memory.
+  aliases: [addresses]
+  introducedIn: fnd-how-programs-run
+operating-system:
+  term: operating system
+  definition: The program that starts other programs, shares the CPU and memory between them and keeps them apart. Linux, Windows and macOS are examples.
+  aliases: [OS]
+  introducedIn: fnd-how-programs-run
+process:
+  term: process
+  definition: A running program as the operating system sees it, with its own private range of memory addresses.
+  aliases: [processes]
+  introducedIn: fnd-how-programs-run
+thread:
+  term: thread
+  definition: One path of execution inside a process. Threads of one process share its memory, but each has its own stack.
+  aliases: [threads]
+  introducedIn: fnd-how-programs-run
+interpreter:
+  term: interpreter
+  definition: A program that reads code and carries it out step by step itself, instead of turning it into machine code first.
+  aliases: [interpreters]
+  introducedIn: fnd-how-programs-run
+bytecode:
+  term: bytecode
+  definition: Compact instructions made for an interpreter, not for a CPU. Java and V8 each have their own bytecode.
+  aliases: []
+  introducedIn: fnd-how-programs-run
+engine:
+  term: engine
+  definition: The program that implements the JavaScript language. It parses source code, runs it and manages its memory. V8, used by Chrome and Node, is one.
+  aliases: [JavaScript engine, engines]
+  spec: implementation (informal use)
+  introducedIn: fnd-how-programs-run
+runtime:
+  term: runtime
+  definition: The software that embeds an engine and adds ways to reach the outside world, such as the page, files and the network. Browsers and Node are runtimes. The spec calls this the host.
+  aliases: [host, host environment, runtimes]
+  spec: host, host environment
+  introducedIn: fnd-how-programs-run
+jit:
+  term: JIT
+  definition: Just-in-time compilation. Compiling code to machine code while the program is already running, usually only the parts that run often.
+  aliases: [just-in-time]
+  introducedIn: fnd-how-programs-run
+call-stack:
+  term: call stack
+  definition: The list of function calls that have started but not finished, newest on top.
+  aliases: []
+  spec: execution context stack
+  introducedIn: fnd-how-programs-run
+stack-frame:
+  term: stack frame
+  definition: One entry on the call stack. It stands for one call that has not finished, with its own variables and its place in the code.
+  aliases: [stack frames]
+  spec: execution context
+  introducedIn: fnd-how-programs-run
+heap:
+  term: heap
+  definition: The region of memory for data whose lifetime is not tied to one function call, such as objects. It is an engine word, not a spec term.
+  aliases: []
+  introducedIn: fnd-how-programs-run
+garbage-collection:
+  term: garbage collection
+  definition: The engine's automatic work of finding memory that nothing can reach any more and reusing it. Lesson 1.9 covers it in depth.
+  aliases: [garbage collector]
+  introducedIn: fnd-how-programs-run
