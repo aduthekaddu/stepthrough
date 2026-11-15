@@ -1,0 +1,5 @@
+binding:
+  term: binding
+  definition: A name paired with the value it points at.
+  aliases: [bindings]
+  introducedIn: js-good

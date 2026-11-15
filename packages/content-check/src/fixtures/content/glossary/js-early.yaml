@@ -1,0 +1,4 @@
+heap:
+  term: heap
+  definition: The memory region where objects live.
+  introducedIn: js-early
