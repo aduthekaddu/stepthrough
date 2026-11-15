@@ -6,7 +6,7 @@ export type { ConsoleLine, RunResult } from './protocol.ts';
 export const DEFAULT_LIMIT_MS = 2000;
 
 /**
- * Runs a snippet as an ES module in a fresh Worker. The worker is always terminated:
+ * Runs a snippet as a classic script in a fresh Worker. The worker is always terminated:
  * on completion, on an uncaught error, or when the time limit passes (an infinite loop
  * cannot be interrupted any other way).
  */

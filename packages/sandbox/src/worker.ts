@@ -75,15 +75,17 @@ const timerApi = {
 };
 Object.assign(self, timerApi);
 
-self.onmessage = async (event: MessageEvent<RunRequest>) => {
-  const url = URL.createObjectURL(new Blob([event.data.code], { type: 'text/javascript' }));
+// Snippets run as a classic script (indirect eval): sloppy mode, top-level var and
+// function declarations become global properties. This matches how content-check runs
+// them in Node (`node -e`) and how the trace generator evaluates them.
+const evaluateScript = eval;
+
+self.onmessage = (event: MessageEvent<RunRequest>) => {
   try {
-    await import(/* webpackIgnore: true */ /* turbopackIgnore: true */ url);
+    evaluateScript(event.data.code);
     evaluated = true;
     checkDone();
   } catch (error) {
     fail(error);
-  } finally {
-    URL.revokeObjectURL(url);
   }
 };
