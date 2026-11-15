@@ -152,7 +152,7 @@
         {
           "id": "env1",
           "kind": "block",
-          "label": "block",
+          "label": "head of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -216,9 +216,9 @@
           ]
         },
         {
-          "id": "env3",
+          "id": "env2",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 1 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -245,6 +245,103 @@
     },
     {
       "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "block",
+          "label": "iteration 1 of the loop at line 2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "iteration 2 of the loop at line 2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env2"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 6,
       "kind": "statement",
       "span": {
         "startLine": 3,
@@ -284,9 +381,9 @@
           ]
         },
         {
-          "id": "env3",
+          "id": "env2",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 1 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -301,106 +398,9 @@
           ]
         },
         {
-          "id": "env5",
-          "kind": "block",
-          "label": "block",
-          "parentId": "env0",
-          "bindings": [
-            {
-              "name": "i",
-              "decl": "let",
-              "state": {
-                "kind": "primitive",
-                "type": "number",
-                "text": "1"
-              }
-            }
-          ]
-        }
-      ],
-      "heap": [
-        {
-          "id": "obj0",
-          "kind": "array",
-          "items": [
-            {
-              "kind": "ref",
-              "heapId": "obj1"
-            }
-          ]
-        },
-        {
-          "id": "obj1",
-          "kind": "function",
-          "name": "(anonymous)",
-          "arrow": true,
-          "envId": "env3"
-        }
-      ],
-      "console": [],
-      "narration": null
-    },
-    {
-      "step": 6,
-      "kind": "statement",
-      "span": {
-        "startLine": 3,
-        "startCol": 3,
-        "endLine": 3,
-        "endCol": 20
-      },
-      "stack": [
-        {
-          "callId": "call0",
-          "fn": "(script)",
-          "envId": "env6"
-        }
-      ],
-      "envs": [
-        {
-          "id": "env0",
-          "kind": "global",
-          "label": "Global",
-          "parentId": null,
-          "bindings": [
-            {
-              "name": "fns",
-              "decl": "const",
-              "state": {
-                "kind": "ref",
-                "heapId": "obj0"
-              }
-            },
-            {
-              "name": "first",
-              "decl": "const",
-              "state": {
-                "kind": "uninitialized"
-              }
-            }
-          ]
-        },
-        {
           "id": "env3",
           "kind": "block",
-          "label": "block",
-          "parentId": "env0",
-          "bindings": [
-            {
-              "name": "i",
-              "decl": "let",
-              "state": {
-                "kind": "primitive",
-                "type": "number",
-                "text": "0"
-              }
-            }
-          ]
-        },
-        {
-          "id": "env5",
-          "kind": "block",
-          "label": "block",
+          "label": "iteration 2 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -415,9 +415,9 @@
           ]
         },
         {
-          "id": "env7",
+          "id": "env4",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 3 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -452,14 +452,14 @@
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env3"
+          "envId": "env2"
         },
         {
           "id": "obj2",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env5"
+          "envId": "env3"
         }
       ],
       "console": [],
@@ -506,9 +506,9 @@
           ]
         },
         {
-          "id": "env3",
+          "id": "env2",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 1 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -523,9 +523,9 @@
           ]
         },
         {
-          "id": "env5",
+          "id": "env3",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 2 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -540,9 +540,9 @@
           ]
         },
         {
-          "id": "env7",
+          "id": "env4",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 3 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -581,21 +581,21 @@
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env3"
+          "envId": "env2"
         },
         {
           "id": "obj2",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env5"
+          "envId": "env3"
         },
         {
           "id": "obj3",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env7"
+          "envId": "env4"
         }
       ],
       "console": [],
@@ -619,7 +619,7 @@
         {
           "callId": "call1",
           "fn": "(anonymous)",
-          "envId": "env8"
+          "envId": "env5"
         }
       ],
       "envs": [
@@ -647,9 +647,9 @@
           ]
         },
         {
-          "id": "env3",
+          "id": "env2",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 1 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -664,9 +664,9 @@
           ]
         },
         {
-          "id": "env5",
+          "id": "env3",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 2 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -681,9 +681,9 @@
           ]
         },
         {
-          "id": "env7",
+          "id": "env4",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 3 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -698,10 +698,10 @@
           ]
         },
         {
-          "id": "env8",
+          "id": "env5",
           "kind": "function",
           "label": "(anonymous)() call",
-          "parentId": "env3",
+          "parentId": "env2",
           "bindings": []
         }
       ],
@@ -729,21 +729,21 @@
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env3"
+          "envId": "env2"
         },
         {
           "id": "obj2",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env5"
+          "envId": "env3"
         },
         {
           "id": "obj3",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env7"
+          "envId": "env4"
         }
       ],
       "console": [],
@@ -762,7 +762,7 @@
         {
           "callId": "call1",
           "fn": "(anonymous)",
-          "envId": "env8"
+          "envId": "env5"
         }
       ],
       "envs": [
@@ -790,9 +790,9 @@
           ]
         },
         {
-          "id": "env3",
+          "id": "env2",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 1 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -807,9 +807,9 @@
           ]
         },
         {
-          "id": "env5",
+          "id": "env3",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 2 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -824,9 +824,9 @@
           ]
         },
         {
-          "id": "env7",
+          "id": "env4",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 3 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -841,10 +841,10 @@
           ]
         },
         {
-          "id": "env8",
+          "id": "env5",
           "kind": "function",
           "label": "(anonymous)() call",
-          "parentId": "env3",
+          "parentId": "env2",
           "bindings": []
         }
       ],
@@ -872,21 +872,21 @@
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env3"
+          "envId": "env2"
         },
         {
           "id": "obj2",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env5"
+          "envId": "env3"
         },
         {
           "id": "obj3",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env7"
+          "envId": "env4"
         }
       ],
       "console": [],
@@ -924,9 +924,9 @@
           ]
         },
         {
-          "id": "env3",
+          "id": "env2",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 1 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -941,9 +941,9 @@
           ]
         },
         {
-          "id": "env5",
+          "id": "env3",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 2 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -958,9 +958,9 @@
           ]
         },
         {
-          "id": "env7",
+          "id": "env4",
           "kind": "block",
-          "label": "block",
+          "label": "iteration 3 of the loop at line 2",
           "parentId": "env0",
           "bindings": [
             {
@@ -999,21 +999,21 @@
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env3"
+          "envId": "env2"
         },
         {
           "id": "obj2",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env5"
+          "envId": "env3"
         },
         {
           "id": "obj3",
           "kind": "function",
           "name": "(anonymous)",
           "arrow": true,
-          "envId": "env7"
+          "envId": "env4"
         }
       ],
       "console": [],

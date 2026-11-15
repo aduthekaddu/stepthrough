@@ -311,6 +311,35 @@ export function generateTrace(options: GenerateOptions): Trace {
     return kinds;
   };
 
+  /** `for (let ...)` loops seen so far: the record around the loop and the loop's names. */
+  const loops: { outer: EnvironmentRecord; names: string[]; line: number }[] = [];
+  const blockLabels = new Map<EnvironmentRecord, string>();
+  const blockLabel = (env: EnvironmentRecord, bindings: Binding[]): string => {
+    const known = blockLabels.get(env);
+    if (known) return known;
+    let label = 'block';
+    const names = bindings.map((b) => b.name).sort();
+    const loop = loops.find(
+      (l) => l.outer === shownEnv(env.OuterEnv) && l.names.join() === names.join(),
+    );
+    if (loop) {
+      // The first such record holds the loop's own declaration; each iteration then gets
+      // a fresh copy (CreatePerIterationEnvironment).
+      const suffix = `loop at line ${loop.line}`;
+      const n = [...blockLabels.values()].filter((x) => x.endsWith(suffix)).length;
+      label = n === 0 ? `head of the ${suffix}` : `iteration ${n} of the ${suffix}`;
+    } else if (env instanceof DeclarativeEnvironmentRecord && env.bindings.size === 1) {
+      // A named function expression gets a record holding only its own name.
+      const [name, b] = [...env.bindings][0] ?? [];
+      const fn = b?.value as EngineObject | undefined;
+      if (name && fn instanceof ObjectValue && isFunctionObject(fn) && fn.Environment === env) {
+        label = `${name}'s own name`;
+      }
+    }
+    blockLabels.set(env, label);
+    return label;
+  };
+
   function snapshot(kind: FrameKind, node: ParseNode | null) {
     if (frames.length >= maxFrames) {
       throw new Error(`${id}: more than ${maxFrames} frames; is there an endless loop?`);
@@ -392,17 +421,10 @@ export function generateTrace(options: GenerateOptions): Trace {
           ? 'function'
           : 'block';
 
-    const stack: StackFrame[] = [];
-    for (const ctx of surroundingAgent.executionContextStack) {
-      if (ctx.Function instanceof ObjectValue && !isECMAScriptFunctionObject(ctx.Function))
-        continue;
-      const shown = shownEnv(ctx.LexicalEnvironment);
-      if (!shown) continue;
-      const callId = idFor(callIds, ctx, 'call');
-      const fn = ctx.Function instanceof ObjectValue ? functionName(ctx.Function) : '(script)';
-      stack.push({ callId, fn, envId: idFor(envIds, shown, 'env') });
-      visit(ctx.LexicalEnvironment);
-    }
+    const userContexts = [...surroundingAgent.executionContextStack].filter(
+      (ctx) => !(ctx.Function instanceof ObjectValue && !isECMAScriptFunctionObject(ctx.Function)),
+    );
+    for (const ctx of userContexts) visit(ctx.LexicalEnvironment);
     // The global record stays visible after the script ends, so the final values show.
     if (globalEnv) visit(globalEnv);
 
@@ -427,7 +449,7 @@ export function generateTrace(options: GenerateOptions): Trace {
               ? 'Global'
               : env instanceof FunctionEnvironmentRecord
                 ? labelFor(env)
-                : 'block',
+                : blockLabel(env, bindings),
           parentId: parent ? idFor(envIds, parent, 'env') : null,
           bindings,
         });
@@ -469,6 +491,15 @@ export function generateTrace(options: GenerateOptions): Trace {
       heap.push({ id: oid, kind: 'object', className: classNameOf(obj), props });
     }
 
+    // Resolved after the walk, which may fold empty block records the stack points at.
+    const stack: StackFrame[] = [];
+    for (const ctx of userContexts) {
+      const shown = shownEnv(ctx.LexicalEnvironment);
+      if (!shown) continue;
+      const fn = ctx.Function instanceof ObjectValue ? functionName(ctx.Function) : '(script)';
+      stack.push({ callId: idFor(callIds, ctx, 'call'), fn, envId: idFor(envIds, shown, 'env') });
+    }
+
     const order = (x: string) => Number(x.replace(/^\D+/, ''));
     envs.sort((a, b) => order(a.id) - order(b.id));
     heap.sort((a, b) => order(a.id) - order(b.id));
@@ -491,6 +522,16 @@ export function generateTrace(options: GenerateOptions): Trace {
         throw new Error(`${id}: evaluated more than ${maxNodes} nodes; is there an endless loop?`);
       }
       const ctx = surroundingAgent.runningExecutionContext;
+      if (node.type === 'ForStatement') {
+        const init = (node as unknown as { LexicalDeclaration?: ParseNode }).LexicalDeclaration;
+        if (init) {
+          loops.push({
+            outer: shownEnv(ctx.LexicalEnvironment) ?? ctx.LexicalEnvironment,
+            names: BoundNames(init).sort(),
+            line: spanOf(node)?.startLine ?? 0,
+          });
+        }
+      }
       if (noteContext(ctx) && ctx.Function instanceof ObjectValue) snapshot('enter', node);
       else if (STATEMENT_NODES.has(node.type)) snapshot('statement', node);
       else if (granularity === 'expression' && EXPRESSION_NODES.has(node.type)) {

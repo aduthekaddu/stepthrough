@@ -210,3 +210,32 @@ describe('errors', () => {
     );
   });
 });
+
+describe('labels and stack links', () => {
+  it('names the loop head record and each iteration record of a let loop', () => {
+    const t = trace('const fns = [];\nfor (let i = 0; i < 2; i++) {\n  fns.push(() => i);\n}');
+    const labels = new Set(t.frames.flatMap((f) => f.envs.map((e) => e.label)));
+    expect(labels).toContain('head of the loop at line 2');
+    expect(labels).toContain('iteration 1 of the loop at line 2');
+    expect(labels).toContain('iteration 2 of the loop at line 2');
+  });
+  it("names a named function expression's own-name record", () => {
+    const t = trace(
+      'const f = function fact(n) {\n  return n <= 1 ? 1 : n * fact(n - 1);\n};\nf(2);',
+    );
+    expect(t.frames.some((f) => f.envs.some((e) => e.label === "fact's own name"))).toBe(true);
+  });
+  it('every stack frame points at a record shown in the same frame', () => {
+    const sources = [
+      'const fns = [];\nfor (let i = 0; i < 2; i++) {\n  fns.push(() => i);\n}',
+      'function f() {\n  {\n    let x = 1;\n  }\n  return 2;\n}\nf();',
+    ];
+    for (const source of sources) {
+      for (const frame of trace(source).frames) {
+        const ids = new Set(frame.envs.map((e) => e.id));
+        for (const s of frame.stack)
+          expect(ids.has(s.envId), `step ${frame.step} ${s.fn}`).toBe(true);
+      }
+    }
+  });
+});
