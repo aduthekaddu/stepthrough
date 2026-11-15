@@ -4,9 +4,9 @@ steps:
   - at: { mark: first, kind: statement }
     say: "Before line 1: declared already holds a function, expressed holds undefined, and arrow is in its TDZ."
     expect:
-      - { record: Global, binding: declared, decl: function, fn: declared }
-      - { record: Global, binding: expressed, decl: var, value: "undefined" }
-      - { record: Global, binding: arrow, decl: const, state: uninitialized }
+      - { record: Global, binding: declared, value: "function declared" }
+      - { record: Global, binding: expressed, value: "undefined" }
+      - { record: Global, binding: arrow, value: "uninitialized" }
   - at: { mark: expressed, kind: statement }
     say: "Line 1 printed function. Line 2 got no step: a function declaration does nothing when execution reaches it."
     expect:
@@ -15,13 +15,9 @@ steps:
   - at: { mark: arrow, kind: statement }
     say: "Line 3 ran. The function expression was evaluated just now, and only now does expressed hold a function."
     expect:
-      - { record: Global, binding: expressed, fn: expressed }
-      - { record: Global, binding: arrow, state: uninitialized }
+      - { record: Global, binding: expressed, value: "function expressed" }
+      - { record: Global, binding: arrow, value: "uninitialized" }
   - at: { mark: last, kind: statement }
-    say: "Line 4 created the arrow function and ended arrow's TDZ."
+    say: "Line 4 created the arrow function and ended arrow's TDZ. All three names now hold functions."
     expect:
-      - { record: Global, binding: arrow, fn: arrow }
-  - at: { kind: end }
-    say: "By the last line all three names hold functions."
-    expect:
-      - { console: ["function", "function function"] }
+      - { record: Global, binding: arrow, value: "function arrow" }

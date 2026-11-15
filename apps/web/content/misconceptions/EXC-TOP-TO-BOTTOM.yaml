@@ -1,7 +1,7 @@
-id: EC-TOP-TO-BOTTOM
+id: EXC-TOP-TO-BOTTOM
 belief: The engine runs a script strictly line by line, and a name does not exist until the line that declares it has run.
 predicts: 'Any use of a name above its declaring line throws "ReferenceError: x is not defined", even for function declarations and for var.'
-truth: Before the first statement runs, declaration instantiation creates a binding for every declaration in the script or function body, including ones inside code that never runs.
+truth: Before the first statement runs, declaration instantiation creates a binding for every declaration that belongs to the script or function body, including a function declaration after a return and a var inside an if that never runs.
 counterexample: console.log(double(4)); function double(n) { return n * 2; } prints 8, and console.log(x); var x = 1; prints undefined, not a ReferenceError.
 sources:
   - https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation

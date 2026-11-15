@@ -1,4 +1,4 @@
-id: LOOKUP-MISSING-IS-UNDEFINED
+id: EXC-LOOKUP-MISSING-IS-UNDEFINED
 belief: Reading a name that was never declared gives undefined.
 predicts: console.log(missing); prints undefined.
 truth: If no record on the chain has the name, the reference cannot be resolved and reading it throws a ReferenceError. Only typeof and assignment in non-strict code treat a missing name differently.

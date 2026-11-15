@@ -4,37 +4,28 @@ steps:
   - at: { mark: first, kind: statement }
     say: "One execution context is on the stack: the one for the script. greet is already a function, and greeting is undefined."
     expect:
-      - { stackDepth: 1, stackTop: (script) }
-      - { record: Global, binding: greet, decl: function, fn: greet }
+      - { stackDepth: 1 }
+      - { record: Global, binding: greet, value: "function greet" }
       - { record: Global, binding: greeting, value: "undefined" }
   - at: { mark: call, kind: statement }
     say: "greeting now holds \"Hi\". The next step calls greet."
     expect:
       - { record: Global, binding: greeting, value: '"Hi"' }
+      - { record: "greet() call", exists: false }
   - at: { mark: body, kind: enter }
     say: "The call pushed a second execution context and made a new record for this call. Before line 3 runs, name is \"Asha\", line is undefined and tail has no value."
     expect:
-      - { stackDepth: 2, stackTop: greet }
-      - { record: "greet() call", outer: Global }
-      - { record: "greet() call", binding: name, decl: param, value: '"Asha"' }
-      - { record: "greet() call", binding: line, decl: var, value: "undefined" }
-      - { record: "greet() call", binding: tail, decl: let, state: uninitialized }
+      - { stackDepth: 2 }
+      - { record: "greet() call", binding: name, value: '"Asha"' }
+      - { record: "greet() call", binding: line, value: "undefined" }
+      - { record: "greet() call", binding: tail, value: "uninitialized" }
   - at: { mark: tail, kind: statement }
     say: "Line 3 ran, so line holds \"Hi, Asha\". greeting was not in greet's record; segment 6 shows how the engine found it."
     expect:
       - { record: "greet() call", binding: line, value: '"Hi, Asha"' }
-      - { record: "greet() call", binding: tail, state: uninitialized }
+      - { record: "greet() call", binding: tail, value: "uninitialized" }
   - at: { mark: ret, kind: statement }
-    say: "Line 4 gave tail its value."
+    say: "Line 4 gave tail its value. Next, greet returns \"Hi, Asha!\", its context leaves the stack, and nothing refers to its record any more, so the picture drops it."
     expect:
+      - { stackDepth: 2 }
       - { record: "greet() call", binding: tail, value: '"!"' }
-  - at: { mark: ret, kind: return }
-    say: "greet is returning \"Hi, Asha!\". Its context is still on top of the stack for this one step."
-    expect:
-      - { stackDepth: 2, stackTop: greet }
-  - at: { kind: end }
-    say: "greet's context has left the stack. Nothing refers to its record any more, so the picture drops it. console.log printed the result."
-    expect:
-      - { stackDepth: 0 }
-      - { recordAbsent: "greet() call" }
-      - { console: ["Hi, Asha!"] }

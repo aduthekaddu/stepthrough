@@ -1,4 +1,4 @@
-id: EC-LOCALS-PERSIST
+id: EXC-LOCALS-PERSIST
 belief: A function has one set of local variables, created once, which every call (including recursive calls) shares.
 predicts: A recursive call overwrites the caller's locals, so every call logs the value set by the deepest call.
 truth: Every call creates a new execution context and a new function environment record (PrepareForOrdinaryCall, NewFunctionEnvironment), so each call has its own bindings.

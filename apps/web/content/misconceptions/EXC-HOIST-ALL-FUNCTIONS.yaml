@@ -1,4 +1,4 @@
-id: HOIST-ALL-FUNCTIONS
+id: EXC-HOIST-ALL-FUNCTIONS
 belief: Every way of writing a function can be called before its line, like a function declaration.
 predicts: run(); var run = function () {}; works, and add(); const add = () => {}; works.
 truth: Only function declarations get their function object during declaration instantiation. A function expression or arrow function is a value that is created when its line runs; until then the name follows the rules of its var, let or const.

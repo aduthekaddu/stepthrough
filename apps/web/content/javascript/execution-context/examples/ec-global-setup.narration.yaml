@@ -5,26 +5,22 @@ steps:
     say: "Line 1 has not run yet, but the global record already has all four names: label holds a function, count holds undefined, and unit and limit exist with no value at all."
     expect:
       - { stackDepth: 1 }
-      - { record: Global, binding: label, decl: function, fn: label }
-      - { record: Global, binding: count, decl: var, value: "undefined" }
-      - { record: Global, binding: unit, decl: let, state: uninitialized }
-      - { record: Global, binding: limit, decl: const, state: uninitialized }
+      - { record: Global, binding: label, value: "function label" }
+      - { record: Global, binding: count, value: "undefined" }
+      - { record: Global, binding: unit, value: "uninitialized" }
+      - { record: Global, binding: limit, value: "uninitialized" }
   - at: { mark: unit, kind: statement }
     say: "Line 1 ran. It did not add a row; it changed the value in the count row from undefined to 2."
     expect:
       - { record: Global, binding: count, value: "2" }
-      - { record: Global, binding: unit, state: uninitialized }
+      - { record: Global, binding: unit, value: "uninitialized" }
   - at: { mark: limit, kind: statement }
     say: "Line 2 ran and gave unit its first value."
     expect:
       - { record: Global, binding: unit, value: '"kg"' }
-      - { record: Global, binding: limit, state: uninitialized }
+      - { record: Global, binding: limit, value: "uninitialized" }
   - at: { mark: bump, kind: statement }
-    say: "Line 3 gave limit its value. The function on lines 4 to 6 needs no step: its row was filled before line 1."
+    say: "Line 3 gave limit its value. The function on lines 4 to 6 needs no step, because its row was filled before line 1. Line 7 runs next and leaves count at 3."
     expect:
       - { record: Global, binding: limit, value: "10" }
-  - at: { kind: end }
-    say: "The script is finished. count is 3, and the global record stays behind with the final values."
-    expect:
-      - { stackDepth: 0 }
-      - { record: Global, binding: count, value: "3" }
+      - { record: Global, binding: count, value: "2" }

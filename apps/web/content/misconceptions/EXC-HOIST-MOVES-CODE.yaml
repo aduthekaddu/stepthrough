@@ -1,4 +1,4 @@
-id: HOIST-MOVES-CODE
+id: EXC-HOIST-MOVES-CODE
 belief: Hoisting moves declarations, together with their "= value" part, to the top of the code before it runs.
 predicts: Reading a var before its line gives the assigned value (console.log(x); var x = 5; prints 5).
 truth: No code moves. Declaration instantiation creates the binding and sets it to undefined; the "= value" part is an ordinary assignment that runs when execution reaches that line.

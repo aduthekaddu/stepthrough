@@ -1,4 +1,4 @@
-id: TYPEOF-UNDECLARED-THROWS
+id: EXC-TYPEOF-UNDECLARED-THROWS
 belief: typeof on a name that was never declared throws a ReferenceError, like a normal read.
 predicts: "console.log(typeof ghost); throws ReferenceError: ghost is not defined."
 truth: When a name is not found on the whole chain of records, typeof returns "undefined" instead of throwing. A plain read of the same name throws.

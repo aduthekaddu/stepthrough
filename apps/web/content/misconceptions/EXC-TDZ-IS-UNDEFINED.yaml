@@ -1,4 +1,4 @@
-id: TDZ-IS-UNDEFINED
+id: EXC-TDZ-IS-UNDEFINED
 belief: Reading a let or const above its line gives undefined, the same as var.
 predicts: console.log(total); let total = 200; prints undefined.
 truth: let and const bindings are created uninitialized. Reading an uninitialized binding throws a ReferenceError until the declaration line runs.

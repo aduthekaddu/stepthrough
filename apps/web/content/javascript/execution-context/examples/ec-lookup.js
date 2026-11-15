@@ -1,6 +1,6 @@
 var site = "stepthrough"; // @mark first
 function page(slug) {
-  function full() {
+  function full() { // @mark page-enter
     return site + "/" + slug; // @mark lookup
   }
   return full(); // @mark inner

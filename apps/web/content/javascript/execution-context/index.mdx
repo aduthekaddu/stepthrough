@@ -31,10 +31,10 @@ console.log(total);
 let total = 200;`}
   answer="b"
   options={[
-    { id: "a", text: "100\n200", misconception: "HOIST-MOVES-CODE", feedback: "You pictured each whole line, value included, moving to the top. Only the names are set up early. The = 100 part runs on line 2, after line 1 has already printed. Segment 9 replays this program step by step." },
+    { id: "a", text: "100\n200", misconception: "EXC-HOIST-MOVES-CODE", feedback: "You pictured each whole line, value included, moving to the top. Only the names are set up early. The = 100 part runs on line 2, after line 1 has already printed. Segment 9 replays this program step by step." },
     { id: "b", text: "undefined\nReferenceError: Cannot access 'total' before initialization", feedback: "Right. price already existed and held undefined. total also existed, but it had no value at all, and reading it threw. Segments 9 and 10 explain both." },
-    { id: "c", text: "ReferenceError: price is not defined", misconception: "EC-TOP-TO-BOTTOM", feedback: "You expected price to be unknown until line 2 runs. But price already exists when line 1 runs, and it holds undefined. Segment 2 shows the setup step that creates it." },
-    { id: "d", text: "undefined\nundefined", misconception: "TDZ-IS-UNDEFINED", feedback: "You treated let like var. A let name also exists before its line, but with no value at all, and reading it throws. Segment 10 explains this state." }
+    { id: "c", text: "ReferenceError: price is not defined", misconception: "EXC-TOP-TO-BOTTOM", feedback: "You expected price to be unknown until line 2 runs. But price already exists when line 1 runs, and it holds undefined. Segment 2 shows the setup step that creates it." },
+    { id: "d", text: "undefined\nundefined", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "You treated let like var. A let name also exists before its line, but with no value at all, and reading it throws. Segment 10 explains this state." }
   ]}
   explain="Before line 1 runs, both price and total already exist. price starts as undefined. total starts with no value, and reading a name with no value throws."
 />
@@ -61,15 +61,15 @@ function double(n) {
   answer="a"
   options={[
     { id: "a", text: "8", feedback: "Right. The function already existed when line 1 ran, so the call worked." },
-    { id: "b", text: "ReferenceError: double is not defined", misconception: "EC-TOP-TO-BOTTOM", feedback: "You read the script as running strictly top to bottom, with double unknown until line 2. The engine had already created double before line 1 ran. This segment explains how." },
-    { id: "c", text: "TypeError: double is not a function", misconception: "HOIST-FN-AS-VAR", feedback: "You expected double to exist but hold undefined, the way a var does. A function declaration starts with its function already in place. Segment 8 lists the starting state of each kind." }
+    { id: "b", text: "ReferenceError: double is not defined", misconception: "EXC-TOP-TO-BOTTOM", feedback: "You read the script as running strictly top to bottom, with double unknown until line 2. The engine had already created double before line 1 ran. This segment explains how." },
+    { id: "c", text: "TypeError: double is not a function", misconception: "EXC-HOIST-FN-AS-VAR", feedback: "You expected double to exist but hold undefined, the way a var does. A function declaration starts with its function already in place. Segment 8 lists the starting state of each kind." }
   ]}
   explain="Before any line runs, the engine creates a binding for every declaration. A function declaration's binding already holds the function."
 />
 
-The call printed `8`. So the engine (the program that runs JavaScript, such as V8 inside Node and Chrome) does not start by running line 1. First it reads the whole script and finds every piece of code that creates a name. Such a piece of code is called a <Term id="declaration">declaration</Term>. The kinds are `var`, `let`, `const`, `function` and `class` declarations, and the parameters of a function.
+The call printed `8`. So the engine (the program that runs JavaScript, such as V8 inside Node and Chrome) does not start by running line 1. First it reads the whole script and finds the pieces of code that create names in it. Such a piece of code is called a <Term id="declaration">declaration</Term>. The kinds are `var`, `let`, `const`, `function` and `class` declarations, and the parameters of a function.
 
-For each declaration, the engine creates a binding (from lesson 1.1: a name paired with a value) before any line runs. Running code is therefore two steps: first set up all the names, then run the lines in order.
+For each declaration that belongs to the script itself, the engine creates a binding (from lesson 1.1: a name paired with a value) before any line runs. Code inside `{ }` blocks has a few extra rules, which lesson 1.3 covers. Running code is therefore two steps: first set up all the names, then run the lines in order.
 
 For a `function` declaration, the binding already holds the function at the end of the first step. That is why line 1 could call it. You can check this without calling it:
 
@@ -88,9 +88,9 @@ The engine keeps bindings in tables. Each table connects names to their current 
 
 Read the picture before you step through it. The box is one environment record, and each row is one binding. The label at the start of a row is the kind of declaration that made it: `var`, `let`, `const`, `function` or `param`. Next comes the name, then the current value. A row can also say that it has no value yet. That means the binding exists but has not been given any value; the spec word is "uninitialized".
 
-Look at the first step before you press next. All four rows exist before line 1 has run, in three different states.
+The picture hides built-in names such as `console`. Look at the first step before you press next. All four rows exist before line 1 has run, in three different states.
 
-<Viz example="global-setup" view="scope" gate="call-early" pauseAt={[1]} title="The global record before and during the run" />
+<Viz example="ec-global-setup" view="scope" gate="call-early" pauseAt={[1]} title="The global record before and during the run" />
 
 Watch what each step changed. Running a line changed the value in a row that already existed. It never added a row.
 
@@ -117,19 +117,19 @@ console.log("script");`}
   answer="a"
   options={[
     { id: "a", text: "inner\nouter\nscript", feedback: "Right. outer paused at the call, inner ran to the end, and then outer carried on from where it stopped." },
-    { id: "b", text: "outer\ninner\nscript", misconception: "EC-CALL-NO-WAIT", feedback: "You let outer finish its own lines before inner ran. A call pauses the caller. outer cannot reach its next line until inner has returned." },
-    { id: "c", text: "outer\nscript\ninner", misconception: "EC-CALL-NO-WAIT", feedback: "You treated the call as something started now and finished later. This call runs inner completely, right away, while outer and the script wait." }
+    { id: "b", text: "outer\ninner\nscript", misconception: "EXC-CALL-NO-WAIT", feedback: "You let outer finish its own lines before inner ran. A call pauses the caller. outer cannot reach its next line until inner has returned." },
+    { id: "c", text: "outer\nscript\ninner", misconception: "EXC-CALL-NO-WAIT", feedback: "You treated the call as something started now and finished later. This call runs inner completely, right away, while outer and the script wait." }
   ]}
   explain="A call pauses the caller, runs the called function to its end, and then resumes the caller exactly where it stopped."
 />
 
-So calling a function is a jump with a promise to come back. The engine must remember where the caller stopped, run the function, and then return to that exact place. The function also needs its own names.
+So calling a function is a jump with a promise to come back. The engine must remember where the caller stopped, run the function, and then return to that exact place. The function also needs its own names. (This holds for ordinary functions like these. Async functions and generators can pause in the middle; later lessons cover them.)
 
-For each piece of code that is running, the engine keeps a small record: which function it is (or none, for the script itself), how far it has got, and which environment records it uses to find names. This is called an <Term id="execution-context">execution context</Term>. The spec names its main parts `Function`, `LexicalEnvironment` (where name lookups start) and `VariableEnvironment` (where `var` bindings go). The sidenote below has the full list.
+For each piece of code that is running, the engine keeps a small record: which function it is (or none, for the script itself), how far it has got, and which environment records it uses to find names. This is called an <Term id="execution-context">execution context</Term>. The spec names its main parts `Function`, `LexicalEnvironment` (where name lookups start) and `VariableEnvironment` (where `var` bindings go). The sidenote below lists the others.
 
 Running a script creates the first execution context. Calling a function creates a new execution context and also a brand new environment record for that one call. This record is a <Term id="function-environment">function environment record</Term>. It holds the call's parameters and the names declared at the top level of the function body. The new context goes on top of the stack. Step through and watch the second context appear.
 
-<Viz example="first-call" view="scope" pauseAt={[2]} title="Calling greet" />
+<Viz example="ec-first-call" view="scope" pauseAt={[2]} title="Calling greet" />
 
 The stack of execution contexts is the call stack from lesson 0.1 (the list of function calls that have started and not finished, newest on top). The spec calls it the execution context stack. The running context is always the one on top.
 
@@ -137,11 +137,11 @@ Is an execution context the same as a stack frame from lesson 0.1? A stack frame
 
 When `greet` returned, its context left the stack, and nothing referred to its record any more. Lesson 1.3 shows when a record lives on after its call has ended.
 
-<Sidenote>Spec fields: code evaluation state, Function, Realm (the built-ins, such as `Array`, and the global record), ScriptOrModule, LexicalEnvironment and VariableEnvironment. "It is impossible for ECMAScript code to directly access or observe an execution context." ([ECMAScript 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)). The pictures draw one record per call; the spec sometimes splits it in two (lesson 1.3), with the same lookup results here.</Sidenote>
+<Sidenote>Spec fields: code evaluation state, Function, Realm (the built-ins, such as `Array`, and the global record), ScriptOrModule, LexicalEnvironment, VariableEnvironment and PrivateEnvironment (for `#private` class names). "It is impossible for ECMAScript code to directly access or observe an execution context." ([ECMAScript 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)). The pictures draw one record per call; the spec sometimes splits it in two (lesson 1.3), with the same lookup results here. They also hide `arguments`, an object every non-arrow function call gets.</Sidenote>
 
 </Segment>
 
-<Segment id="s05-each-call" goal="Every call gets a new execution context and a new record, so calls never share locals">
+<Segment id="s05-each-call" goal="Every call gets a new execution context and a new record, so each call has its own local bindings">
 
 Every call creates a new execution context and a new function environment record. Now test that rule on a harder case: a function that calls itself before its first call has finished. Does the second call overwrite the first call's `label`, or does each call keep its own?
 
@@ -157,13 +157,13 @@ countdown(2);`}
   answer="a"
   options={[
     { id: "a", text: "n=0\nn=1\nn=2", feedback: "Right. Each call had its own label, and the deepest call finished first." },
-    { id: "b", text: "n=0\nn=0\nn=0", misconception: "EC-LOCALS-PERSIST", feedback: "You pictured one label shared by every call, so the deepest call overwrote it. Each call gets a new record with its own label, and the inner call cannot touch the outer one. Step the trace below and watch three records exist at once." },
-    { id: "c", text: "n=2\nn=1\nn=0", misconception: "EC-CALL-NO-WAIT", feedback: "You let each call print before the call it started had finished. A caller's context waits, paused, until the context it pushed is removed from the stack. So the deepest call prints first." }
+    { id: "b", text: "n=0\nn=0\nn=0", misconception: "EXC-LOCALS-PERSIST", feedback: "You pictured one label shared by every call, so the deepest call overwrote it. Each call gets a new record with its own label, and the inner call cannot touch the outer one. Step the trace below and watch three records exist at once." },
+    { id: "c", text: "n=2\nn=1\nn=0", misconception: "EXC-CALL-NO-WAIT", feedback: "You let each call print before the call it started had finished. A caller's context waits, paused, until the context it pushed is removed from the stack. So the deepest call prints first." }
   ]}
   explain="Every call pushes a new execution context with a new record. Three label bindings exist at the same time, and calls finish in last-in, first-out order."
 />
 
-<Viz example="countdown" view="scope" gate="countdown" pauseAt={[7, 12]} title="Three calls, three records" />
+<Viz example="ec-countdown" view="scope" gate="countdown" pauseAt={[7, 12]} title="Three calls, three records" />
 
 The output was `n=0`, `n=1`, `n=2`. Each call to `countdown` created its own execution context and its own record, so three `label` bindings existed at the same time, one per call. The inner call could not overwrite the outer call's `label`.
 
@@ -190,9 +190,9 @@ The chain of records a lookup walks has a teaching name: the <Term id="scope-cha
 console.log(missing);`}
   answer="b"
   options={[
-    { id: "a", text: "undefined\nundefined", misconception: "LOOKUP-MISSING-IS-UNDEFINED", feedback: "You expected a missing name to read as undefined. A name that no record has cannot be read at all, so the second line throws. undefined is a value that a binding holds; here there is no binding." },
+    { id: "a", text: "undefined\nundefined", misconception: "EXC-LOOKUP-MISSING-IS-UNDEFINED", feedback: "You expected a missing name to read as undefined. A name that no record has cannot be read at all, so the second line throws. undefined is a value that a binding holds; here there is no binding." },
     { id: "b", text: "undefined\nReferenceError: missing is not defined", feedback: "Right. typeof has a special case for a name that cannot be found. A plain read does not." },
-    { id: "c", text: "ReferenceError: missing is not defined", misconception: "TYPEOF-UNDECLARED-THROWS", feedback: "You expected typeof to throw like a plain read. typeof checks first whether the name can be found at all, and returns \"undefined\" when it cannot." }
+    { id: "c", text: "ReferenceError: missing is not defined", misconception: "EXC-TYPEOF-UNDECLARED-THROWS", feedback: "You expected typeof to throw like a plain read. typeof checks first whether the name can be found at all, and returns \"undefined\" when it cannot." }
   ]}
   explain={"The lookup walked every record and found no missing. typeof returns \"undefined\" for that case; a plain read throws a ReferenceError."}
 />
@@ -203,7 +203,7 @@ In the next trace, `full` is written inside `page`. So `full`'s record points ou
 
 You might ask: "Why does `full`'s record point to `page`, and not to whoever called `full`?" The outer reference comes from where the function was written, not from who calls it. Lesson 1.3 is about exactly this.
 
-<Viz example="lookup" view="scope" gate="lookup" pauseAt={[4]} title="Walking the scope chain" />
+<Viz example="ec-lookup" view="scope" gate="lookup" pauseAt={[4]} title="Walking the scope chain" />
 
 <Sidenote>The lookup is the spec's GetIdentifierReference: "If envRecord is null", the result is unresolvable; if the record has the binding, it is found; otherwise it repeats with envRecord.[[OuterEnv]]. ([ECMAScript 9.1.2.1](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-getidentifierreference))</Sidenote>
 
@@ -213,7 +213,7 @@ You might ask: "Why does `full`'s record point to `page`, and not to whoever cal
 
 The outermost record is different from the others. Its name is the <Term id="global-environment">global environment record</Term>, and it has two parts.
 
-One part is backed by a real object that your code can touch, the <Term id="global-object">global object</Term>. Every host names it `globalThis`, and browsers also call it `window`. At the top level of a script, `var` and `function` declarations become properties of this object.
+One part is backed by a real object that your code can touch, the <Term id="global-object">global object</Term>. Your code can always reach it as `globalThis`, and in a browser page it is also called `window`. At the top level of a script, `var` and `function` declarations become properties of this object.
 
 The other part is a plain table, like the records you have seen so far. It holds top-level `let`, `const` and `class` bindings, which are not properties of the global object.
 
@@ -227,8 +227,8 @@ console.log(globalThis.a, globalThis.b, typeof globalThis.f);`}
   answer="a"
   options={[
     { id: "a", text: "1 undefined function", feedback: "Right. var and function declarations become properties of the global object. let does not." },
-    { id: "b", text: "1 2 function", misconception: "GLOBAL-LET-ON-OBJECT", feedback: "You put every top-level name on the global object. Only var and function declarations go there. let, const and class go into the global record's other part, which has no properties, so globalThis.b is undefined." },
-    { id: "c", text: "undefined undefined undefined", misconception: "GLOBAL-NOTHING-ON-OBJECT", feedback: "That is how ES modules and Node CommonJS files behave, so this belief is reasonable if you mostly write modules. In a classic script, top-level var and function declarations do become global object properties." }
+    { id: "b", text: "1 2 function", misconception: "EXC-GLOBAL-LET-ON-OBJECT", feedback: "You put every top-level name on the global object. Only var and function declarations go there. let, const and class go into the global record's other part, which has no properties, so globalThis.b is undefined." },
+    { id: "c", text: "undefined undefined undefined", misconception: "EXC-GLOBAL-NOTHING-ON-OBJECT", feedback: "That is how ES modules and Node CommonJS files behave, so this belief is reasonable if you mostly write modules. In a classic script, top-level var and function declarations do become global object properties." }
   ]}
   explain="The global environment record has an object part, which is the global object, for var and function, and a declarative part for let, const and class."
 />
@@ -257,13 +257,21 @@ Many tutorials call it the "creation phase", and call the second step, running t
 Here is what declaration instantiation leaves in each binding, and what the declaration's own line does later, when execution reaches it:
 
 - **Function declaration.** Holds a new function object (functions are objects, lesson 1.1). Its line does nothing.
-- **`var x`.** Holds `undefined`. `var x = 5;` assigns 5. `var x;` does nothing.
+- **`var x`.** A new binding holds `undefined`. If the name already has a binding in that record, such as a parameter or a function declaration with the same name, that binding is kept with its value. `var x = 5;` assigns 5; `var x;` does nothing.
 - **`let x`.** Exists with no value. `let x = 5;` gives it its first value. `let x;` gives it `undefined`.
-- **`const x`.** Exists with no value. `const x = 5;` gives it its one and only value.
+- **`const x`.** Exists with no value. `const x = 5;` gives it its value, and the binding can never be reassigned.
 - **`class C`.** Exists with no value. Its line creates the class and gives it to `C`.
-- **Parameter.** Holds the argument passed in, filled left to right. A parameter has no line of its own.
+- **Parameter.** Holds the argument passed in. If none was passed, it holds its default value (`a = 7`), or `undefined` if it has no default. Parameters are filled left to right.
 
-Declaration instantiation reads every declaration in the body, even ones after a `return` or inside an `if` that never runs.
+<Code runnable code={`function show(a) {
+  var a;
+  return a;
+}
+console.log(show(5)); // → 5`} />
+
+Declaration instantiation reads the whole body. It finds every `var` and function declaration that belongs to this script or function, even one written after a `return`, and even a `var` inside an `if` that never runs. A `let`, `const` or `class` inside a `{ }` block belongs to that block instead, and the block sets up its own record when execution enters it (lesson 1.3).
+
+One more check happens before any line runs. If two declarations in one scope clash, such as `var x` and `let x`, the engine rejects the whole script with a SyntaxError, and not even line 1 runs.
 
 <Predict
   id="unreachable"
@@ -278,8 +286,8 @@ console.log(outer());`}
   answer="a"
   options={[
     { id: "a", text: "reached", feedback: "Right. Declaration instantiation for the call created inner before the return statement ran." },
-    { id: "b", text: "ReferenceError: inner is not defined", misconception: "EC-TOP-TO-BOTTOM", feedback: "You reasoned that the line declaring inner never runs, so inner never exists. Declarations do not need to run. Declaration instantiation reads the whole function body when outer is called." },
-    { id: "c", text: "TypeError: inner is not a function", misconception: "HOIST-FN-AS-VAR", feedback: "You gave inner the starting state of a var, undefined. A function declaration starts with its function object already in place." }
+    { id: "b", text: "ReferenceError: inner is not defined", misconception: "EXC-TOP-TO-BOTTOM", feedback: "You reasoned that the line declaring inner never runs, so inner never exists. Declarations do not need to run. Declaration instantiation reads the whole function body when outer is called." },
+    { id: "c", text: "TypeError: inner is not a function", misconception: "EXC-HOIST-FN-AS-VAR", feedback: "You gave inner the starting state of a var, undefined. A function declaration starts with its function object already in place." }
   ]}
   explain="When outer is called, FunctionDeclarationInstantiation creates inner's function object. The return statement can call it even though the declaration's line is never reached."
 />
@@ -298,13 +306,13 @@ console.log(color); // → red`} />
 
 <Segment id="s09-hoisting" goal="Hoisting is a teaching name for the effects of declaration instantiation; no code moves">
 
-There is a word everybody uses for these effects: <Term id="hoisting">hoisting</Term>. MDN says it "refers to the process whereby the interpreter appears to move the declaration of functions, variables, classes, or imports to the top of their scope, prior to execution of the code." Notice the word "appears". Hoisting is a teaching name. The spec never uses it.
+There is a word everybody uses for these effects: <Term id="hoisting">hoisting</Term>. MDN says it "refers to the process whereby the interpreter appears to move the declaration of functions, variables, classes, or imports to the top of their scope, prior to execution of the code." Notice the word "appears". Hoisting is a teaching name. The spec does not define it; the closest it gets is a grammar group called HoistableDeclaration, which holds the function declaration forms.
 
-MDN lists four behaviours that people call hoisting. A function can be called before its line. A `var` can be read before its line, and gives `undefined`. A `let`, `const` or `class` changes what a name means even above its line. An `import` takes effect before the rest of the code runs. All four are effects of declaration instantiation.
+MDN lists four behaviours that people call hoisting. A function can be called before its line. A `var` can be read before its line, and gives `undefined`. A `let`, `const` or `class` changes what a name means even above its line. An `import` takes effect before the rest of the code runs. The first three are effects of declaration instantiation. The `import` case comes from how modules load, which is lesson 1.10.
 
 You might ask: "Then why does everyone say declarations move to the top?" Picturing the declaration lifted to the top predicts the `var` and function cases well. But it predicts `undefined` for `let`, which is wrong, and it hides the fact that there are two separate moments. Now replay the hook with the visualizer.
 
-<Viz example="hook-replay" view="scope" gate="hook" pauseAt={[1]} title="The hook, replayed" />
+<Viz example="ec-hook-replay" view="scope" gate="hook" pauseAt={[3]} title="The hook, replayed" />
 
 Here is the first hook line, exactly. The `price` binding existed from declaration instantiation, holding `undefined`. Line 1 printed that value. For a `var`, line 2 is only an assignment, and it put 100 into the binding.
 
@@ -314,9 +322,9 @@ Here is the first hook line, exactly. The `price` binding existed from declarati
 
 <Segment id="s10-tdz" goal="A let or const binding exists before its line but has no value, and touching it throws">
 
-Declaration instantiation creates `let`, `const` and `class` bindings but leaves them with no value. From that moment until the declaration's line runs, the binding is in the <Term id="tdz">temporal dead zone</Term>, or TDZ.
+Declaration instantiation creates `let`, `const` and `class` bindings but leaves them with no value. From that moment until its declaration has finished running, the binding is in the <Term id="tdz">temporal dead zone</Term>, or TDZ.
 
-During the TDZ, any read of the name, or any assignment to it, throws a `ReferenceError`. Node words it as `Cannot access 'total' before initialization`.
+During the TDZ, any read of the name, or any assignment to it, throws a `ReferenceError`. Node words it as `Cannot access 'total' before initialization`. The value on the right of `=` is computed before the binding gets it, so even `let x = x;` throws: the right-hand `x` is read while `x` is still in its TDZ.
 
 The binding is still real, and lookups find it. That matters when an outer record has a binding with the same name, because a lookup checks the current record before it follows the outer reference.
 
@@ -331,15 +339,15 @@ function check() {
 check();`}
   answer="c"
   options={[
-    { id: "a", text: "outer", misconception: "HOIST-LET-NOT-HOISTED", feedback: "You assumed the inner level does not exist until line 4, so the lookup falls through to the global level. The inner level already exists when check starts, and the lookup stops at the first record that has the name." },
-    { id: "b", text: "undefined", misconception: "TDZ-IS-UNDEFINED", feedback: "You found the right binding, the inner level, but gave it var's starting value. A let starts with no value, and reading it throws." },
+    { id: "a", text: "outer", misconception: "EXC-HOIST-LET-NOT-HOISTED", feedback: "You assumed the inner level does not exist until line 4, so the lookup falls through to the global level. The inner level already exists when check starts, and the lookup stops at the first record that has the name." },
+    { id: "b", text: "undefined", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "You found the right binding, the inner level, but gave it var's starting value. A let starts with no value, and reading it throws." },
     { id: "c", text: "ReferenceError: Cannot access 'level' before initialization", feedback: "Right. The lookup found check's own level, which was still in its temporal dead zone." },
-    { id: "d", text: "inner", misconception: "HOIST-MOVES-CODE", feedback: "You moved the = \"inner\" part to the top. Line 4 has not run when line 3 reads level." }
+    { id: "d", text: "inner", misconception: "EXC-HOIST-MOVES-CODE", feedback: "You moved the = \"inner\" part to the top. Line 4 has not run when line 3 reads level." }
   ]}
   explain="Declaration instantiation for the call creates an uninitialized level in check's record. The lookup on line 3 finds it first and reads it, which throws."
 />
 
-<Viz example="tdz-shadow" view="scope" gate="tdz-shadow" pauseAt={[3]} title="A shadowed name in its dead zone" />
+<Viz example="ec-tdz-shadow" view="scope" gate="tdz-shadow" pauseAt={[3]} title="A shadowed name in its dead zone" />
 
 Calling `check` ran declaration instantiation for that call, and it created `check`'s own `level` binding with no value. The lookup for `level` on line 3 checked `check`'s record first, found that binding in its TDZ, and stopped there. It never reached the global `level`, so `"outer"` was never possible.
 
@@ -357,7 +365,7 @@ Blocks, the code between `{` and `}`, get their own records for `let` and `const
 
 </Segment>
 
-<Segment id="s11-typeof" goal="typeof is safe only for names that do not exist at all">
+<Segment id="s11-typeof" goal="typeof does not protect you from a binding in its TDZ">
 
 In segment 6, `typeof` did not throw for a name that does not exist anywhere on the scope chain. It gave back `"undefined"`. Does it also protect you from a binding that exists but is in its TDZ?
 
@@ -369,9 +377,9 @@ console.log(typeof later);
 let later = 1;`}
   answer="b"
   options={[
-    { id: "a", text: "undefined\nundefined", misconception: "TDZ-TYPEOF-SAFE", feedback: "You trusted typeof to never throw. It only has a special case for names that cannot be found. later can be found, and reading it in its dead zone throws." },
+    { id: "a", text: "undefined\nundefined", misconception: "EXC-TDZ-TYPEOF-SAFE", feedback: "You trusted typeof to never throw. It only has a special case for names that cannot be found. later can be found, and reading it in its dead zone throws." },
     { id: "b", text: "undefined\nReferenceError: Cannot access 'later' before initialization", feedback: "Right. ghost cannot be found, so typeof returns \"undefined\". later is found and is uninitialized, so reading it throws." },
-    { id: "c", text: "ReferenceError: ghost is not defined", misconception: "TYPEOF-UNDECLARED-THROWS", feedback: "You expected typeof to throw for an unknown name, like a plain read. typeof returns \"undefined\" when the lookup finds nothing." }
+    { id: "c", text: "ReferenceError: ghost is not defined", misconception: "EXC-TYPEOF-UNDECLARED-THROWS", feedback: "You expected typeof to throw for an unknown name, like a plain read. typeof returns \"undefined\" when the lookup finds nothing." }
   ]}
   explain={"typeof first asks whether the name resolves. If not, it returns \"undefined\". If it does, it reads the value, and an uninitialized binding throws."}
 />
@@ -382,7 +390,7 @@ First, `typeof` asks whether the name can be found on the scope chain at all. `g
 
 If the name can be found, `typeof` reads its value. `later` is found, and it is in its TDZ, so the read throws.
 
-So a check like `typeof x === "undefined"` is safe only for a name that may not exist at all, such as a global that some browsers do not have.
+So `typeof` is safe for a name that does not exist and for a name that already has a value. It throws only for a binding in its TDZ. That is why a check like `typeof x === "undefined"` is used for names that may not exist at all, such as a global that some browsers do not have.
 
 <Sidenote>The typeof algorithm: "If IsUnresolvableReference(value) is true, return \"undefined\". Set value to ? GetValue(value)." ([ECMAScript 13.5.3.1](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-typeof-operator-runtime-semantics-evaluation))</Sidenote>
 
@@ -403,8 +411,8 @@ let limit = 10;
 console.log(read());`}
   answer="10"
   wrong={[
-    { match: "ReferenceError", misconception: "TDZ-IS-SPATIAL", feedback: "You treated every line above let limit as dead. read is written above it but runs on line 5, after line 4 has given limit its value." },
-    { match: "undefined", feedback: "read does not keep a copy of limit from when it was written. It looks limit up each time it runs, and by line 5 limit is 10." }
+    { match: "ReferenceError", misconception: "EXC-TDZ-IS-SPATIAL", feedback: "You treated every line above let limit as dead. read is written above it but runs on line 5, after line 4 has given limit its value." },
+    { match: "undefined", misconception: "EXC-LOOKUP-AT-DEFINITION", feedback: "read does not look limit up when it is written. It looks limit up each time it runs, and by line 5 limit is 10." }
   ]}
   explain="The lookup of limit happens when read runs, on line 5. By then let limit = 10 has run, so the binding is initialized."
 />
@@ -426,8 +434,8 @@ console.log(read());
 let limit = 10;`}
   answer="ReferenceError"
   wrong={[
-    { match: "10", misconception: "HOIST-MOVES-CODE", feedback: "You let the = 10 happen early. read runs on line 4, and line 5 has not run yet." },
-    { match: "undefined", misconception: "TDZ-IS-UNDEFINED", feedback: "limit is a let, so before its line it has no value at all. Reading it throws instead of giving undefined." }
+    { match: "10", misconception: "EXC-HOIST-MOVES-CODE", feedback: "You let the = 10 happen early. read runs on line 4, and line 5 has not run yet." },
+    { match: "undefined", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "limit is a let, so before its line it has no value at all. Reading it throws instead of giving undefined." }
   ]}
   explain="Same lines, different order of execution. read now runs while limit is still uninitialized, so the read throws ReferenceError: Cannot access 'limit' before initialization."
 />
@@ -447,7 +455,7 @@ The designers of JavaScript asked the same question. When `let` and `const` were
 3. It is an error if the use runs before the declaration ("temporal dead zone").
 4. The use refers to the outer variable if it runs before ("temporal window").
 
-Options 2 and 4 let one name mean different variables at different places, or at different times, inside one block. Option 1 would forbid functions that call each other, because one of them must be written first. Option 3 allows that, as long as the calls run after both lines:
+Options 2 and 4 let one name mean different variables at different places, or at different times, inside one block. Option 1 would forbid two `const` functions that call each other, because one of them must be written first and mentions the other. Option 3 allows that, as long as the calls run after both lines:
 
 <Code runnable code={`const isEven = (n) => (n === 0 ? true : isOdd(n - 1));
 const isOdd = (n) => (n === 0 ? false : isEven(n - 1));
@@ -455,7 +463,7 @@ console.log(isEven(4)); // → true`} />
 
 After nearly two years of discussion, the committee chose option 3, the temporal dead zone. One rule came with it: inside one scope, a name has exactly one binding.
 
-One more consequence follows from this choice. A `const` is meant to have one value forever. If a `const` started as `undefined`, like a `var`, code could read it before and after its line and see two different values. With the TDZ, any read before the line throws, so a `const` is only ever seen with its one value. The same rule turns a quiet bug, reading `undefined` too early, into an error on the exact line.
+One more consequence follows from this choice. A `const` binding gets one value and can never be reassigned. (The value can still be an object whose contents change, as lesson 1.1 showed.) If a `const` started as `undefined`, like a `var`, code could read it before and after its line and see two different values. With the TDZ, any read before the line throws, so a `const` binding is only ever seen with its one value. The same rule turns a quiet bug, reading `undefined` too early, into an error on the exact line.
 
 The TDZ also explains segment 7. An object property cannot be "not yet initialized", so top-level `let` and `const` could not live on the global object.
 
@@ -463,7 +471,7 @@ The TDZ also explains segment 7. An object property cannot be "not yet initializ
   id="why-tdz"
   prompt="In two sentences: why does a const need a dead zone when a var does not?"
   rubric={[
-    "A const binding exists from declaration instantiation but gets its one value only when its line runs",
+    "A const binding exists from declaration instantiation but gets its one value only when its declaration runs, and can never be reassigned",
     "If it started as undefined, code could read it before and after its line and see two different values",
     "The dead zone makes any read before the line throw, so a const is only ever seen with its one value",
     "var has no such promise; it is allowed to change, so starting as undefined breaks nothing"
@@ -491,15 +499,14 @@ function declared() {}
 var expressed = function () {};`}
   answer="b"
   options={[
-    { id: "a", text: "function\nfunction", misconception: "HOIST-ALL-FUNCTIONS", feedback: "You treated both as declarations. expressed is a var whose value is a function expression, and that value is only created when line 4 runs." },
+    { id: "a", text: "function\nfunction", misconception: "EXC-HOIST-ALL-FUNCTIONS", feedback: "You treated both as declarations. expressed is a var whose value is a function expression, and that value is only created when line 4 runs." },
     { id: "b", text: "function\nundefined", feedback: "Right. declared got its function during declaration instantiation. expressed is a var, so it starts as undefined." },
-    { id: "c", text: "undefined\nundefined", misconception: "HOIST-FN-AS-VAR", feedback: "You gave the function declaration var's starting state. A function declaration starts with its function object already in place." },
-    { id: "d", text: "ReferenceError: declared is not defined", misconception: "EC-TOP-TO-BOTTOM", feedback: "You expected names to appear only when their line runs. Both names exist before line 1." }
+    { id: "c", text: "undefined\nundefined", misconception: "EXC-HOIST-FN-AS-VAR", feedback: "You gave the function declaration var's starting state, undefined. (If you instead thought declared does not exist yet, typeof would also say undefined, but that belief is wrong too: both names exist before line 1.) A function declaration starts with its function object already in place." }
   ]}
-  explain="Declaration instantiation creates a function object only for function declarations. A function expression is a value, created when its line runs; until then the name is whatever its var, let or const gives."
+  explain="Among the declarations in a body, only function declarations get a function object during declaration instantiation. A function expression is a value, created when its line runs; until then the name is whatever its var, let or const gives."
 />
 
-<Viz example="function-forms" view="scope" gate="fn-forms" pauseAt={[1]} title="Three ways to make a function" />
+<Viz example="ec-function-forms" view="scope" gate="fn-forms" pauseAt={[1]} title="Three ways to make a function" />
 
 The code printed `function` and then `undefined`. After declaration instantiation, `declared` already held its function, while `expressed` was a `var` that still held `undefined`.
 
@@ -527,36 +534,35 @@ console.log(total, globalThis.total);`}
   answer="a"
   options={[
     { id: "a", text: "42 42", feedback: "Right. The assignment created a property named total on the global object." },
-    { id: "b", text: "ReferenceError: total is not defined", misconception: "GLOBAL-ASSIGN-MAKES-LOCAL", feedback: "You expected total = 42 to make a local variable of save that disappears after the call. Assignment never declares anything. With no binding anywhere, non-strict code creates a property on the global object." },
-    { id: "c", text: "undefined undefined", misconception: "LOOKUP-MISSING-IS-UNDEFINED", feedback: "Reading a name that does not exist would throw, not give undefined. Here total does exist after save runs, as a global object property holding 42." }
+    { id: "b", text: "ReferenceError: total is not defined", misconception: "EXC-GLOBAL-ASSIGN-MAKES-LOCAL", feedback: "You expected total = 42 to make a local variable of save that disappears after the call. Assignment never declares anything. With no binding anywhere, non-strict code creates a property on the global object." },
+    { id: "c", text: "42 undefined", misconception: "EXC-IMPLICIT-NOT-PROPERTY", feedback: "You knew the assignment makes a global, but pictured it like a top-level let. It is a property of the global object, so globalThis.total is 42 too." }
   ]}
   explain="The lookup for total found nothing, so in non-strict code the assignment created globalThis.total. Reading total later finds it through the global record."
 />
 
-<Viz example="implicit-global" view="scope" gate="sloppy" pauseAt={[2]} title="An implicit global appears" />
+<Viz example="ec-implicit-global" view="scope" gate="sloppy" pauseAt={[2]} title="An implicit global appears" />
 
 The output is `42 42`. JavaScript has two sets of rules. The stricter set is called <Term id="strict-mode">strict mode</Term>. Code that is not in strict mode is "non-strict code" in the spec, and people informally call it sloppy mode. This script has no `"use strict"` line, so it ran in sloppy mode.
 
-In sloppy mode, assigning to a name that no record has creates a property with that name on the global object. A global made this way is called an <Term id="implicit-global">implicit global</Term>. It outlives the function call and is visible everywhere, so one typo in a variable name can quietly create a global.
+In sloppy mode, assigning to a name that no record has normally creates a property with that name on the global object. A global made this way is called an <Term id="implicit-global">implicit global</Term>. It outlives the function call and is visible everywhere, so one typo in a variable name can quietly create a global.
 
 Strict mode is turned on by a `"use strict"` line at the very start of a script or a function, and it is always on inside ES modules and class bodies. Add that line and predict again.
 
 <Sidenote>"Module code is always strict mode code." "All parts of a ClassDeclaration or a ClassExpression are strict mode code." ([ECMAScript 11.2.2](https://tc39.es/ecma262/multipage/ecmascript-language-source-code.html#sec-strict-mode-code))</Sidenote>
 
 <Predict
+  kind="text"
   id="strict"
-  prompt={'The same code with "use strict" on the first line. What does it print?'}
+  prompt={'The same code with "use strict" on the first line. What does it print? If a line throws, type only the error name.'}
   code={`"use strict";
 function save() {
   total = 42;
 }
 save();
 console.log(total);`}
-  answer="b"
-  options={[
-    { id: "a", text: "42", misconception: "GLOBAL-ASSIGN-ALWAYS-WORKS", feedback: "You expected the assignment to create a global in every kind of code. In strict code, assigning to a name that cannot be found throws." },
-    { id: "b", text: "ReferenceError: total is not defined", feedback: "Right. Strict mode turns the silent global into an error at the line with the typo." },
-    { id: "c", text: "undefined", misconception: "LOOKUP-MISSING-IS-UNDEFINED", feedback: "The program never reaches the last line. The assignment inside save throws first." }
+  answer="ReferenceError"
+  wrong={[
+    { match: "42", misconception: "EXC-GLOBAL-ASSIGN-ALWAYS-WORKS", feedback: "You expected the assignment to create a global in every kind of code. In strict code, assigning to a name that cannot be found throws, at the assignment inside save." }
   ]}
   explain="In strict mode code, PutValue on a name that cannot be resolved throws a ReferenceError. The spec (Annex C): assignment to an undeclared identifier does not create a property in the global object."
 />
@@ -607,8 +613,8 @@ var score = 10;
 console.log(score);`}
   answer={"undefined\n10"}
   wrong={[
-    { match: "10\n10", misconception: "HOIST-MOVES-CODE", feedback: "Only the binding is made early. The = 10 part is an assignment that runs on line 2, after line 1 has printed." },
-    { match: "ReferenceError", misconception: "EC-TOP-TO-BOTTOM", feedback: "score exists before line 1 runs. Declaration instantiation created it and set it to undefined." },
+    { match: "10\n10", misconception: "EXC-HOIST-MOVES-CODE", feedback: "Only the binding is made early. The = 10 part is an assignment that runs on line 2, after line 1 has printed." },
+    { match: "ReferenceError", misconception: "EXC-TOP-TO-BOTTOM", feedback: "score exists before line 1 runs. Declaration instantiation created it and set it to undefined." },
   ]}
   explain={"Declaration instantiation creates score and sets it to undefined. Line 1 prints that undefined, line 2 assigns 10, and line 3 prints 10."}
 />
@@ -623,8 +629,8 @@ function square(n) {
 }`}
   answer={"9"}
   wrong={[
-    { match: "ReferenceError", misconception: "EC-TOP-TO-BOTTOM", feedback: "The engine set up square before line 1 ran, so the name is there when line 1 looks for it." },
-    { match: "TypeError", misconception: "HOIST-FN-AS-VAR", feedback: "A function declaration does not start as undefined. Its function object is created during declaration instantiation." },
+    { match: "ReferenceError", misconception: "EXC-TOP-TO-BOTTOM", feedback: "The engine set up square before line 1 ran, so the name is there when line 1 looks for it." },
+    { match: "TypeError", misconception: "EXC-HOIST-FN-AS-VAR", feedback: "A function declaration does not start as undefined. Its function object is created during declaration instantiation." },
   ]}
   explain={"Declaration instantiation creates the function object for square and stores it in the binding before line 1 runs, so the call works."}
 />
@@ -637,8 +643,8 @@ function square(n) {
 let limit = 3;`}
   answer={"ReferenceError"}
   wrong={[
-    { match: "undefined", misconception: "TDZ-IS-UNDEFINED", feedback: "That is what var would print. A let binding is created with no value, and reading it before line 2 throws." },
-    { match: "3", misconception: "HOIST-MOVES-CODE", feedback: "No code moves. Line 2 has not run yet when line 1 reads limit." },
+    { match: "undefined", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "That is what var would print. A let binding is created with no value, and reading it before line 2 throws." },
+    { match: "3", misconception: "EXC-HOIST-MOVES-CODE", feedback: "No code moves. Line 2 has not run yet when line 1 reads limit." },
   ]}
   explain={"limit exists from the start but is uninitialized until line 2 runs. Line 1 reads it inside its temporal dead zone, so Node throws ReferenceError: Cannot access 'limit' before initialization."}
 />
@@ -654,8 +660,8 @@ if (false) {
 console.log(flag);`}
   answer={"undefined\nundefined"}
   wrong={[
-    { match: "ReferenceError", misconception: "EC-TOP-TO-BOTTOM", feedback: "Declaration instantiation reads the whole script, including code that will never run. It found var flag and created the binding." },
-    { match: "undefined\ntrue", feedback: "The if (false) body never runs, so the assignment flag = true never happens." },
+    { match: "ReferenceError", misconception: "EXC-TOP-TO-BOTTOM", feedback: "Declaration instantiation reads the whole script, including code that will never run. It found var flag and created the binding." },
+    { match: "true\ntrue", misconception: "EXC-HOIST-MOVES-CODE", feedback: "Only the binding is created early, not the = true part. And the if (false) body never runs, so the assignment never happens at all." },
   ]}
   explain={"var ignores the if block and belongs to the script's record. The binding is created as undefined before line 1, and because the block never runs, it stays undefined."}
 />
@@ -672,8 +678,8 @@ console.log(flag);`}
 show(1);`}
   answer={"1\n2"}
   wrong={[
-    { match: "undefined\n2", misconception: "VAR-REDECLARE-RESETS", feedback: "The parameter a and var a are one binding. Declaration instantiation does not create it twice, so it keeps the argument 1." },
-    { match: "2\n2", misconception: "HOIST-MOVES-CODE", feedback: "var a = 2 is an assignment that runs on its own line, after the first console.log." },
+    { match: "undefined\n2", misconception: "EXC-VAR-REDECLARE-RESETS", feedback: "The parameter a and var a are one binding. Declaration instantiation does not create it twice, so it keeps the argument 1." },
+    { match: "2\n2", misconception: "EXC-HOIST-MOVES-CODE", feedback: "var a = 2 is an assignment that runs on its own line, after the first console.log." },
   ]}
   explain={"FunctionDeclarationInstantiation binds the parameter a to 1. var a names a binding that already exists, so nothing new is made. Line 3 then assigns 2."}
 />
@@ -689,8 +695,8 @@ var run = function () {
 };`}
   answer={"undefined\nTypeError"}
   wrong={[
-    { match: "function\nrunning", misconception: "HOIST-ALL-FUNCTIONS", feedback: "Only function declarations get their function object early. This function is a value on the right of =, made when line 3 runs." },
-    { match: "ReferenceError", misconception: "EC-TOP-TO-BOTTOM", feedback: "run exists from the start because of var run. It holds undefined, so the error is about calling undefined, not about a missing name." },
+    { match: "function\nrunning", misconception: "EXC-HOIST-ALL-FUNCTIONS", feedback: "Only function declarations get their function object early. This function is a value on the right of =, made when line 3 runs." },
+    { match: "undefined\nReferenceError", misconception: "EXC-TOP-TO-BOTTOM", feedback: "You treated run as missing until line 3. It exists from the start because of var run and holds undefined, so the error is about calling undefined (TypeError), not about a missing name." },
   ]}
   explain={"var run starts as undefined. typeof gives \"undefined\", and calling undefined throws TypeError: run is not a function. The function expression would only be created on line 3."}
 />
@@ -704,8 +710,8 @@ const add = (a, b) => a + b;
 console.log(total);`}
   answer={"ReferenceError"}
   wrong={[
-    { match: "5", misconception: "HOIST-ALL-FUNCTIONS", feedback: "An arrow function is a value created when line 2 runs. Line 1 runs first." },
-    { match: "TypeError", misconception: "TDZ-IS-UNDEFINED", feedback: "add is not undefined before line 2. It is a const in its temporal dead zone, and reading it throws a ReferenceError before any call happens." },
+    { match: "5", misconception: "EXC-HOIST-ALL-FUNCTIONS", feedback: "An arrow function is a value created when line 2 runs. Line 1 runs first." },
+    { match: "TypeError", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "add is not undefined before line 2. It is a const in its temporal dead zone, and reading it throws a ReferenceError before any call happens." },
   ]}
   explain={"add is a const binding, created uninitialized. Line 1 reads add while it is in its temporal dead zone: ReferenceError: Cannot access 'add' before initialization."}
 />
@@ -723,8 +729,8 @@ class Dog {
 console.log(pet.name);`}
   answer={"ReferenceError"}
   wrong={[
-    { match: "Rex", misconception: "HOIST-CLASS-LIKE-FUNCTION", feedback: "A class declaration is not a function declaration. Its binding is created uninitialized, like let." },
-    { match: "TypeError", misconception: "TDZ-IS-UNDEFINED", feedback: "Dog does not hold undefined before its line. Reading it throws a ReferenceError before new is even tried." },
+    { match: "Rex", misconception: "EXC-HOIST-CLASS-LIKE-FUNCTION", feedback: "A class declaration is not a function declaration. Its binding is created uninitialized, like let." },
+    { match: "TypeError", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "Dog does not hold undefined before its line. Reading it throws a ReferenceError before new is even tried." },
   ]}
   explain={"class Dog creates a binding that stays in its temporal dead zone until line 2 runs. Line 1 reads Dog first: ReferenceError: Cannot access 'Dog' before initialization."}
 />
@@ -740,8 +746,8 @@ const rate = 0.18;
 console.log(getRate());`}
   answer={"0.18"}
   wrong={[
-    { match: "ReferenceError", misconception: "TDZ-IS-SPATIAL", feedback: "The dead zone is about time. getRate is written above const rate, but it is called on line 5, after line 4 has initialized rate." },
-    { match: "undefined", feedback: "getRate does not save a copy of rate when it is created. It looks rate up each time it runs, and by then rate is 0.18." },
+    { match: "ReferenceError", misconception: "EXC-TDZ-IS-SPATIAL", feedback: "The dead zone is about time. getRate is written above const rate, but it is called on line 5, after line 4 has initialized rate." },
+    { match: "undefined", misconception: "EXC-LOOKUP-AT-DEFINITION", feedback: "getRate does not look rate up when it is written. It looks rate up each time it runs, and by then rate is 0.18." },
   ]}
   explain={"The lookup of rate happens when getRate runs, on line 5. By then line 4 has run and rate is initialized, so the read succeeds."}
 />
@@ -758,9 +764,9 @@ function whoami() {
 whoami();`}
   answer={"ReferenceError"}
   wrong={[
-    { match: "admin", misconception: "HOIST-LET-NOT-HOISTED", feedback: "The inner let user already exists in whoami's record when line 3 runs. Lookup finds it first and never reaches the global user." },
-    { match: "undefined", misconception: "TDZ-IS-UNDEFINED", feedback: "The inner user is in its temporal dead zone, which throws instead of giving undefined." },
-    { match: "guest", misconception: "HOIST-MOVES-CODE", feedback: "Line 4 has not run when line 3 reads user." },
+    { match: "admin", misconception: "EXC-HOIST-LET-NOT-HOISTED", feedback: "The inner let user already exists in whoami's record when line 3 runs. Lookup finds it first and never reaches the global user." },
+    { match: "undefined", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "The inner user is in its temporal dead zone, which throws instead of giving undefined." },
+    { match: "guest", misconception: "EXC-HOIST-MOVES-CODE", feedback: "Line 4 has not run when line 3 reads user." },
   ]}
   explain={"Calling whoami runs FunctionDeclarationInstantiation, which creates an uninitialized user in the call's record. The lookup on line 3 stops at that record and reads an uninitialized binding: ReferenceError."}
 />
@@ -774,8 +780,8 @@ console.log(typeof secret);
 let secret = "s3";`}
   answer={"undefined\nReferenceError"}
   wrong={[
-    { match: "undefined\nundefined", misconception: "TDZ-TYPEOF-SAFE", feedback: "typeof is only safe for names that do not exist. secret exists and is in its temporal dead zone, so reading it throws." },
-    { match: "ReferenceError", misconception: "TYPEOF-UNDECLARED-THROWS", feedback: "token is not declared anywhere, so the lookup finds nothing, and typeof returns \"undefined\" for that case." },
+    { match: "undefined\nundefined", misconception: "EXC-TDZ-TYPEOF-SAFE", feedback: "typeof's special case is only for names that do not exist. secret exists and is in its temporal dead zone, so typeof reads it, and the read throws." },
+    { match: "ReferenceError", misconception: "EXC-TYPEOF-UNDECLARED-THROWS", feedback: "token is not declared anywhere, so the lookup finds nothing, and typeof returns \"undefined\" for that case." },
   ]}
   explain={"typeof returns \"undefined\" when a name cannot be resolved at all (token). secret resolves to a real binding, and reading an uninitialized binding throws, even inside typeof."}
 />
@@ -790,8 +796,8 @@ const c = 3;
 console.log(globalThis.a, globalThis.b, globalThis.c);`}
   answer={"1 undefined undefined"}
   wrong={[
-    { match: "1 2 3", misconception: "GLOBAL-LET-ON-OBJECT", feedback: "Only var and function declarations go in the object part of the global record. let and const go in the declarative part, which has no properties." },
-    { match: "undefined undefined undefined", misconception: "GLOBAL-NOTHING-ON-OBJECT", feedback: "That is how modules behave. In a classic script, a top-level var becomes a property of the global object." },
+    { match: "1 2 3", misconception: "EXC-GLOBAL-LET-ON-OBJECT", feedback: "Only var and function declarations go in the object part of the global record. let and const go in the declarative part, which has no properties." },
+    { match: "undefined undefined undefined", misconception: "EXC-GLOBAL-NOTHING-ON-OBJECT", feedback: "That is how modules behave. In a classic script, a top-level var becomes a property of the global object." },
   ]}
   explain={"The global environment record has an object part (the global object) for var and function, and a declarative part for let, const and class. Only a is a property of globalThis."}
 />
@@ -807,8 +813,7 @@ init();
 console.log(typeof a, typeof b);`}
   answer={"undefined number"}
   wrong={[
-    { match: "undefined undefined", misconception: "GLOBAL-ASSIGN-MAKES-LOCAL", feedback: "var only declares a. b = 5 assigns to a name that no record has, and non-strict code turns that into a global object property." },
-    { match: "number number", feedback: "a is declared with var inside init, so it lives in init's record and is gone from view after the call." },
+    { match: "undefined undefined", misconception: "EXC-GLOBAL-ASSIGN-MAKES-LOCAL", feedback: "var only declares a. b = 5 assigns to a name that no record has, and non-strict code turns that into a global object property." },
   ]}
   explain={"The line means var a = (b = 5). b is not declared anywhere, so in sloppy mode the assignment creates globalThis.b. a is local to init's record."}
 />
@@ -823,9 +828,9 @@ function item() {}
 console.log(typeof item);`}
   answer={"function\nstring"}
   wrong={[
-    { match: "undefined\nstring", misconception: "HOIST-VAR-BEATS-FUNCTION", feedback: "When a var and a function share a name, declaration instantiation keeps the function object. var item adds no second binding." },
-    { match: "function\nfunction", misconception: "HOIST-FN-LINE-ASSIGNS", feedback: "Reaching a function declaration line does nothing. The last change to item was the assignment on line 2." },
-    { match: "string\nstring", misconception: "HOIST-MOVES-CODE", feedback: "The = \"box\" part runs on line 2, after line 1 has printed." },
+    { match: "undefined\nstring", misconception: "EXC-HOIST-VAR-BEATS-FUNCTION", feedback: "When a var and a function share a name, declaration instantiation keeps the function object. var item adds no second binding." },
+    { match: "function\nfunction", misconception: "EXC-HOIST-FN-LINE-ASSIGNS", feedback: "Reaching a function declaration line does nothing. The last change to item was the assignment on line 2." },
+    { match: "string\nstring", misconception: "EXC-HOIST-MOVES-CODE", feedback: "The = \"box\" part runs on line 2, after line 1 has printed." },
   ]}
   explain={"GlobalDeclarationInstantiation skips var names that are also function names, so item starts as the function. Line 2 assigns \"box\". Line 3 does nothing at run time."}
 />
@@ -841,8 +846,8 @@ console.log(pair(1));
 console.log(pair());`}
   answer={"3\nReferenceError"}
   wrong={[
-    { match: "3\n4", misconception: "TDZ-PARAMS-EXEMPT", feedback: "Parameters are initialized one at a time, left to right. When a's default reads b, b has not been initialized yet." },
-    { match: "3\nNaN", misconception: "TDZ-IS-UNDEFINED", feedback: "b is not undefined at that moment. It is uninitialized, and reading it throws." },
+    { match: "3\n4", misconception: "EXC-TDZ-PARAMS-EXEMPT", feedback: "Parameters are initialized one at a time, left to right. When a's default reads b, b has not been initialized yet." },
+    { match: "3\nNaN", misconception: "EXC-TDZ-IS-UNDEFINED", feedback: "b is not undefined at that moment. It is uninitialized, and reading it throws." },
   ]}
   explain={"In pair(1), a gets 1 and its default never runs. In pair(), a's default b runs while b is still uninitialized, which is a dead zone too: ReferenceError: Cannot access 'b' before initialization."}
 />
@@ -894,7 +899,8 @@ console.log(routes[0].handler({ path: "/health" })); // → ok /health`} />
     "Gives the starting state per kind: function declarations hold their function, var holds undefined, let/const/class are uninitialized, parameters hold their arguments",
     "Says let and const are created early but not initialized, so reading them before their line throws (the temporal dead zone)",
     "Proves it with shadowing: an inner let makes an outer variable of the same name unreachable above the inner let's line",
-    "Notes that hoisting is a teaching name, not a term the ECMAScript spec defines"
+    "Notes that hoisting is a teaching name, not a term the ECMAScript spec defines",
+    "Separates two errors: clashing declarations in one scope (var x and let x) are a SyntaxError before anything runs; reading a let too early is a ReferenceError at run time"
   ]}
 />
 
@@ -956,7 +962,7 @@ var a = 1;`} back="undefined. var a exists from declaration instantiation and ho
 <Card id="card-let-typeof" kind="predict" front={`What does this print? (Compare with the var version.)
 
 console.log(typeof a);
-let a = 1;`} back={`ReferenceError: Cannot access 'a' before initialization. a exists but is uninitialized, and typeof only returns "undefined" for names that cannot be found at all.`} />
+let a = 1;`} back={`ReferenceError: Cannot access 'a' before initialization. a exists but is uninitialized. typeof's special case covers only names that cannot be found at all, so it reads a, and the read throws.`} />
 
 <Card id="card-why-global-let" kind="explain" front="Why does a top-level let not become a property of the global object, when a top-level var does?" back="The global record has two parts. var and function stay on the global object for old code. let, const and class need an uninitialized state, which object properties cannot have, so they live in a separate declarative part." />
 

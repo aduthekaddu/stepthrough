@@ -1,0 +1,19 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: call, kind: statement }
+    say: "The picture shows one global name, save; built-in names such as console are hidden. No record has a binding called total."
+    expect:
+      - { stackDepth: 1 }
+      - { record: Global, binding: save, value: "function save" }
+  - at: { mark: assign, kind: enter }
+    say: "save is running. It declares nothing, so its record shows no bindings, and the global record still has no total."
+    expect:
+      - { stackDepth: 2 }
+      - { record: "save() call", exists: true }
+  - at: { mark: read, kind: statement }
+    say: "save has returned. The lookup for total found nothing, and this code is not strict, so the engine created a property named total on the global object. It outlived the call because it lives on the global object, not in save's record."
+    expect:
+      - { stackDepth: 1 }
+      - { record: Global, binding: total, value: "42" }
+      - { record: "save() call", exists: false }

@@ -1,4 +1,4 @@
-id: TDZ-IS-SPATIAL
+id: EXC-TDZ-IS-SPATIAL
 belief: Code written above a let or const line can never use that name, even if the code runs after the line.
 predicts: function read() { return limit; } let limit = 10; console.log(read()); throws a ReferenceError.
 truth: The dead zone is about time, not position. The binding is uninitialized only until its declaration runs; a function that reads it later works.

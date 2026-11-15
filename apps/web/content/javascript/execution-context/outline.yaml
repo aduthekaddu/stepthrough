@@ -29,7 +29,7 @@ facts:
     text: "The execution context stack is used to track execution contexts. The running execution context is always the top element. A new execution context is created whenever control is transferred to code not associated with the running one, and is pushed onto the stack."
     url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
   - id: f-ec-fields
-    text: "Table 21: code evaluation state; Function (the function object, or null for a Script or Module); Realm; ScriptOrModule. Table 22 (ECMAScript code): LexicalEnvironment identifies the Environment Record used to resolve identifier references; VariableEnvironment identifies the Environment Record that holds bindings created by VariableStatements; PrivateEnvironment (class private names)."
+    text: "State components for all execution contexts: code evaluation state; Function (the function object, or null for a Script or Module); Realm; ScriptOrModule. Additional components for ECMAScript code: LexicalEnvironment identifies the Environment Record used to resolve identifier references; VariableEnvironment identifies the Environment Record that holds bindings created by VariableStatements; PrivateEnvironment (class private names)."
     url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
   - id: f-ec-not-observable
     text: "An execution context is purely a specification mechanism and need not correspond to any particular artefact of an ECMAScript implementation. It is impossible for ECMAScript code to directly access or observe an execution context. The same is said of Environment Records."
@@ -62,7 +62,7 @@ facts:
     text: "ScriptEvaluation creates scriptContext with Function null and LexicalEnvironment = VariableEnvironment = the global environment, pushes it, runs GlobalDeclarationInstantiation, then evaluates the script's statements, then removes the context."
     url: https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-runtime-semantics-scriptevaluation
   - id: f-gdi
-    text: "GlobalDeclarationInstantiation: lexically declared names are created with CreateImmutableBinding (const) or CreateMutableBinding (let, class) and 'only instantiated here but not initialized'; for each function declaration (last one wins) InstantiateFunctionDeclaration creates the function object and CreateGlobalFunctionBinding stores it; var names that are not function names get CreateGlobalVarBinding, which initializes them to undefined. Conflicts with existing lexical names throw a SyntaxError before any binding is made."
+    text: "GlobalDeclarationInstantiation: lexically declared names are created with CreateImmutableBinding (const) or CreateMutableBinding (let, class) and 'only instantiated here but not initialized'; for each function declaration (last one wins) InstantiateFunctionDeclaration creates the function object and CreateGlobalFunctionBinding stores it; var names that are not function names get CreateGlobalVarBinding, which creates and initializes them to undefined only if the global object has no such own property yet (so var Object; keeps the built-in). Conflicts with existing lexical names throw a SyntaxError before any binding is made."
     url: https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation
   - id: f-call
     text: "PrepareForOrdinaryCall creates calleeContext with Function = func, LexicalEnvironment = VariableEnvironment = NewFunctionEnvironment(func), and pushes it. [[Call]] then evaluates the body and removes calleeContext, restoring the caller's context."
@@ -142,9 +142,10 @@ vocabulary:
   - { term: block environment record, status: forward reference to js-closures (lesson 1.3), segment: s10-tdz }
 
 misconceptions:
-  main: [EC-TOP-TO-BOTTOM, HOIST-MOVES-CODE, TDZ-IS-UNDEFINED, HOIST-LET-NOT-HOISTED, TDZ-IS-SPATIAL, HOIST-ALL-FUNCTIONS, GLOBAL-LET-ON-OBJECT, GLOBAL-ASSIGN-MAKES-LOCAL]
-  secondary: [HOIST-FN-AS-VAR, EC-LOCALS-PERSIST, LOOKUP-MISSING-IS-UNDEFINED, TYPEOF-UNDECLARED-THROWS, GLOBAL-NOTHING-ON-OBJECT, TDZ-TYPEOF-SAFE, GLOBAL-ASSIGN-ALWAYS-WORKS]
-  gauntlet_only: [VAR-REDECLARE-RESETS, HOIST-CLASS-LIKE-FUNCTION, HOIST-VAR-BEATS-FUNCTION, HOIST-FN-LINE-ASSIGNS, TDZ-PARAMS-EXEMPT]
+  main: [EXC-TOP-TO-BOTTOM, EXC-HOIST-MOVES-CODE, EXC-TDZ-IS-UNDEFINED, EXC-HOIST-LET-NOT-HOISTED, EXC-TDZ-IS-SPATIAL, EXC-HOIST-ALL-FUNCTIONS, EXC-GLOBAL-LET-ON-OBJECT, EXC-GLOBAL-ASSIGN-MAKES-LOCAL]
+  secondary: [EXC-HOIST-FN-AS-VAR, EXC-LOCALS-PERSIST, EXC-CALL-NO-WAIT, EXC-LOOKUP-MISSING-IS-UNDEFINED, EXC-TYPEOF-UNDECLARED-THROWS, EXC-GLOBAL-NOTHING-ON-OBJECT, EXC-TDZ-TYPEOF-SAFE, EXC-GLOBAL-ASSIGN-ALWAYS-WORKS]
+  added_after_review: [EXC-IMPLICIT-NOT-PROPERTY, EXC-LOOKUP-AT-DEFINITION]
+  gauntlet_only: [EXC-VAR-REDECLARE-RESETS, EXC-HOIST-CLASS-LIKE-FUNCTION, EXC-HOIST-VAR-BEATS-FUNCTION, EXC-HOIST-FN-LINE-ASSIGNS, EXC-TDZ-PARAMS-EXEMPT]
   notes: "Entries whose sources say Inferred are hypotheses until Aditya's logged answers confirm them."
 
 segments:
@@ -154,21 +155,23 @@ segments:
     terms_used: []
     words: 40-80
     code: examples in the Predict (hook)
-    interaction: { kind: predict, id: hook, targets: [HOIST-MOVES-CODE, EC-TOP-TO-BOTTOM, TDZ-IS-UNDEFINED] }
+    interaction: { kind: predict, id: hook, targets: [EXC-HOIST-MOVES-CODE, EXC-TOP-TO-BOTTOM, EXC-TDZ-IS-UNDEFINED] }
     note: "Reveal real output; defer the explanation to s09 and s10."
   - id: s02-setup-first
     goal: "The engine sets up every declared name before the first line runs"
     terms_introduced: [declaration]
     terms_used: [engine, binding]
     words: 100-150
-    interaction: { kind: predict, id: call-early, targets: [EC-TOP-TO-BOTTOM, HOIST-FN-AS-VAR] }
+    interaction:
+      - { kind: predict, id: call-early, targets: [EXC-TOP-TO-BOTTOM, EXC-HOIST-FN-AS-VAR] }
+      - { kind: run, code: "console.log(typeof double) before function double prints function" }
     doubt: "If code runs top to bottom, how can line 1 call a function from line 2?"
   - id: s03-records
     goal: "Names live in a table of bindings called an environment record"
     terms_introduced: [environment-record]
     terms_used: [declaration, binding]
     words: 120-170
-    visual: { component: Viz, example: global-setup, view: scope, gate: call-early, pauseAt: [1], new_parts: [record box, binding rows, decl kind label, uninitialized state] }
+    visual: { component: Viz, example: ec-global-setup, view: scope, gate: call-early, pauseAt: [1], new_parts: [record box, binding rows, decl kind label, uninitialized state] }
     interaction: { kind: step, id: viz-global-setup }
     doubt: "Is the record a real thing in memory?"
   - id: s04-context
@@ -176,30 +179,34 @@ segments:
     terms_introduced: [execution-context, function-environment]
     terms_used: [environment-record, call stack]
     words: 150-220
-    visual: { component: Viz, example: first-call, view: scope, pauseAt: [2], new_parts: [stack region, function record] }
-    interaction: { kind: step, id: viz-first-call }
+    visual: { component: Viz, example: ec-first-call, view: scope, pauseAt: [2], new_parts: [stack region, function record] }
+    interaction:
+      - { kind: predict, id: call-order, targets: [EXC-CALL-NO-WAIT], note: "concrete case first: a call pauses the caller" }
+      - { kind: step, id: viz-first-call }
     doubt: "Is an execution context the same thing as a stack frame from lesson 0.1?"
   - id: s05-each-call
-    goal: "Every call gets a new execution context and a new record, so calls never share locals"
+    goal: "Every call gets a new execution context and a new record, so each call has its own local bindings"
     terms_introduced: []
     terms_used: [execution-context, function-environment, call stack]
     words: 90-140
-    interaction: { kind: predict, id: countdown, targets: [EC-LOCALS-PERSIST] }
-    visual: { component: Viz, example: countdown, view: scope, gate: countdown, pauseAt: [7, 12] }
+    interaction: { kind: predict, id: countdown, targets: [EXC-LOCALS-PERSIST, EXC-CALL-NO-WAIT] }
+    visual: { component: Viz, example: ec-countdown, view: scope, gate: countdown, pauseAt: [7, 12] }
   - id: s06-lookup
     goal: "A lookup walks outer references until it finds the name or runs out of records"
     terms_introduced: [outer-reference, scope-chain]
     terms_used: [environment-record, typeof]
     words: 140-200
-    interaction: { kind: predict, id: lookup, targets: [LOOKUP-MISSING-IS-UNDEFINED, TYPEOF-UNDECLARED-THROWS] }
-    visual: { component: Viz, example: lookup, view: scope, gate: lookup, pauseAt: [4], new_parts: [outer arrow] }
+    interaction: { kind: predict, id: lookup, targets: [EXC-LOOKUP-MISSING-IS-UNDEFINED, EXC-TYPEOF-UNDECLARED-THROWS] }
+    visual: { component: Viz, example: ec-lookup, view: scope, gate: lookup, pauseAt: [4], new_parts: [outer arrow] }
     doubt: "Why does the outer of full point to page and not to whoever called it?"
   - id: s07-global
     goal: "The global record has two parts, and only var and function land on the global object"
     terms_introduced: [global-environment, global-object]
     terms_used: [environment-record, declaration]
     words: 150-220
-    interaction: { kind: predict, id: globals, targets: [GLOBAL-LET-ON-OBJECT, GLOBAL-NOTHING-ON-OBJECT] }
+    interaction:
+      - { kind: predict, id: globals, targets: [EXC-GLOBAL-LET-ON-OBJECT, EXC-GLOBAL-NOTHING-ON-OBJECT] }
+      - { kind: run, code: "let b = 2; b, globalThis.b, 'b' in globalThis prints 2 undefined false" }
     doubt: "Why would the language keep two kinds of global names?"
   - id: s08-instantiation
     goal: "Declaration instantiation gives each declaration kind its own starting state"
@@ -207,13 +214,13 @@ segments:
     terms_used: [declaration, environment-record, execution-context]
     words: 180-240
     code: "table of kinds; runnable var redeclare (var color twice prints red)"
-    interaction: { kind: predict, id: unreachable, targets: [EC-TOP-TO-BOTTOM, HOIST-FN-AS-VAR], transfer: true }
+    interaction: { kind: predict, id: unreachable, targets: [EXC-TOP-TO-BOTTOM, EXC-HOIST-FN-AS-VAR], transfer: true }
   - id: s09-hoisting
     goal: "Hoisting is a teaching name for the effects of declaration instantiation; no code moves"
     terms_introduced: [hoisting]
     terms_used: [declaration-instantiation]
     words: 120-180
-    visual: { component: Viz, example: hook-replay, view: scope, gate: hook, pauseAt: [1] }
+    visual: { component: Viz, example: ec-hook-replay, view: scope, gate: hook, pauseAt: [1] }
     interaction: { kind: step, id: viz-hook-replay }
     doubt: "Then why does everyone say declarations move to the top?"
   - id: s10-tdz
@@ -221,49 +228,52 @@ segments:
     terms_introduced: [tdz]
     terms_used: [declaration-instantiation, outer-reference]
     words: 150-210
-    interaction: { kind: predict, id: tdz-shadow, targets: [HOIST-LET-NOT-HOISTED, TDZ-IS-UNDEFINED, HOIST-MOVES-CODE] }
-    visual: { component: Viz, example: tdz-shadow, view: scope, gate: tdz-shadow, pauseAt: [3] }
+    interaction: { kind: predict, id: tdz-shadow, targets: [EXC-HOIST-LET-NOT-HOISTED, EXC-TDZ-IS-UNDEFINED, EXC-HOIST-MOVES-CODE] }
+    visual: { component: Viz, example: ec-tdz-shadow, view: scope, gate: tdz-shadow, pauseAt: [3] }
     note: "One sentence: blocks get their own records too (lesson 1.3); runnable block example."
   - id: s11-typeof
-    goal: "typeof is safe only for names that do not exist at all"
+    goal: "typeof does not protect you from a binding in its TDZ"
     terms_introduced: []
     terms_used: [tdz, scope-chain, typeof]
     words: 90-140
-    interaction: { kind: predict, id: tdz-typeof, targets: [TDZ-TYPEOF-SAFE, TYPEOF-UNDECLARED-THROWS] }
+    interaction: { kind: predict, id: tdz-typeof, targets: [EXC-TDZ-TYPEOF-SAFE, EXC-TYPEOF-UNDECLARED-THROWS] }
   - id: s12-temporal
     goal: "The dead zone is about when code runs, not where it is written"
     terms_introduced: []
     terms_used: [tdz]
     words: 90-140
     interaction:
-      - { kind: predict, id: temporal, targets: [TDZ-IS-SPATIAL] }
-      - { kind: predict, id: temporal-moved, modify: true, targets: [TDZ-IS-SPATIAL] }
+      - { kind: predict, id: temporal, targets: [EXC-TDZ-IS-SPATIAL] }
+      - { kind: predict, id: temporal-moved, modify: true, targets: [EXC-TDZ-IS-SPATIAL] }
   - id: s13-why-tdz
     goal: "The TDZ was chosen so one name means one binding and a const is never seen with two values"
     terms_introduced: []
     terms_used: [tdz, global-object, environment-record]
     words: 180-250
-    interaction: { kind: explain, id: why-tdz }
+    interaction:
+      - { kind: run, code: "isEven/isOdd const arrows that call each other print true (why option 1 was rejected)" }
+      - { kind: explain, id: why-tdz }
     doubt: "Would it not be simpler to give let undefined, like var?"
   - id: s14-functions
     goal: "Only function declarations get their function object during instantiation"
     terms_introduced: [function-expression]
     terms_used: [declaration-instantiation, tdz]
     words: 140-200
-    interaction: { kind: predict, id: fn-forms, targets: [HOIST-ALL-FUNCTIONS, HOIST-FN-AS-VAR, EC-TOP-TO-BOTTOM] }
-    visual: { component: Viz, example: function-forms, view: scope, gate: fn-forms, pauseAt: [1] }
+    interaction: { kind: predict, id: fn-forms, targets: [EXC-HOIST-ALL-FUNCTIONS, EXC-HOIST-FN-AS-VAR, EXC-TOP-TO-BOTTOM] }
+    visual: { component: Viz, example: ec-function-forms, view: scope, gate: fn-forms, pauseAt: [1] }
   - id: s15-strict
     goal: "Assigning to an undeclared name creates a global in sloppy mode and throws in strict mode"
     terms_introduced: [strict-mode, implicit-global]
     terms_used: [scope-chain, global-object]
     words: 160-230
     interaction:
-      - { kind: predict, id: sloppy, targets: [GLOBAL-ASSIGN-MAKES-LOCAL, LOOKUP-MISSING-IS-UNDEFINED] }
-      - { kind: predict, id: strict, modify: true, targets: [GLOBAL-ASSIGN-ALWAYS-WORKS] }
-    visual: { component: Viz, example: implicit-global, view: scope, gate: sloppy, pauseAt: [2] }
+      - { kind: predict, id: sloppy, targets: [EXC-GLOBAL-ASSIGN-MAKES-LOCAL, EXC-LOOKUP-MISSING-IS-UNDEFINED] }
+      - { kind: predict, id: strict, modify: true, targets: [EXC-GLOBAL-ASSIGN-ALWAYS-WORKS] }
+    visual: { component: Viz, example: ec-implicit-global, view: scope, gate: sloppy, pauseAt: [2] }
   - id: s16-misconceptions
     goal: "The wrong models in one place, each with the line of code that breaks it"
-    words: 150-220
+    words: 100-150
+    interaction: { kind: explain, id: one-model }
   - id: s17-lab
     goal: "Fifteen predictions, from warm-up to default parameters, each checked against Node"
     interaction: { kind: gauntlet, file: lab/gauntlet.yaml, count: 15 }
@@ -281,6 +291,11 @@ segments:
     cards: [card-predict-new-surface, card-discriminate-var, card-discriminate-let, card-why-tdz, card-trace-instantiation]
 
 predict_count:
-  lesson: 14   # hook, call-early, countdown, lookup, globals, unreachable, tdz-shadow, tdz-typeof, temporal, temporal-moved, fn-forms, sloppy, strict, block (runnable, not counted) -> 13 Predicts
-  next_frame_pauses: 9
+  lesson: 14   # hook, call-early, call-order, countdown, lookup, globals, unreachable, tdz-shadow, tdz-typeof, temporal, temporal-moved, fn-forms, sloppy, strict
+  note: "Above the recipe's 8 to 12: the brief's scope needs every one, and the 250-word interaction rule needed call-order. The lab adds 15 more."
+  next_frame_pauses: 9   # global-setup [1], first-call [2], countdown [7, 12], lookup [4], hook-replay [1], tdz-shadow [3], function-forms [1], implicit-global [2]
+  explains: 3            # why-tdz, one-model, explain-back
   gauntlet: 15
+
+review_changes:
+  - "Codex (gpt-6.1-terra) and opencode (deepseek-v4.1-flash) findings and the fixes are listed in review.md."

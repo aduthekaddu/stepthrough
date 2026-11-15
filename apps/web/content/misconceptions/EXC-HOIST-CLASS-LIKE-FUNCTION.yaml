@@ -1,4 +1,4 @@
-id: HOIST-CLASS-LIKE-FUNCTION
+id: EXC-HOIST-CLASS-LIKE-FUNCTION
 belief: A class declaration is available above its line, the way a function declaration is.
 predicts: new Dog() above class Dog {} creates an object.
 truth: A class declaration creates an uninitialized binding (in the temporal dead zone) during declaration instantiation; the class itself is created when its line runs.

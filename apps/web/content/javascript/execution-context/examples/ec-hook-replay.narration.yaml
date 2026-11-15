@@ -1,0 +1,18 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: first, kind: statement }
+    say: "Declaration instantiation is done and no statement has run. price exists with undefined; total exists with no value."
+    expect:
+      - { record: Global, binding: price, value: "undefined" }
+      - { record: Global, binding: total, value: "uninitialized" }
+  - at: { mark: price, kind: statement }
+    say: "Line 1 read price, found undefined, and printed it."
+    expect:
+      - { console: ["undefined"] }
+      - { record: Global, binding: price, value: "undefined" }
+  - at: { mark: read, kind: statement }
+    say: "Line 2 ran. For a var, the line is only an assignment, so price changed from undefined to 100. Line 3 is about to read total, which still has no value."
+    expect:
+      - { record: Global, binding: price, value: "100" }
+      - { record: Global, binding: total, value: "uninitialized" }

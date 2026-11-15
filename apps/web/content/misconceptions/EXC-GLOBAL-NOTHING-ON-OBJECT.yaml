@@ -1,4 +1,4 @@
-id: GLOBAL-NOTHING-ON-OBJECT
+id: EXC-GLOBAL-NOTHING-ON-OBJECT
 belief: Top-level declarations never create properties on the global object.
 predicts: var a = 1; console.log(globalThis.a); prints undefined.
 truth: In a classic script, top-level var and function declarations are bindings of the global object. The belief is true only for modules (ES modules and CommonJS), where top-level declarations belong to the module.

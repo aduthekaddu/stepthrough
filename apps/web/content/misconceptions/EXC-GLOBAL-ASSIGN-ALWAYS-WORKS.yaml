@@ -1,4 +1,4 @@
-id: GLOBAL-ASSIGN-ALWAYS-WORKS
+id: EXC-GLOBAL-ASSIGN-ALWAYS-WORKS
 belief: Assigning to an undeclared name always creates a global, in every kind of code.
 predicts: '"use strict"; function save() { total = 42; } save(); console.log(total); prints 42.'
 truth: In strict mode code, and so in every module and class body, assigning to an unresolvable name throws a ReferenceError.
