@@ -1,6 +1,7 @@
 import { DefaultScheduler, Rating } from 'ts-fsrs';
 
-export type Scheduler = Awaited<ReturnType<typeof DefaultScheduler>>;
+/** Named directly: ReturnType<typeof DefaultScheduler> resolves the version to the union of all versions. */
+export type Scheduler = DefaultScheduler<'FSRS-7'>;
 /** The card shape review() accepts; stored as-is in IndexedDB. */
 export type FsrsCard = Parameters<Scheduler['review']>[0]['card'];
 export type ReviewResult = ReturnType<Scheduler['review']>;
@@ -30,15 +31,11 @@ const RATING = {
 export const DAILY_CAP = 30;
 
 export function createScheduler(): Promise<Scheduler> {
-  return DefaultScheduler();
+  return DefaultScheduler({ version: 'FSRS-7' });
 }
 
 export function newCard(scheduler: Scheduler, now: Date): FsrsCard {
-  const card = scheduler.newCard({ now });
-  // ts-fsrs 6.0.0 types newCard() without stabilityFast, but the value has it (0) and
-  // review() requires it. Check rather than trust either side.
-  if (!('stabilityFast' in card)) throw new Error('ts-fsrs newCard() returned no stabilityFast');
-  return card as FsrsCard;
+  return scheduler.newCard({ now });
 }
 
 export function grade(scheduler: Scheduler, card: FsrsCard, g: Grade, now: Date): ReviewResult {
