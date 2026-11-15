@@ -668,7 +668,7 @@ console.log(o.list.length); // → 2`} />
 
 ## Lab: `deepEqual`, `deepClone` and `structuredClone`
 
-The lab is separate from the 90 minutes of the lesson; plan about 60 minutes. It lives in `lab/` next to this lesson. The tests use Vitest, a test runner like JUnit, and the lab's README gives three hints for each task.
+The lab is separate from the 90 minutes of the lesson; plan about 60 minutes. The browser lab runner is not built yet, so for now the lab runs on your machine: the files are in `apps/web/content/javascript/values-and-references/lab/` in the repository, and `lab/README.md` gives the command, the tasks and three hints for each. The tests use Vitest, a test runner like JUnit.
 
 1. **`deepEqual(a, b)`**, a completion task (part of the code is given). Primitives compare with `Object.is`; different prototypes are never equal; Dates compare by time, Maps by entries, Sets by members; cycles must not loop forever.
 2. **`deepClone(value)`**, a Parsons problem (put given lines of code in order; three lines are wrong models from this lesson), then extend it to Dates, Maps and Sets. Unlike `structuredClone`, it keeps class prototypes and shares functions.

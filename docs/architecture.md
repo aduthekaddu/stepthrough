@@ -60,8 +60,11 @@ Dexie (IndexedDB), shapes in `apps/web/lib/learner.ts`: `predictions` (lesson, p
 
 ## Sandbox
 
-`runInSandbox(code)` runs code as an ES module in a fresh Worker, captures console output formatted like Node (tested against `util.inspect`), waits until no timer is pending, and terminates the worker after 2 s. The worker can reach IndexedDB and `fetch`; acceptable because it only runs the learner's own code and reviewed lesson code. TypeScript labs will pin `typescript@6` in a lazy-loaded worker with a virtual file system and the standard `lib.*.d.ts` files.
+`runInSandbox(code)` runs code as a classic script (indirect eval) in a fresh Worker, captures console output formatted like Node (tested against `util.inspect`), waits until no timer is pending, and terminates the worker after 2 s. The worker can reach IndexedDB and `fetch`; acceptable because it only runs the learner's own code and reviewed lesson code. TypeScript labs will pin `typescript@6` in a lazy-loaded worker with a virtual file system and the standard `lib.*.d.ts` files.
 
-## CI
+## CI (planned: no workflow exists yet)
+
+Until the workflow lands, the gates run locally (see `.audit/STATE.md`). The plan:
+
 
 Every job `runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}`. A private repo also needs the owner to grant the romper runner access (Notion decision "Run private repos' CI on romper"). Jobs: typecheck, lint, unit, content-check (code runs, predictions match real output, terms, banned phrases, primary sources, `verifiedAt` age, trace expectations and regenerate-diff), production static build with a 200 KB gzip budget for lesson JavaScript, Playwright e2e with step snapshots and transcripts, and Lighthouse. Node is pinned to 24 or later (ts-fsrs 6 requires it).

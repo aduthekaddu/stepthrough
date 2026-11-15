@@ -1,21 +1,17 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
-import { afterAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { type GenerateOptions, generateTrace } from './generate.ts';
 import type { BindingState, EnvRecord, Frame, Trace } from './types.ts';
 
 // Expected states below come from the ECMAScript spec's rules, written by hand,
 // not copied from the generator's output.
 
-const dir = mkdtempSync(path.join(tmpdir(), 'trace-test-'));
-afterAll(() => rmSync(dir, { recursive: true, force: true }));
-
+// Classic-script semantics (`node -e`), the same as the generator, content-check and the
+// browser sandbox; a .cjs file would keep top-level var off the global object.
 function nodeOutput(source: string): string[] {
-  const file = path.join(dir, `snippet-${Math.random().toString(36).slice(2)}.cjs`);
-  writeFileSync(file, source);
-  return execFileSync(process.execPath, [file], { encoding: 'utf8' }).split('\n').slice(0, -1);
+  return execFileSync(process.execPath, ['-e', source], { encoding: 'utf8' })
+    .split('\n')
+    .slice(0, -1);
 }
 
 function trace(source: string, options: Partial<GenerateOptions> = {}): Trace {
@@ -47,6 +43,7 @@ describe('console output matches real Node', () => {
     'console.log(false, NaN, -0, "text", 10n);',
     'const fns = [];\nfor (let i = 0; i < 3; i++) fns.push(() => i);\nconsole.log(fns[0](), fns[2]());',
     'const fns = [];\nfor (var i = 0; i < 3; i++) fns.push(() => i);\nconsole.log(fns[0](), fns[2]());',
+    'var g = 1;\nconsole.log(globalThis.g, typeof globalThis.h);\nvar h = 2;',
   ];
   for (const source of programs) {
     it(source.split('\n')[0] ?? source, () => {
