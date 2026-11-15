@@ -1,0 +1,1024 @@
+{
+  "id": "fixtures/for-let-closures",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "const fns = [];\nfor (let i = 0; i < 3; i++) {\n  fns.push(() => i);\n}\nconst first = fns[0]();\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 1
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": []
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 6,
+        "endLine": 2,
+        "endCol": 14
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": []
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": []
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env4"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env5",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env3"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 6,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env6"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env5",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env7",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj2"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env3"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env5"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 7,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 1,
+        "endLine": 5,
+        "endCol": 23
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env5",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env7",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj2"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj3"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env3"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env5"
+        },
+        {
+          "id": "obj3",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env7"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 8,
+      "kind": "enter",
+      "span": {
+        "startLine": 3,
+        "startCol": 18,
+        "endLine": 3,
+        "endCol": 18
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "(anonymous)",
+          "envId": "env8"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env5",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env7",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env8",
+          "kind": "function",
+          "label": "(anonymous)() call",
+          "parentId": "env3",
+          "bindings": []
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj2"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj3"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env3"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env5"
+        },
+        {
+          "id": "obj3",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env7"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 9,
+      "kind": "return",
+      "span": null,
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "(anonymous)",
+          "envId": "env8"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env5",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env7",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env8",
+          "kind": "function",
+          "label": "(anonymous)() call",
+          "parentId": "env3",
+          "bindings": []
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj2"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj3"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env3"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env5"
+        },
+        {
+          "id": "obj3",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env7"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 10,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "fns",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "first",
+              "decl": "const",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env5",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env7",
+          "kind": "block",
+          "label": "block",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "i",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "ref",
+              "heapId": "obj1"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj2"
+            },
+            {
+              "kind": "ref",
+              "heapId": "obj3"
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env3"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env5"
+        },
+        {
+          "id": "obj3",
+          "kind": "function",
+          "name": "(anonymous)",
+          "arrow": true,
+          "envId": "env7"
+        }
+      ],
+      "console": [],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}
