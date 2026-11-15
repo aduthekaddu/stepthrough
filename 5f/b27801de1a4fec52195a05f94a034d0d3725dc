@@ -1,0 +1,67 @@
+apps/web/scripts/build-traces.ts
+  s_2a56c3b7f09e96::t_ec421f4a6910d4 72
+  s_2a56c3b7f09e96::t_d763f7f4986480 1-71,73-79
+apps/web/vitest.config.ts
+  s_2a56c3b7f09e96::t_967932356cdf2e 1-8
+apps/web/scripts/narration.ts
+  s_2a56c3b7f09e96::t_6c4f25bcd1f2fd 2-24,34-70
+  s_2a56c3b7f09e96::t_972da5b7738d91 25-33
+  s_2a56c3b7f09e96::t_1029e00f564ea2 1
+apps/web/viz-fixtures/closure-counter.js
+  s_2a56c3b7f09e96::t_21bd2976e8f6a6 1-2,4-5,8-9,11
+  s_2a56c3b7f09e96::t_e1765c626226dd 3,6-7
+  s_2a56c3b7f09e96::t_e5225ccae9ce90 10
+apps/web/viz-fixtures/closure-counter.narration.yaml
+  s_2a56c3b7f09e96::t_4a2c4fce4fbd83 1-3
+apps/web/scripts/narration.test.ts
+  s_2a56c3b7f09e96::t_4cd222f7801d5f 1-43
+apps/web/viz-fixtures/hoisting-tdz.js
+  s_2a56c3b7f09e96::t_e300fc203d507c 1-6
+apps/web/viz-fixtures/recursion-fact.js
+  s_2a56c3b7f09e96::t_10eacbc5eee4d4 1-5
+docs/lesson-components.md
+  s_2a56c3b7f09e96::t_67df79df0fb1fb 1-74
+biome.json
+  s_2a56c3b7f09e96::t_69630e64a1f508 19-26
+  s_2a56c3b7f09e96::t_972da5b7738d91 6-13
+apps/web/package.json
+  s_2a56c3b7f09e96::t_572263cb7130a4 6-8,10,17
+  s_2a56c3b7f09e96::t_a9b0da35953375 28-29,35-36
+  s_2a56c3b7f09e96::t_d46ea669919720 19
+apps/web/viz-fixtures/for-let-closures.js
+  s_2a56c3b7f09e96::t_f65491ebf20cdd 1-5
+apps/web/viz-fixtures/aliasing.js
+  s_2a56c3b7f09e96::t_84127d33e82ef5 1-5
+apps/web/viz-fixtures/cycle-and-holes.js
+  s_2a56c3b7f09e96::t_26f719cd64391f 1-4
+apps/web/generated/traces/fixtures/aliasing.json
+  s_2a56c3b7f09e96::t_63af88c4e2e11a 1-437
+apps/web/generated/traces/fixtures/closure-counter.json
+  s_2a56c3b7f09e96::t_7c9d20e6f964f7 1-1160
+apps/web/generated/traces/fixtures/cycle-and-holes.json
+  s_2a56c3b7f09e96::t_54b0bb43c8cf50 1-361
+apps/web/generated/traces/fixtures/for-let-closures.json
+  s_2a56c3b7f09e96::t_75344c9a40394a 1-1024
+apps/web/generated/traces/fixtures/hoisting-tdz.json
+  s_2a56c3b7f09e96::t_20674d6e6922a8 1-451
+apps/web/generated/traces/fixtures/recursion-fact.json
+  s_2a56c3b7f09e96::t_4fb2082af083a8 1-974
+pnpm-lock.yaml
+  s_2a56c3b7f09e96::t_878d2209862e2b 190-192,196-198,201,218-223,242-244,280-285,647-651,1082-1085,1212-1225,1473-1492,1536-1545,1827-1831,2109-2112,2391-2392,2505-2513,2971-2984,2989,3008,3031-3036
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5fb27801de1a4fec52195a05f94a034d0d3725dc",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
