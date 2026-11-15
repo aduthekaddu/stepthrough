@@ -1,0 +1,19 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: first, kind: statement }
+    say: "Before line 1, the global level exists but is in its TDZ. check is already a function."
+    expect:
+      - { record: Global, binding: level, value: "uninitialized" }
+      - { record: Global, binding: check, value: "function check" }
+  - at: { mark: call, kind: statement }
+    say: "Line 1 ran: the global level is now \"outer\"."
+    expect:
+      - { record: Global, binding: level, value: '"outer"' }
+  - at: { mark: read, kind: enter }
+    say: "check was called. Its record already has its own level, created from the let on line 4, and it is in its TDZ. Line 3 will look up level, find this one first, and the read will throw a ReferenceError. The global level is never reached."
+    expect:
+      - { stackDepth: 2 }
+      - { record: "check() call", binding: level, value: "uninitialized" }
+      - { record: Global, binding: level, value: '"outer"' }
+      - { console: [] }

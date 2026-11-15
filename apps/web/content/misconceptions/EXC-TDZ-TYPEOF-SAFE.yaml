@@ -1,0 +1,10 @@
+id: EXC-TDZ-TYPEOF-SAFE
+belief: typeof never throws, so it is a safe way to test any name.
+predicts: console.log(typeof later); let later = 1; prints undefined.
+truth: 'typeof has a special case only for a name that cannot be found anywhere: it returns "undefined". A name in its temporal dead zone is found, so typeof reads it, and that read throws.'
+counterexample: "console.log(typeof later); let later = 1; throws ReferenceError: Cannot access 'later' before initialization."
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-typeof-operator-runtime-semantics-evaluation
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+lessons:
+  - js-execution-context

@@ -1,0 +1,11 @@
+id: EXC-TDZ-PARAMS-EXEMPT
+belief: All parameters receive their values together before any default value is computed, so a default can use a later parameter.
+predicts: function pair(a = b, b = 2) { return a + b; } console.log(pair()); prints 4.
+truth: Parameters are created uninitialized and initialized one by one, left to right. A default that reads a parameter to its right reads an uninitialized binding and throws.
+counterexample: "pair() throws ReferenceError: Cannot access 'b' before initialization."
+sources:
+  - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-functiondeclarationinstantiation
+  - "https://doi.org/10.1145/3386327 (Wirfs-Brock and Eich, JavaScript: The First 20 Years, pp. 111-113)"
+  - Inferred
+lessons:
+  - js-execution-context

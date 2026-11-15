@@ -1,0 +1,10 @@
+id: EXC-LOCALS-PERSIST
+belief: A function has one set of local variables, created once, which every call (including recursive calls) shares.
+predicts: A recursive call overwrites the caller's locals, so every call logs the value set by the deepest call.
+truth: Every call creates a new execution context and a new function environment record (PrepareForOrdinaryCall, NewFunctionEnvironment), so each call has its own bindings.
+counterexample: function countdown(n) { var label = "n=" + n; if (n > 0) countdown(n - 1); console.log(label); } countdown(2); prints n=0, n=1, n=2.
+sources:
+  - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-prepareforordinarycall
+  - Inferred; related to CLO-SHARED-ACROSS-CALLS planned for lesson 1.3 (research/pedagogy.md §5.1)
+lessons:
+  - js-execution-context

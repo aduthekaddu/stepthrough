@@ -1,0 +1,11 @@
+id: EXC-HOIST-CLASS-LIKE-FUNCTION
+belief: A class declaration is available above its line, the way a function declaration is.
+predicts: new Dog() above class Dog {} creates an object.
+truth: A class declaration creates an uninitialized binding (in the temporal dead zone) during declaration instantiation; the class itself is created when its line runs.
+counterexample: "new Dog('Rex'); class Dog {} throws ReferenceError: Cannot access 'Dog' before initialization."
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation
+  - https://developer.mozilla.org/en-US/docs/Glossary/Hoisting
+  - Inferred
+lessons:
+  - js-execution-context
