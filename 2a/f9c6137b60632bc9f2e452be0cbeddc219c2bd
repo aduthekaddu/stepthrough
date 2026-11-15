@@ -1,0 +1,77 @@
+apps/web/content/misconceptions/FND-BYTE-ANY-NUMBER.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_2a56c3b7f09e96::t_be966dd942b5d9 218
+  s_2a56c3b7f09e96::t_904ccda11cbdcb 465
+  s_2a56c3b7f09e96::t_1babbf85387eea 592
+  s_2a56c3b7f09e96::t_00b44b21bcfcc0 362
+  s_2a56c3b7f09e96::t_36a2dabe483448 203
+  s_2a56c3b7f09e96::t_bfdca1d02eb065 385
+  s_2a56c3b7f09e96::t_42ab9d36560e40 419
+  s_2a56c3b7f09e96::t_f087ee6a44ad97 154
+  s_2a56c3b7f09e96::t_4a700cc20fc09a 584
+  s_2a56c3b7f09e96::t_9ff84e82823d17 139
+  s_2a56c3b7f09e96::t_cb25094ad6217d 532
+  s_2a56c3b7f09e96::t_d202a9d2078378 467
+  s_2a56c3b7f09e96::t_1d6d45e51bd028 174
+  s_2a56c3b7f09e96::t_0849ec1652ccbe 162
+  s_2a56c3b7f09e96::t_09ce1b3596b42f 411
+  s_2a56c3b7f09e96::t_2a0bb5fdc158bb 169
+  s_2a56c3b7f09e96::t_407dd085e1e29d 493
+  s_2a56c3b7f09e96::t_3c1b1c6afd8902 241
+  s_2a56c3b7f09e96::t_9da700192d3286 575
+  s_2a56c3b7f09e96::t_f2e35f54b3df11 410
+  s_2a56c3b7f09e96::t_68d0740944b547 582
+  s_2a56c3b7f09e96::t_a0cc348b045ed5 619
+  s_2a56c3b7f09e96::t_663332a2d7c6ee 655
+  s_2a56c3b7f09e96::t_6d1eabdef788a6 69
+  s_2a56c3b7f09e96::t_1cbf1d93c37870 678
+  s_2a56c3b7f09e96::t_6780d408785f8b 616
+  s_2a56c3b7f09e96::t_cd2a8b1cef6772 423
+  s_2a56c3b7f09e96::t_586e8bbe858c08 541
+  s_2a56c3b7f09e96::t_ee47e0df339581 360
+  s_2a56c3b7f09e96::t_72790de4a82d70 539
+  s_2a56c3b7f09e96::t_91e882f7a3e5dc 270
+  s_2a56c3b7f09e96::t_66e9d489e41670 100
+  s_2a56c3b7f09e96::t_46ceb39c8455e7 186
+  s_2a56c3b7f09e96::t_24ddb6614289de 280
+  s_2a56c3b7f09e96::t_e4e70e0740dd46 483
+  s_2a56c3b7f09e96::t_dfd2cf64337e0d 201
+  s_2a56c3b7f09e96::t_d7a168253e219f 560
+  s_2a56c3b7f09e96::t_3972e187229cfa 681-683
+  s_2a56c3b7f09e96::t_f2f57759c50ac7 734
+  s_2a56c3b7f09e96::t_885a0d825fb104 586
+  s_2a56c3b7f09e96::t_b89abcffebfc8e 741
+apps/web/content/misconceptions/FND-JIT-CACHES-RESULTS.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+apps/web/content/misconceptions/FND-JS-PREEMPTED.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+apps/web/content/misconceptions/FND-RECURSION-RUNS-FOREVER.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+apps/web/content/misconceptions/FND-TABS-SHARE-MEMORY.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+apps/web/content/misconceptions/FND-JS-COMPILED-AHEAD.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4-5
+apps/web/content/misconceptions/FND-STACK-IS-ALL-MEMORY.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+apps/web/content/foundations/how-programs-run/outline.yaml
+  s_2a56c3b7f09e96::t_aae683608e107b 161-170
+apps/web/content/misconceptions/FND-RETURN-FREES-ALL.yaml
+  s_2a56c3b7f09e96::t_a34edffde9a251 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2af9c6137b60632bc9f2e452be0cbeddc219c2bd",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
