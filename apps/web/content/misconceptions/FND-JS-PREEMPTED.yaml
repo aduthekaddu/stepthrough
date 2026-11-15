@@ -1,0 +1,11 @@
+id: FND-JS-PREEMPTED
+belief: "A timer or another piece of JavaScript can interrupt a function that is still running, the way the OS switches threads."
+predicts: "A 0 ms timer prints before a 100 ms busy loop that started after it finishes."
+truth: "An agent runs one piece of JavaScript at a time, and each job runs to completion. A callback can only start when the running code has finished and the call stack is empty."
+counterexample: "setTimeout(() => console.log(\"timer\"), 0) followed by a 100 ms busy loop that logs \"loop done\" prints loop done, then timer."
+sources:
+  - "https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs"
+  - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model"
+  - "inferred: transfer from Java threads, which the OS can switch between at any instruction"
+lessons:
+  - fnd-how-programs-run

@@ -1,0 +1,394 @@
+# Outline for lesson 0.1 "How a program runs". Single source of truth for index.mdx.
+frontmatter:
+  id: fnd-how-programs-run
+  track: foundations
+  title: How a program runs
+  minutes: 75
+  prereqs: []
+  outcomes:
+    - Trace how JavaScript source code becomes work the CPU does (parse, bytecode, interpreter, JIT), and say which steps the language promises and which V8 chooses
+    - Draw the call stack for nested and recursive calls, and explain what causes a stack overflow
+    - Explain memory, processes, threads and the heap, and why one long-running JavaScript function stops everything else on its thread
+  sources:
+    - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+    - https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - https://v8.dev/blog/maglev
+    - https://man7.org/linux/man-pages/man7/pthreads.7.html
+    - https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop
+  interviewTags: [frontend, backend, fullstack]
+  status: draft
+  verifiedAt: 2026-11
+
+# Every fact the prose relies on, with where it was read (2026-11-15) or how it was measured.
+facts:
+  spec:
+    - id: early-errors
+      text: "An early error is an error that can be detected and reported prior to the evaluation of any construct in the Script containing the error. The presence of an early error prevents the evaluation of the construct. An implementation must report early errors in a Script as part of parsing that Script in ParseScript."
+      url: https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions
+    - id: not-early
+      text: "An implementation shall not treat other kinds of errors as early errors even if the compiler can prove that a construct cannot execute without error under any circumstances."
+      url: https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions
+    - id: duplicate-lexical
+      text: "Script early error: It is a Syntax Error if the LexicallyDeclaredNames of ScriptBody contains any duplicate entries. Function body: It is a Syntax Error if the LexicallyDeclaredNames of FunctionStatementList contains any duplicate entries."
+      url: https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-scripts-static-semantics-early-errors
+    - id: parse-script
+      text: "ParseScript returns a Script Record or a non-empty List of SyntaxError objects. ScriptEvaluation (16.1.6) is a separate later step that pushes the script's execution context."
+      url: https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-parse-script
+    - id: ec-stack
+      text: "The execution context stack is used to track execution contexts. The running execution context is always the top element of this stack. ... The newly created execution context is pushed onto the stack and becomes the running execution context."
+      url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+    - id: one-running
+      text: "At any point in time, there is at most one execution context per agent that is actually executing code."
+      url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+    - id: run-to-completion
+      text: "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent."
+      url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs
+    - id: agent
+      text: "An agent comprises a set of ECMAScript execution contexts, an execution context stack, a running execution context, an Agent Record, and an executing thread."
+      url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agents
+    - id: shared-thread-tabs
+      text: "Some web browsers share a single executing thread across multiple unrelated tabs of a browser window, for example."
+      url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-agents
+    - id: hosts
+      text: "Spec 4.2: a host is an external source that further defines facilities listed in Annex D ... A host is often an external specification, such as WHATWG HTML. 4.1: A web browser provides an ECMAScript host environment ... A web server provides a different host environment."
+      url: https://tc39.es/ecma262/multipage/overview.html#sec-hosts-and-implementations
+    - id: host-extras
+      text: "A host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."
+      url: https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions
+    - id: no-console
+      text: "The ECMAScript global object section has no console property; the console namespace is defined by the WHATWG Console Standard ('This specification defines APIs for console debugging facilities')."
+      url: https://console.spec.whatwg.org/
+    - id: touint8
+      text: "ToUint8 converts its argument to one of 2^8 integral Number values from +0 to 255 (ToFixedSizeInteger(int, unsigned, 8)). Writing to a Uint8Array element uses it."
+      url: https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8
+    - id: tail-calls
+      text: "15.10.3 PrepareForTailCall: 'Discard all resources associated with the current execution context.' Strict-mode calls in tail position reuse the frame in the spec model."
+      url: https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-preparefortailcall
+    - id: gc-in-spec
+      text: "The spec mentions garbage collection only where it matters to behaviour, e.g. 'A WeakRef is an object that is used to refer to a target object or symbol without preserving it from garbage collection.' It never defines a stack region or a heap region."
+      url: https://tc39.es/ecma262/multipage/managing-memory.html#sec-weak-ref-objects
+  mdn:
+    - id: engine-host
+      text: "JavaScript execution requires the cooperation of two pieces of software: the JavaScript engine and the host environment. The JavaScript engine implements the ECMAScript (JavaScript) language, providing the core functionality. It takes source code, parses it, and executes it."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - id: mdn-stack
+      text: "Stack (of execution contexts): this is what's known as a call stack ... It's called a stack because it's last-in-first-out. ... When foo returns, the top frame element is popped out of the stack."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - id: mdn-heap
+      text: "Heap (of objects): this is just a name to denote a large (mostly unstructured) region of memory. It gets populated as objects get created in the program."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - id: mdn-agent-thread
+      text: "Each agent is analogous to a thread (note that the underlying implementation may or may not be an actual operating system thread)."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - id: mdn-long-job
+      text: "If a job takes too long to complete, the web application is unable to process user interactions like click or scroll."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - id: mdn-windows
+      text: "Two Window objects with no opener or ancestor relationship are not in the same agent cluster, even if same origin; they can exchange data with postMessage(), passed by value."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model
+    - id: mdn-recursion
+      text: "Message: RangeError: Maximum call stack size exceeded (Chrome); InternalError: too much recursion (Firefox). 'When there are too many function calls, or a function is missing a base case, JavaScript will throw this error.'"
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion
+    - id: mdn-gc
+      text: "Low-level languages like C, have manual memory management primitives such as malloc() and free(). In contrast, JavaScript automatically allocates memory when objects are created and frees it when they are not used anymore (garbage collection)."
+      url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management
+    - id: mdn-jit
+      text: "JIT (Just-In-Time Compilation) is a compilation process in which code is translated from an intermediate representation or a higher-level language (e.g., JavaScript or Java bytecode) into machine code at runtime, rather than prior to execution."
+      url: https://developer.mozilla.org/en-US/docs/Glossary/Just_In_Time_Compilation
+    - id: mdn-compile
+      text: "A compiler transforms code written in a higher-level language such as C++, Rust, or Java into executable (runnable) code, so-called binary code or machine code."
+      url: https://developer.mozilla.org/en-US/docs/Glossary/Compile
+  v8:
+    - id: tiers
+      text: "All JavaScript code is first compiled to ignition bytecode, and executed by interpreting it. ... in 2021 we introduced a new baseline JIT called Sparkplug ... Maglev sits between our existing Sparkplug and TurboFan compilers. TurboFan: V8's optimizing compiler focused on peak performance. (Maglev post, 5 Dec 2023)"
+      url: https://v8.dev/blog/maglev
+    - id: feedback
+      text: "During execution V8 tracks how the program behaves, including tracking object shapes and types. Both the runtime execution metadata and bytecode are fed into the optimizing compiler to generate high-performance, often speculative, machine code. Maglev code needs to be able to deoptimize."
+      url: https://v8.dev/blog/maglev
+    - id: sparkplug
+      text: "Sparkplug compiles from bytecode rather than from JavaScript source. Interpreters have inherent overheads. Deoptimisation: the optimized code tiers down and continues the function's execution in the interpreter. (27 May 2021)"
+      url: https://v8.dev/blog/sparkplug
+    - id: turboshaft
+      text: "Turboshaft is a CFG-based IR; the whole JavaScript backend of Turbofan uses Turboshaft. Turbofan is still V8's end-tier optimizing compiler. (25 Mar 2025)"
+      url: https://v8.dev/blog/leaving-the-sea-of-nodes
+    - id: preparser
+      text: "The preparser verifies that the functions it skips are syntactically valid. When a preparsed function is later called, it is fully parsed and compiled on-demand. (15 Apr 2019)"
+      url: https://v8.dev/blog/preparser
+    - id: gc-threads
+      text: "Concurrent is when the main thread executes JavaScript constantly, and helper threads do GC work totally in the background. Concurrent marking happens entirely in the background while JavaScript is executing on the main thread. (Trash talk, 3 Jan 2019)"
+      url: https://v8.dev/blog/trash-talk
+  os:
+    - id: fork
+      text: "fork() creates a new process by duplicating the calling process. The child process and the parent process run in separate memory spaces. Memory writes ... performed by one of the processes do not affect the other."
+      url: https://man7.org/linux/man-pages/man2/fork.2.html
+    - id: pthreads
+      text: "A single process can contain multiple threads, all of which are executing the same program. These threads share the same global memory (data and heap segments), but each thread has its own stack (automatic variables)."
+      url: https://man7.org/linux/man-pages/man7/pthreads.7.html
+    - id: proc-maps
+      text: "/proc/pid/maps: A file containing the currently mapped memory regions and their access permissions. The address field is the address space in the process that the mapping occupies. [stack]: The initial process's (also known as the main thread's) stack. [heap]: The process's heap."
+      url: https://man7.org/linux/man-pages/man5/proc_pid_maps.5.html
+    - id: chromium-processes
+      text: "Modern browsers like Chromium use multiple operating system processes. In site-per-process mode, each process is locked to documents from a single site. Over a soft process limit, Chromium may reuse a same-site process for a new tab."
+      url: https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md
+  node:
+    - id: node-pool
+      text: "Node.js runs JavaScript code in the Event Loop (initialization and callbacks), and offers a Worker Pool to handle expensive tasks like file I/O. ... crypto.pbkdf2(), crypto.scrypt() ... use the Worker Pool. If the Event Loop spends too long at any point, all current and new clients will not get a turn."
+      url: https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop
+  java:
+    - id: java-mixed
+      text: "-Xmixed: Executes all bytecode by the interpreter except for hot methods, which are compiled to native code. On by default. -Xint: all bytecode is executed by the interpreter. -Xss: Sets the thread stack size ... Linux/x64: 1024 KB. -Xmx: maximum size of the heap."
+      url: https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html
+  measured:
+    - id: m-env
+      text: "Node v26.13.1, V8 14.6.202.34-node.40, x86_64 Linux, gcc 13.3.0, GNU objdump 2.42."
+    - id: m-machine-code
+      text: "gcc -O1 -fcf-protection=none -c add.c for 'int add(int a, int b) { return a + b; }' gives 4 bytes: 8d 04 37 (lea eax,[rdi+rsi*1]) and c3 (ret)."
+    - id: m-bytecode
+      text: "node --print-bytecode --print-bytecode-filter=add on 'function add(a, b) { return a + b; }': Bytecode length 6; Ldar a1 / Add a0, FBV[0] / Return."
+    - id: m-trace-opt
+      text: "--trace-opt --trace-deopt on the p-deopt snippet: 'marking ... add ... for optimization to MAGLEV, ConcurrencyMode::kConcurrent, reason: hot and stable'; the loop is also compiled with target TURBOFAN_JS (OSR); after add('ab','cd'): 'bailout (kind: deopt-eager, reason: not a Smi) ... deoptimizing ... add'. Output still 100000 then abcd."
+    - id: m-stack-size
+      text: "node --v8-options: --stack-size default 984 (kBytes). A no-argument recursive function reached depth 12517 before RangeError on this machine (varies by engine, version and frame size)."
+    - id: m-tail
+      text: "'use strict' tail-recursive count(100000) throws RangeError: Maximum call stack size exceeded in Node v26 (V8 does not implement proper tail calls)."
+    - id: m-maps
+      text: "Two runs of the node -e command shown in s05 printed different ranges: 63fbdd2b8000-63fbdd520000 [heap], 7fffa371a000-7fffa373c000 [stack]; then 62a12068b000-62a1208f3000 [heap], 7ffd5c40c000-7ffd5c42e000 [stack]."
+    - id: m-lazy
+      text: "--print-bytecode --print-bytecode-filter=add on the s10 lazy.js code printed 'before the first call', then the bytecode for add once, then 3 and 7. With the filter set to neverCalled, no bytecode was printed."
+    - id: m-oom
+      text: "node --max-old-space-size=16 with an ever-growing array prints 'FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory'."
+    - id: m-depth-lesson
+      text: "The s15 runnable dive() code prints 'frames before the overflow: 12517' twice in a row on this machine."
+    - id: m-p1b
+      text: "A never-called function that reads an undeclared name is not an early error: the script prints one, two."
+
+vocabulary:
+  # new terms, in the order the segments introduce them
+  - { id: program, status: new, segment: s02-program, def: "A list of instructions that tells a computer what to do." }
+  - { id: source-code, status: new, segment: s02-program, def: "The text of a program as a person writes it, in a language like JavaScript, Java or C." }
+  - { id: cpu, status: new, segment: s02-program, def: "The chip that carries out a program's instructions, one after another." }
+  - { id: machine-code, status: new, segment: s03-machine-code, def: "Instructions written as numbers in the format one CPU family understands. It is the only form a CPU can run directly." }
+  - { id: byte, status: new, segment: s03-machine-code, def: "Eight bits. One byte holds a whole number from 0 to 255." }
+  - { id: compiler, status: new, segment: s03-machine-code, def: "A program that translates code into another form, such as machine code or bytecode, before that code runs." }
+  - { id: memory, status: new, segment: s04-memory, def: "The computer's working storage (RAM): a long row of bytes the CPU can read and write while programs run." }
+  - { id: address, status: new, segment: s04-memory, def: "The number that names one byte's position in memory." }
+  - { id: operating-system, status: new, segment: s05-process, def: "The program that starts other programs, shares the CPU and memory between them and keeps them apart. Linux, Windows and macOS are examples." }
+  - { id: process, status: new, segment: s05-process, def: "A running program as the operating system sees it, with its own private range of memory addresses." }
+  - { id: thread, status: new, segment: s06-thread, def: "One path of execution inside a process. Threads of one process share its memory, but each has its own stack." }
+  - { id: interpreter, status: new, segment: s07-interpreter, def: "A program that reads code and carries it out step by step itself, instead of turning it into machine code first." }
+  - { id: bytecode, status: new, segment: s07-interpreter, def: "Compact instructions made for an interpreter, not for a CPU. Java and V8 both use their own bytecode." }
+  - { id: engine, status: new, segment: s08-engine-host, def: "The program that implements the JavaScript language: it parses source code, runs it and manages its memory. V8 is one.", spec: "implementation (informal)" }
+  - { id: runtime, status: new, segment: s08-engine-host, def: "The software that embeds an engine and adds ways to reach the outside world, such as the page, files and the network. Browsers and Node are runtimes.", spec: "host / host environment" }
+  - { id: jit, status: new, segment: s11-jit, def: "Just-in-time compilation: compiling code to machine code while the program is already running, usually only the parts that run often." }
+  - { id: call-stack, status: new, segment: s13-call-stack, def: "The list of function calls that have started but not finished, newest on top.", spec: "execution context stack" }
+  - { id: stack-frame, status: new, segment: s13-call-stack, def: "One entry on the call stack: one call that has not finished, with its own variables and its place in the code.", spec: "execution context" }
+  - { id: heap, status: new, segment: s16-heap, def: "The region of memory for data whose lifetime is not tied to one function call, such as objects. Not a spec term." }
+  - { id: garbage-collection, status: new, segment: s16-heap, def: "The engine's automatic work of finding memory nothing can reach any more and reusing it. Depth in lesson 1.9." }
+  # not glossary terms, explained in plain words where used: register, accumulator, deoptimization, base case, setTimeout (forward to 1.7), worker (forward)
+
+misconceptions:
+  - FND-LINE-BY-LINE
+  - FND-REDECLARE-REPLACES
+  - FND-UNCALLED-UNCHECKED
+  - FND-JS-COMPILED-AHEAD
+  - FND-BYTE-ANY-NUMBER
+  - FND-TABS-SHARE-MEMORY
+  - FND-JS-PREEMPTED
+  - FND-LATE-CALLBACK-DROPPED
+  - FND-DOM-IS-JS
+  - FND-SAME-CODE-SAME-SPEED
+  - FND-JIT-CACHES-RESULTS
+  - FND-ENGINE-IS-LANGUAGE
+  - FND-OPTIMIZED-CHANGES-MEANING
+  - FND-RECURSION-RUNS-FOREVER
+  - FND-STACK-IS-ALL-MEMORY
+  - FND-RETURN-FREES-ALL
+
+# Words are prose words per segment (lead-in + after the reveal). Minutes are approximate.
+segments:
+  - id: s01-hook
+    goal: "Running a file is not reading it one line at a time"
+    minutes: 4
+    terms_introduced: []
+    terms_used: []
+    words: 40-70
+    code: examples in index (p-hook)
+    interaction: { kind: predict, id: p-hook }
+    doubt: null
+  - id: s02-program
+    goal: "A program is instructions, and the CPU cannot read the text you write"
+    minutes: 3
+    terms_introduced: [program, source-code, cpu]
+    terms_used: []
+    words: 120-160
+    code: "add(2, 3) and add.toString() (runnable)"
+    interaction: { kind: run }
+    doubt: "If the computer runs my JavaScript, surely the chip understands JavaScript?"
+  - id: s03-machine-code
+    goal: "The CPU runs only machine code: numbered instructions stored as bytes"
+    minutes: 4
+    terms_introduced: [machine-code, byte, compiler]
+    terms_used: [cpu, source-code, program]
+    words: 150-190
+    code: "C add() compiled by gcc to 8d 04 37 c3 (measured m-machine-code)"
+    interaction: { kind: explain, id: e-cpu }
+    doubt: "Why can't one set of bytes run on every computer?"
+  - id: s04-memory
+    goal: "Memory is one long row of bytes, each with a numbered address"
+    minutes: 4
+    terms_introduced: [memory, address]
+    terms_used: [byte, cpu, program]
+    words: 200-240
+    code: "Uint8Array as a model of a few bytes"
+    visual: "still: row of numbered boxes, address under each box"
+    interaction: { kind: predict, id: p-byte }
+    doubt: "Is a Uint8Array real memory?"
+  - id: s05-process
+    goal: "The operating system runs each program as a process with its own private memory"
+    minutes: 4
+    terms_introduced: [operating-system, process]
+    terms_used: [memory, address, program]
+    words: 220-260
+    code: "/proc/self/maps from two node runs (measured m-maps)"
+    interaction: { kind: predict, id: p-tabs }
+    doubt: "Are two browser tabs two processes?"
+  - id: s06-thread
+    goal: "A thread is one path of execution, and JavaScript runs your code on one thread at a time"
+    minutes: 4
+    terms_introduced: [thread]
+    terms_used: [process, memory, cpu]
+    words: 230-270
+    interaction: { kind: predict, id: p-busy }
+    doubt: "If the computer has many cores, why does my loop block the timer?"
+  - id: s07-interpreter
+    goal: "A compiler translates ahead of time; an interpreter carries out code itself; bytecode sits between"
+    minutes: 4
+    terms_introduced: [interpreter, bytecode]
+    terms_used: [compiler, machine-code, cpu, source-code]
+    words: 180-220
+    code: "C path vs Java path (javac, JVM -Xmixed)"
+    interaction: { kind: explain, id: e-compile }
+    doubt: "So is Java compiled or interpreted?"
+  - id: s08-engine-host
+    goal: "The engine implements the language; the runtime (host) adds the outside world"
+    minutes: 4
+    terms_introduced: [engine, runtime]
+    terms_used: [interpreter, compiler, source-code]
+    words: 200-240
+    interaction: { kind: predict, id: p-host }
+    doubt: "Isn't console.log part of JavaScript?"
+  - id: s09-parse-first
+    goal: "The engine parses the whole script before running any of it, so early errors stop everything"
+    minutes: 4
+    terms_introduced: []
+    terms_used: [engine, source-code]
+    words: 220-260
+    interaction: { kind: predict, id: p-parse-first, modifies: p-hook }
+    doubt: "Why would the language check code that never runs?"
+  - id: s10-bytecode
+    goal: "V8 turns each function into bytecode, usually the first time it is called"
+    minutes: 4
+    terms_introduced: []
+    terms_used: [bytecode, interpreter, engine, byte]
+    words: 200-240
+    code: "real --print-bytecode output for add (m-bytecode)"
+    interaction: { kind: predict, id: p-lazy }
+    doubt: "Why not turn everything into bytecode at once?"
+  - id: s11-jit
+    goal: "Hot functions get compiled to machine code while the program runs, based on what V8 has seen"
+    minutes: 4
+    terms_introduced: [jit]
+    terms_used: [bytecode, interpreter, machine-code, compiler, engine]
+    words: 230-270
+    interaction: { kind: predict, id: p-faster }
+    doubt: "If compiled code is faster, why not compile everything at the start?"
+  - id: s12-deopt
+    goal: "Optimized code rests on guesses, and when a guess fails V8 throws the code away, never the meaning"
+    minutes: 4
+    terms_introduced: []
+    terms_used: [jit, bytecode, interpreter, thread]
+    words: 180-220
+    code: "real --trace-opt --trace-deopt output (m-trace-opt)"
+    interaction: { kind: predict, id: p-deopt, then: { kind: explain, id: e-deopt } }
+    doubt: "Does JavaScript use only one thread, then?"
+  - id: s13-call-stack
+    goal: "Each call that has not finished is a frame on the call stack; calling pushes, returning pops"
+    minutes: 5
+    terms_introduced: [call-stack, stack-frame]
+    terms_used: [thread, memory]
+    words: 180-220
+    code: examples/nested-calls.js
+    visual: { component: Viz, view: scope, example: nested-calls, pauseAt: [4], pretrain: "still labelled description of the two columns before stepping" }
+    interaction: { kind: predict-next-frame, at: 4 }
+    doubt: "Where does sumOfSquares wait while square runs?"
+  - id: s14-recursion
+    goal: "A recursive function gets a separate frame for every call, each with its own variables"
+    minutes: 4
+    terms_introduced: []
+    terms_used: [call-stack, stack-frame]
+    words: 150-190
+    code: examples/factorial.js
+    visual: { component: Viz, view: scope, example: factorial, pauseAt: [8] }
+    interaction: { kind: predict-next-frame, at: 8 }
+    doubt: "Do the three calls share one n?"
+  - id: s15-overflow
+    goal: "A stack overflow happens when calls keep pushing frames and none return, until the fixed-size stack is full"
+    minutes: 4
+    terms_introduced: []
+    terms_used: [call-stack, stack-frame, memory, engine]
+    words: 200-240
+    interaction: { kind: predict, id: p-overflow }
+    doubt: "Why is the limit so small when my laptop has gigabytes of memory?"
+  - id: s16-heap
+    goal: "Objects live in the heap, whose data outlives the call that made it, and garbage collection frees it later"
+    minutes: 4
+    terms_introduced: [heap, garbage-collection]
+    terms_used: [stack-frame, call-stack, memory, engine]
+    words: 220-260
+    interaction: { kind: predict, id: p-survive }
+    doubt: "Are numbers on the stack and objects on the heap?"
+  - id: s17-map
+    goal: "Sort every fact in this lesson into general computing, JavaScript spec, or V8 choice"
+    minutes: 3
+    terms_introduced: []
+    terms_used: [engine, jit, call-stack, heap, process, thread]
+    words: 160-200
+    interaction: { kind: predict, id: p-which-rule }
+  - id: s18-wild
+    goal: "One thread, one stack and a JIT show up in Express servers, React apps and the JVM you use at work"
+    minutes: 4
+    terms_introduced: []
+    terms_used: [thread, runtime, call-stack, jit, heap, process]
+    words: 220-300 (three paragraphs, each after a code block)
+    code: "Express route with pbkdf2Sync vs pbkdf2; LiveChess ws handler with a synchronous search; Java vs Node flags and out-of-space errors"
+    interaction: { kind: code }
+    note: "In the wild comes before the misconceptions table, as in the pedagogy.md §5 worked outline. With misconceptions first, the s17 facts table and the misconceptions table ran to 349 words with no interaction between them."
+
+closing:
+  - id: s19-misconceptions
+    content: one table row per registry id used, belief then truth
+  - id: s20-interview
+    questions:
+      - "Is JavaScript compiled or interpreted?"
+      - "What is the difference between a process and a thread? How does Node serve many users with one JavaScript thread?"
+      - "What causes 'Maximum call stack size exceeded', and how do you fix it?"
+  - id: s21-explain
+    prompt: "Explain to a junior, in 3 sentences, what happens between saving add.js and the CPU computing add(2, 3)."
+  - id: s22-cards
+    count: 5
+
+predicts:
+  - { id: p-hook, segment: s01-hook, format: choice, answer: "SyntaxError, nothing printed", wrong: [FND-LINE-BY-LINE, FND-REDECLARE-REPLACES] }
+  - { id: p-byte, segment: s04-memory, format: text, answer: "200 44", wrong: [FND-BYTE-ANY-NUMBER] }
+  - { id: p-tabs, segment: s05-process, format: choice, answer: "ReferenceError", wrong: [FND-TABS-SHARE-MEMORY] }
+  - { id: p-busy, segment: s06-thread, format: choice, answer: "loop done, timer", wrong: [FND-JS-PREEMPTED, FND-LATE-CALLBACK-DROPPED] }
+  - { id: p-host, segment: s08-engine-host, format: text, answer: "object undefined function", wrong: [FND-DOM-IS-JS] }
+  - { id: p-parse-first, segment: s09-parse-first, format: choice, modifies: p-hook, answer: "SyntaxError, nothing printed", wrong: [FND-UNCALLED-UNCHECKED, FND-LINE-BY-LINE] }
+  - { id: p-lazy, segment: s10-bytecode, format: choice, answer: "on first call (V8)", wrong: [FND-JS-COMPILED-AHEAD, FND-LINE-BY-LINE] }
+  - { id: p-faster, segment: s11-jit, format: choice, answer: "probably, no promise", wrong: [FND-SAME-CODE-SAME-SPEED, FND-JIT-CACHES-RESULTS, FND-ENGINE-IS-LANGUAGE] }
+  - { id: p-deopt, segment: s12-deopt, format: choice, transfer: true, answer: "100000 / abcd", wrong: [FND-OPTIMIZED-CHANGES-MEANING] }
+  - { id: p-overflow, segment: s15-overflow, format: choice, answer: "RangeError", wrong: [FND-RECURSION-RUNS-FOREVER, FND-STACK-IS-ALL-MEMORY] }
+  - { id: p-survive, segment: s16-heap, format: choice, transfer: true, answer: "Asha", wrong: [FND-RETURN-FREES-ALL] }
+  - { id: p-which-rule, segment: s17-map, format: choice, answer: "early errors stop the script", wrong: [FND-ENGINE-IS-LANGUAGE] }
+  # plus next-frame pauses in s13 (step 4) and s14 (step 8): 14 prediction points in total

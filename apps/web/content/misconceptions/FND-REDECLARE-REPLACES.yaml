@@ -1,0 +1,10 @@
+id: FND-REDECLARE-REPLACES
+belief: "Declaring the same let name twice just replaces the first declaration, as var allows."
+predicts: "let total = 1; let total = 2; runs and total ends as 2."
+truth: "Two let (or const) declarations of one name in one scope are an early error. var allows redeclaration; let and const do not."
+counterexample: "let total = 1; let total = 2; throws SyntaxError: Identifier 'total' has already been declared before anything runs."
+sources:
+  - "https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-scripts-static-semantics-early-errors"
+  - "inferred: transfer from var, which MDN documents as redeclarable"
+lessons:
+  - fnd-how-programs-run

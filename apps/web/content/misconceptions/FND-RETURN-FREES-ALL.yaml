@@ -1,0 +1,10 @@
+id: FND-RETURN-FREES-ALL
+belief: "When a function returns, everything it created is destroyed."
+predicts: "An object created inside a function and returned from it is gone, so reading a property gives undefined or a TypeError."
+truth: "The frame is removed, so the function's local variables go away. The object itself lives in the heap, and it stays as long as something can still reach it. Garbage collection frees it later, once nothing can."
+counterexample: "function makeUser() { const user = { name: \"Asha\" }; return user; } console.log(makeUser().name) prints Asha."
+sources:
+  - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management"
+  - "related: Sorva 2012 Table A.1 #5, difficulties understanding the lifetime of values"
+lessons:
+  - fnd-how-programs-run

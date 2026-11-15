@@ -1,0 +1,10 @@
+id: FND-DOM-IS-JS
+belief: "document, window, setTimeout and console are part of the JavaScript language, so every JavaScript environment has them."
+predicts: "typeof document is \"object\" in Node."
+truth: "The ECMAScript spec defines the language core (Math, Array, JSON). The host adds the rest: browsers add document; browsers and Node each add their own setTimeout and console. The console API comes from the WHATWG Console Standard, not ECMAScript."
+counterexample: "In Node, console.log(typeof Math, typeof document, typeof setTimeout) prints object undefined function."
+sources:
+  - "https://tc39.es/ecma262/multipage/overview.html#sec-hosts-and-implementations"
+  - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model"
+lessons:
+  - fnd-how-programs-run
