@@ -1,0 +1,301 @@
+{
+  "id": "values-alias",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "let a = { n: 1 };\nlet b = a;\nb.n = 2;\nconsole.log(a.n);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 17
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "Two names and nothing created yet; objects will appear on the right, outside the Global box."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 2,
+        "endCol": 10
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "n",
+              "value": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "The object literal made one new object, and the row for a holds an arrow to it, not the object itself."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 8
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "n",
+              "value": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "let b = a copied the arrow, so two arrows now lead to one object and no second object was made."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 17
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "n",
+              "value": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "b.n = 2 followed b's arrow and changed the object at its end, which is the same object a points to."
+    },
+    {
+      "step": 5,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "n",
+              "value": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [
+        "2"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

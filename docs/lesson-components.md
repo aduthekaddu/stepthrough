@@ -65,6 +65,17 @@ steps:
       - { stackDepth: 1 }
 ```
 
+The build checks every expectation against the generated trace and fails with the step number on a mismatch. Write them from the spec, not from the trace. Shapes:
+
+- `{ record, binding, value }`: value is the primitive text as the trace shows it (`"0"`, `"\"hi\""`, `"-0"`), `"uninitialized"` for the TDZ, or `"function <name>"` / `"array"` / `"object"` for a reference.
+- `{ record, binding, sameAs: { record, binding } }`: both names point at one object.
+- `{ record, binding, prop, value }`: a property of the plain object the binding points at.
+- `{ record, exists }`: a record is (or is not) visible.
+- `{ stackDepth }`: the script itself counts as 1.
+- `{ console: [...] }`: console output so far.
+
+Record labels: `Global`, `<fn>() call`, `<fn>() call #2`, `head of the loop at line N`, `iteration K of the loop at line N`, `<name>'s own name`, otherwise `block`. Anchor kinds: `enter` (a call after declaration instantiation), `statement`, `return`, `end`.
+
 ## Other components
 
 - `<Code runnable code={`...`} />` runs in the browser sandbox; `// → value` comments after a line are output annotations checked by content-check.

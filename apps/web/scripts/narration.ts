@@ -37,8 +37,19 @@ const FrameKindSchema = z.enum([
  * so a wrong trace fails the build. A binding value is the primitive's text ("0", "\"hi\""),
  * "uninitialized" for the TDZ, or "function name" / "array" / "object" for a reference.
  */
+const BindingRef = z.strictObject({ record: z.string().min(1), binding: z.string().min(1) });
+
 const Expectation = z.union([
   z.strictObject({ record: z.string().min(1), binding: z.string().min(1), value: z.string() }),
+  /** Two names point at one object (aliasing). */
+  z.strictObject({ record: z.string().min(1), binding: z.string().min(1), sameAs: BindingRef }),
+  /** A property of the object a binding points at. */
+  z.strictObject({
+    record: z.string().min(1),
+    binding: z.string().min(1),
+    prop: z.string().min(1),
+    value: z.string(),
+  }),
   z.strictObject({ stackDepth: z.number().int().min(0) }),
   z.strictObject({ record: z.string().min(1), exists: z.boolean() }),
   z.strictObject({ console: z.array(z.string()) }),
@@ -67,6 +78,27 @@ export function checkExpectation(frame: Frame, e: Expectation): string | null {
       : `console is ${actual}, expected ${JSON.stringify(e.console)}`;
   }
   const record = frame.envs.find((r) => r.label === e.record);
+  const stateOf = (recordLabel: string, name: string) =>
+    frame.envs.find((r) => r.label === recordLabel)?.bindings.find((b) => b.name === name)?.state;
+  if ('sameAs' in e) {
+    const a = stateOf(e.record, e.binding);
+    const b = stateOf(e.sameAs.record, e.sameAs.binding);
+    if (a?.kind !== 'ref' || b?.kind !== 'ref')
+      return `${e.binding} and ${e.sameAs.binding} are not both references`;
+    return a.heapId === b.heapId
+      ? null
+      : `${e.binding} and ${e.sameAs.binding} point at different objects`;
+  }
+  if ('prop' in e) {
+    const target = stateOf(e.record, e.binding);
+    if (target?.kind !== 'ref') return `${e.binding} in "${e.record}" is not a reference`;
+    const obj = frame.heap.find((h) => h.id === target.heapId);
+    if (obj?.kind !== 'object') return `${e.binding} does not point at a plain object`;
+    const prop = obj.props.find((p) => p.key === e.prop);
+    if (!prop) return `${e.binding}.${e.prop} does not exist`;
+    const actual = describeValue(frame, prop.value);
+    return actual === e.value ? null : `${e.binding}.${e.prop} is ${actual}, expected ${e.value}`;
+  }
   if ('exists' in e) {
     return Boolean(record) === e.exists
       ? null

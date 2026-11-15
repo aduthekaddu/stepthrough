@@ -65,4 +65,23 @@ describe('narration expectations', () => {
       ),
     ).not.toThrow();
   });
+  it('checks aliasing and object properties', () => {
+    const { code: c, marks: m } = stripMarks(
+      'const a = { n: 1 };\nconst b = a;\nb.n = 2;\nconst c = { n: 2 }; // @mark end',
+    );
+    const f = generateTrace({ id: 'alias', source: c }).frames;
+    const step = (expectations: Parameters<typeof bindNarration>[1][number]['expect']) => () =>
+      bindNarration(
+        f,
+        [{ at: { mark: 'end', kind: 'statement' }, say: 'x', expect: expectations }],
+        m,
+      );
+    expect(
+      step([{ record: 'Global', binding: 'b', sameAs: { record: 'Global', binding: 'a' } }]),
+    ).not.toThrow();
+    expect(step([{ record: 'Global', binding: 'a', prop: 'n', value: '2' }])).not.toThrow();
+    expect(step([{ record: 'Global', binding: 'a', prop: 'n', value: '1' }])).toThrow(
+      /a\.n is 2, expected 1/,
+    );
+  });
 });

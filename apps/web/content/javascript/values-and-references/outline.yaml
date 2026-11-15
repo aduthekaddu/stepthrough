@@ -121,7 +121,7 @@ facts:
     text: "MDN Structured clone algorithm: functions throw DataCloneError; DOM nodes throw; RegExp lastIndex, property descriptors, getters/setters are not preserved; 'The prototype chain is not walked or duplicated'; class private elements not duplicated; supports Array, Date, Map, Set, plain Object, primitives except symbol, RegExp, Error types, typed arrays; keeps a map of visited references to handle cycles. MDN structuredClone: example keeps clone.itself === clone."
     url: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
   - id: node-deep-strict
-    text: "Node assert.deepStrictEqual comparison details: 'Primitive values are compared using Object.is().' '[[Prototype]] of objects are compared using the === operator.' 'Only enumerable \"own\" properties are considered.' 'Map keys and Set items are compared unordered.' 'Recursion stops when both sides differ or either side encounters a circular reference.'"
+    text: 'Node assert.deepStrictEqual comparison details: ''Primitive values are compared using Object.is().'' ''[[Prototype]] of objects are compared using the === operator.'' ''Only enumerable "own" properties are considered.'' ''Map keys and Set items are compared unordered.'' ''Recursion stops when both sides differ or either side encounters a circular reference.'''
     url: https://nodejs.org/api/assert.html#assertdeepstrictequalactual-expected-message
   - id: react-object-is
     text: "react.dev useState: 'If the new value you provide is identical to the current state, as determined by an Object.is comparison, React will skip re-rendering the component and its children.' Mutating obj then setObj(obj) 'Doesn't do anything'; 'you should replace it rather than mutate your existing objects'."
@@ -134,38 +134,177 @@ facts:
     url: https://progmiscon.org/misconceptions/JavaScript/
 
 vocabulary:
-  - { id: value, status: new, segment: s02-values, definition: "One piece of data a program works with, such as 42, \"hi\", true or an object.", spec: "ECMAScript language value" }
-  - { id: primitive, status: new, segment: s02-values, definition: "Any value that is not an object: undefined, null, a boolean, a number, a bigint, a string or a symbol. It cannot be changed.", spec: "primitive value" }
-  - { id: object, status: new, segment: s02-values, definition: "A value that holds a collection of properties. Arrays and functions are objects. Objects can be changed, and each one has its own identity.", spec: "Object type" }
-  - { id: typeof, status: new, segment: s03-typeof, definition: "An operator that returns a string naming a value's type. Two oddities: typeof null is \"object\", and functions give \"function\".", spec: "The typeof Operator (13.5.3)" }
-  - { id: binding, status: new, segment: s04-bindings, definition: "A name together with the value it holds right now. Lesson 1.2 shows where bindings live.", spec: "binding in an Environment Record" }
-  - { id: immutable, status: new, segment: s05-immutable, definition: "Cannot be changed after it is made. Every primitive value is immutable." }
-  - { id: reference, status: new, segment: s06-references, definition: "What a binding or a property holds when its value is an object: a way to reach that object, drawn as an arrow. It is not a copy of the object. (The spec's Reference Record is a different idea.)" }
-  - { id: identity, status: new, segment: s07-identity, definition: "The hidden mark that makes each object unique, so an object is equal under === only to itself.", spec: "Identity (5.2.8)" }
-  - { id: mutation, status: new, segment: s08-mutation, definition: "Changing an object in place, such as setting a property or pushing to an array. Every binding that refers to that object sees the change." }
-  - { id: strict-equality, status: new, segment: s12-strict-equality, definition: "The === comparison. Different types are never equal; numbers compare by value except NaN; strings compare by their characters; objects compare by identity.", spec: "IsStrictlyEqual" }
-  - { id: nan, status: new, segment: s12-strict-equality, definition: "NaN, the one Number value that means \"not a number\". It is the only value that is not === to itself.", spec: "NaN (Number type)" }
-  - { id: same-value, status: new, segment: s13-same-value, definition: "The comparison Object.is uses. Like === except that NaN equals NaN and +0 does not equal -0.", spec: "SameValue" }
-  - { id: loose-equality, status: new, segment: s14-loose-equality, definition: "The == comparison. If the two sides have different types, it converts one side, step by step, then compares again.", spec: "IsLooselyEqual" }
-  - { id: coercion, status: new, segment: s14-loose-equality, definition: "Teaching name for a conversion from one type to another that an operator does for you, such as ToNumber inside ==. Not a single spec operation." }
-  - { id: shallow-copy, status: new, segment: s16-shallow-copy, definition: "A new outer object whose properties hold the same values as the original, so nested objects are shared, not copied." }
-  - { id: deep-copy, status: new, segment: s17-deep-copy, definition: "A copy in which every nested object is copied too, so changing the copy never changes the original." }
+  - {
+      id: value,
+      status: new,
+      segment: s02-values,
+      definition: 'One piece of data a program works with, such as 42, "hi", true or an object.',
+      spec: "ECMAScript language value",
+    }
+  - {
+      id: primitive,
+      status: new,
+      segment: s02-values,
+      definition: "Any value that is not an object: undefined, null, a boolean, a number, a bigint, a string or a symbol. It cannot be changed.",
+      spec: "primitive value",
+    }
+  - {
+      id: object,
+      status: new,
+      segment: s02-values,
+      definition: "A value that holds a collection of properties. Arrays and functions are objects. Objects can be changed, and each one has its own identity.",
+      spec: "Object type",
+    }
+  - {
+      id: typeof,
+      status: new,
+      segment: s03-typeof,
+      definition: 'An operator that returns a string naming a value''s type. Two oddities: typeof null is "object", and functions give "function".',
+      spec: "The typeof Operator (13.5.3)",
+    }
+  - {
+      id: binding,
+      status: new,
+      segment: s04-bindings,
+      definition: "A name together with the value it holds right now. Lesson 1.2 shows where bindings live.",
+      spec: "binding in an Environment Record",
+    }
+  - {
+      id: immutable,
+      status: new,
+      segment: s05-immutable,
+      definition: "Cannot be changed after it is made. Every primitive value is immutable.",
+    }
+  - {
+      id: reference,
+      status: new,
+      segment: s06-references,
+      definition: "What a binding or a property holds when its value is an object: a way to reach that object, drawn as an arrow. It is not a copy of the object. (The spec's Reference Record is a different idea.)",
+    }
+  - {
+      id: identity,
+      status: new,
+      segment: s07-identity,
+      definition: "The hidden mark that makes each object unique, so an object is equal under === only to itself.",
+      spec: "Identity (5.2.8)",
+    }
+  - {
+      id: mutation,
+      status: new,
+      segment: s08-mutation,
+      definition: "Changing an object in place, such as setting a property or pushing to an array. Every binding that refers to that object sees the change.",
+    }
+  - {
+      id: strict-equality,
+      status: new,
+      segment: s12-strict-equality,
+      definition: "The === comparison. Different types are never equal; numbers compare by value except NaN; strings compare by their characters; objects compare by identity.",
+      spec: "IsStrictlyEqual",
+    }
+  - {
+      id: nan,
+      status: new,
+      segment: s12-strict-equality,
+      definition: 'NaN, the one Number value that means "not a number". It is the only value that is not === to itself.',
+      spec: "NaN (Number type)",
+    }
+  - {
+      id: same-value,
+      status: new,
+      segment: s13-same-value,
+      definition: "The comparison Object.is uses. Like === except that NaN equals NaN and +0 does not equal -0.",
+      spec: "SameValue",
+    }
+  - {
+      id: loose-equality,
+      status: new,
+      segment: s14-loose-equality,
+      definition: "The == comparison. If the two sides have different types, it converts one side, step by step, then compares again.",
+      spec: "IsLooselyEqual",
+    }
+  - {
+      id: coercion,
+      status: new,
+      segment: s14-loose-equality,
+      definition: "Teaching name for a conversion from one type to another that an operator does for you, such as ToNumber inside ==. Not a single spec operation.",
+    }
+  - {
+      id: shallow-copy,
+      status: new,
+      segment: s16-shallow-copy,
+      definition: "A new outer object whose properties hold the same values as the original, so nested objects are shared, not copied.",
+    }
+  - {
+      id: deep-copy,
+      status: new,
+      segment: s17-deep-copy,
+      definition: "A copy in which every nested object is copied too, so changing the copy never changes the original.",
+    }
   # From 0.1 (fnd-how-programs-run): one-clause reminder on first use, plain text (their glossary entries live in lesson 0.1).
-  - { id: memory, status: from fnd-how-programs-run, first_use: s04-bindings, reminder: "memory, the computer's working storage where a running program keeps its data" }
-  - { id: engine, status: from fnd-how-programs-run, first_use: s02-values, reminder: "the engine, the program that runs JavaScript (V8 in Chrome and Node)" }
-  - { id: stack-frame, status: from fnd-how-programs-run, first_use: s10-passing, reminder: "a stack frame, the record a function call gets while it runs" }
-  - { id: heap, status: from fnd-how-programs-run, first_use: s11-engine-detail, reminder: "the heap, the memory region for data that must outlive a single call" }
-  - { id: garbage-collection, status: from fnd-how-programs-run, first_use: s10-passing, reminder: "the garbage collector, the part of the engine that frees memory nothing can reach" }
+  - {
+      id: memory,
+      status: from fnd-how-programs-run,
+      first_use: s04-bindings,
+      reminder: "memory, the computer's working storage where a running program keeps its data",
+    }
+  - {
+      id: engine,
+      status: from fnd-how-programs-run,
+      first_use: s02-values,
+      reminder: "the engine, the program that runs JavaScript (V8 in Chrome and Node)",
+    }
+  - {
+      id: stack-frame,
+      status: from fnd-how-programs-run,
+      first_use: s10-passing,
+      reminder: "a stack frame, the record a function call gets while it runs",
+    }
+  - {
+      id: heap,
+      status: from fnd-how-programs-run,
+      first_use: s11-engine-detail,
+      reminder: "the heap, the memory region for data that must outlive a single call",
+    }
+  - {
+      id: garbage-collection,
+      status: from fnd-how-programs-run,
+      first_use: s10-passing,
+      reminder: "the garbage collector, the part of the engine that frees memory nothing can reach",
+    }
 
 misconceptions:
-  core: [VAL-ASSIGN-COPIES-OBJECT, VAL-PASS-BY-REFERENCE, VAL-REASSIGN-MUTATES, VAL-CONST-FREEZES, MEM-PRIMITIVES-ON-STACK, NUM-NAN-SELF-EQUAL, EQ-BOOLEAN-TRUTHINESS, COPY-SPREAD-DEEP]
-  secondary: [VAL-TYPEOF-NULL, VAL-TYPEOF-ARRAY, VAL-CONST-OBJECT-REASSIGNABLE, VAL-EVERYTHING-IS-OBJECT, EQ-STRINGS-BY-IDENTITY, VAL-EQUAL-BY-CONTENT, EQ-NULL-LOOSE-ZERO, EQ-OBJECT-TOSTRING-FIRST, EQ-OBJECT-NEVER-LOOSE-EQUAL, COPY-SPREAD-ALIAS, COPY-CLONE-KEEPS-CLASS, COPY-CLONE-SPLITS-SHARED]
+  core:
+    [
+      VAL-ASSIGN-COPIES-OBJECT,
+      VAL-PASS-BY-REFERENCE,
+      VAL-REASSIGN-MUTATES,
+      VAL-CONST-FREEZES,
+      MEM-PRIMITIVES-ON-STACK,
+      NUM-NAN-SELF-EQUAL,
+      EQ-BOOLEAN-TRUTHINESS,
+      COPY-SPREAD-DEEP,
+    ]
+  secondary:
+    [
+      VAL-TYPEOF-NULL,
+      VAL-TYPEOF-ARRAY,
+      VAL-CONST-OBJECT-REASSIGNABLE,
+      VAL-EVERYTHING-IS-OBJECT,
+      EQ-STRINGS-BY-IDENTITY,
+      VAL-EQUAL-BY-CONTENT,
+      EQ-NULL-LOOSE-ZERO,
+      EQ-OBJECT-TOSTRING-FIRST,
+      EQ-OBJECT-NEVER-LOOSE-EQUAL,
+      COPY-SPREAD-ALIAS,
+      COPY-CLONE-KEEPS-CLASS,
+      COPY-CLONE-SPLITS-SHARED,
+    ]
   note: "Core ids carry the outcomes. Secondary ids are distractor-level beliefs, each exposed by one Predict option; the inferred ones are marked in their registry files."
 
 design_decisions:
   - "Hook: pass an object, mutate it, then reassign the parameter. It splits the two main wrong models (copy vs true pass-by-reference) and Aditya meets the same rule in Java, so s10 can resolve it with a Java contrast."
   - "Primitives are drawn inside their binding row and objects as separate boxes with arrows. This is the trace format's drawing choice; s04 and s11 say it is a drawing, not where an engine stores values."
-  - "Narration expectations use only the shapes the build checks: { record, binding, value } (value is the primitive text, \"uninitialized\", or \"object\" / \"array\" / \"function <name>\" for a reference), { stackDepth }, { record, exists }, { console }. These cannot say that two bindings share one object or what a property holds; the observable result of each example is pinned by its Predict answer (content-check runs it) instead. Every step needs a mark, and end and return frames have no source line, so they cannot be narrated; values-pass-object.js adds return user.name; to get a frame right after the reassignment."
+  - 'Narration expectations use only the shapes the build checks: { record, binding, value } (value is the primitive text, "uninitialized", or "object" / "array" / "function <name>" for a reference), { stackDepth }, { record, exists }, { console }. These cannot say that two bindings share one object or what a property holds; the observable result of each example is pinned by its Predict answer (content-check runs it) instead. Every step needs a mark, and end and return frames have no source line, so they cannot be narrated; values-pass-object.js adds return user.name; to get a frame right after the reassignment.'
   - "Every snippet runs as a classic script (node -e), matching the trace generator and the browser sandbox. The string index write in s05 is silently ignored in sloppy mode and throws in strict mode; both are shown."
   - "12 Predicts (the brief's upper bound), plus 6 next-frame pauses in 5 traces and 3 mid-lesson explain prompts (s10, s14, s19)."
   - "Added after review: runnable blocks in s02 (Number vs bigint precision), s14 (rules 4, 6, 7 and 8 at work) and s16 (Object.assign writes into its target), each a real interaction that also keeps prose runs under 250 words."
@@ -178,7 +317,18 @@ segments:
     words: 20-50
     code: "function rename(user) { user.name = 'Riya'; user = { name: 'Kabir' }; } const player = { name: 'Aditya' }; rename(player); console.log(player.name);"
     visual: null
-    interaction: { kind: predict, id: hook, answer: "Riya", options: ["Aditya -> VAL-ASSIGN-COPIES-OBJECT", "Riya (correct)", "Kabir -> VAL-PASS-BY-REFERENCE"] }
+    interaction:
+      {
+        kind: predict,
+        id: hook,
+        answer: "Riya",
+        options:
+          [
+            "Aditya -> VAL-ASSIGN-COPIES-OBJECT",
+            "Riya (correct)",
+            "Kabir -> VAL-PASS-BY-REFERENCE",
+          ],
+      }
     doubt: null
     reveal: "Show the real output; defer the explanation to s10."
 
@@ -194,12 +344,23 @@ segments:
     facts: [language-types, object-type, null-type, mdn-immutable]
 
   - id: s03-typeof
-    goal: "typeof names a value's type as a string, with two oddities: null gives \"object\" and functions give \"function\""
+    goal: 'typeof names a value''s type as a string, with two oddities: null gives "object" and functions give "function"'
     terms_introduced: [typeof]
     terms_used: [value, primitive, object]
     words: 120-170
     code: "console.log(typeof null, typeof [1, 2], typeof function () {});"
-    interaction: { kind: predict, id: typeof, answer: "object object function", options: ["object object function (correct)", "null object function -> VAL-TYPEOF-NULL", "object array function -> VAL-TYPEOF-ARRAY"] }
+    interaction:
+      {
+        kind: predict,
+        id: typeof,
+        answer: "object object function",
+        options:
+          [
+            "object object function (correct)",
+            "null object function -> VAL-TYPEOF-NULL",
+            "object array function -> VAL-TYPEOF-ARRAY",
+          ],
+      }
     doubt: "If null is not an object, why does typeof say it is?"
     facts: [typeof-algorithm, typeof-null-history]
 
@@ -209,7 +370,13 @@ segments:
     terms_used: [value, primitive, memory]
     words: 130-170
     code: examples/values-primitive-copy.js
-    visual: { component: MemoryDiagram, example: values-primitive-copy, new_parts: [global-box, binding-row, inline-primitive], pauseAt: [3] }
+    visual:
+      {
+        component: MemoryDiagram,
+        example: values-primitive-copy,
+        new_parts: [global-box, binding-row, inline-primitive],
+        pauseAt: [3],
+      }
     interaction: { kind: predict-next-frame, at_step: 3, question: "What changes when a = 6 runs?" }
     doubt: "Doesn't b = a tie b to a, like a formula in a spreadsheet?"
     teaching_model: "Abramov's 'wire' is a teaching word, not a JS term (he says so). The spec word is binding."
@@ -231,8 +398,22 @@ segments:
     terms_used: [object, binding, value]
     words: 120-170
     code: examples/values-alias.js
-    interaction: { kind: predict, id: alias, type: text, answer: "2", wrong: ["1 -> VAL-ASSIGN-COPIES-OBJECT"] }
-    visual: { component: MemoryDiagram, example: values-alias, gate: alias, new_parts: [object-box, reference-arrow], pauseAt: [3] }
+    interaction:
+      {
+        kind: predict,
+        id: alias,
+        type: text,
+        answer: "2",
+        wrong: ["1 -> VAL-ASSIGN-COPIES-OBJECT"],
+      }
+    visual:
+      {
+        component: MemoryDiagram,
+        example: values-alias,
+        gate: alias,
+        new_parts: [object-box, reference-arrow],
+        pauseAt: [3],
+      }
     doubt: "So does let b = a copy the object or not?"
     facts: [assignment, identity, reference-record]
 
@@ -253,7 +434,15 @@ segments:
     terms_used: [object, binding, reference]
     words: 120-170
     code: "modify of s06: b = { n: 2 } instead of b.n = 2; then examples/values-reassign.js"
-    interaction: { kind: predict, id: reassign, type: text, answer: "1", wrong: ["2 -> VAL-REASSIGN-MUTATES"], role: "modify and predict again" }
+    interaction:
+      {
+        kind: predict,
+        id: reassign,
+        type: text,
+        answer: "1",
+        wrong: ["2 -> VAL-REASSIGN-MUTATES"],
+        role: "modify and predict again",
+      }
     visual: { component: MemoryDiagram, example: values-reassign, gate: reassign, pauseAt: [4] }
     doubt: "Both lines use =. Why do they do different things?"
     facts: [assignment]
@@ -264,7 +453,18 @@ segments:
     terms_used: [binding, mutation, immutable, object]
     words: 120-170
     code: "const settings = { theme: 'light' }; settings.theme = 'dark'; try { settings = {...} } catch ...; console.log(settings.theme, result)"
-    interaction: { kind: predict, id: const, answer: "dark TypeError", options: ["dark TypeError (correct)", "light TypeError -> VAL-CONST-FREEZES", "blue ok -> VAL-CONST-OBJECT-REASSIGNABLE"] }
+    interaction:
+      {
+        kind: predict,
+        id: const,
+        answer: "dark TypeError",
+        options:
+          [
+            "dark TypeError (correct)",
+            "light TypeError -> VAL-CONST-FREEZES",
+            "blue ok -> VAL-CONST-OBJECT-REASSIGNABLE",
+          ],
+      }
     doubt: "Then what is const good for?"
     facts: [const-binding, mdn-const, progmiscon]
     extra: "Object.freeze makes one object immutable, and only one level deep (runnable: config.db.host still changes)."
@@ -275,20 +475,60 @@ segments:
     terms_used: [reference, binding, mutation, stack-frame, garbage-collection]
     words: 150-210
     code: examples/values-pass-object.js (the hook plus a final return user.name line), then the cart transfer snippet
-    visual: { component: MemoryDiagram, example: values-pass-object, gate: hook, new_parts: [call-box, stack-depth], pauseAt: [4, 5] }
-    interaction: { kind: predict, id: pass, answer: "[ 'bread', 'tea' ] 2", options: ["[ 'bread', 'tea' ] 2 (correct)", "[ 'bread' ] 2 -> VAL-ASSIGN-COPIES-OBJECT", "[ 'coffee', 'milk' ] 2 -> VAL-PASS-BY-REFERENCE"], role: transfer }
-    explain: { id: e1-hook, prompt: "In one or two sentences, why did player.name become Riya and not Kabir?", rubric: ["user gets a copy of the reference, so it reaches the same object", "user.name = ... mutates that shared object", "user = {...} only moves the parameter's reference"] }
+    visual:
+      {
+        component: MemoryDiagram,
+        example: values-pass-object,
+        gate: hook,
+        new_parts: [call-box, stack-depth],
+        pauseAt: [4, 5],
+      }
+    interaction:
+      {
+        kind: predict,
+        id: pass,
+        answer: "[ 'bread', 'tea' ] 2",
+        options:
+          [
+            "[ 'bread', 'tea' ] 2 (correct)",
+            "[ 'bread' ] 2 -> VAL-ASSIGN-COPIES-OBJECT",
+            "[ 'coffee', 'milk' ] 2 -> VAL-PASS-BY-REFERENCE",
+          ],
+        role: transfer,
+      }
+    explain:
+      {
+        id: e1-hook,
+        prompt: "In one or two sentences, why did player.name become Riya and not Kabir?",
+        rubric:
+          [
+            "user gets a copy of the reference, so it reaches the same object",
+            "user.name = ... mutates that shared object",
+            "user = {...} only moves the parameter's reference",
+          ],
+      }
     doubt: "Isn't this pass-by-reference, then?"
     java: "Oracle tutorial: reference parameters are passed by value. Same rule, same diagram."
     facts: [arguments, java-pass, wires]
 
   - id: s11-engine-detail
-    goal: "The spec never says where values are stored; \"primitives on the stack, objects on the heap\" describes some engines and the JVM, not JavaScript"
+    goal: 'The spec never says where values are stored; "primitives on the stack, objects on the heap" describes some engines and the JVM, not JavaScript'
     terms_introduced: []
     terms_used: [primitive, object, identity, heap, engine]
     words: 140-200
     code: null
-    interaction: { kind: predict, id: stack-heap, answer: "spec-silent", options: ["on the stack because 5 is a primitive -> MEM-PRIMITIVES-ON-STACK", "on the heap because everything in JavaScript is an object -> VAL-EVERYTHING-IS-OBJECT", "the spec does not say; each engine chooses (correct)"] }
+    interaction:
+      {
+        kind: predict,
+        id: stack-heap,
+        answer: "spec-silent",
+        options:
+          [
+            "on the stack because 5 is a primitive -> MEM-PRIMITIVES-ON-STACK",
+            "on the heap because everything in JavaScript is an object -> VAL-EVERYTHING-IS-OBJECT",
+            "the spec does not say; each engine chooses (correct)",
+          ],
+      }
     doubt: "Then why did my Java course teach stack and heap?"
     boundary: "This is the lesson's main model boundary: the diagram is a picture of behaviour, not of memory layout."
     facts: [no-heap-in-spec, v8-values, jvm-heap, identity]
@@ -299,7 +539,19 @@ segments:
     terms_used: [identity, primitive, object]
     words: 160-220
     code: "const x = 0 / 0; console.log(x === x, 0 === -0, 'chess' === 'ch' + 'ess', [] === []);"
-    interaction: { kind: predict, id: strict, answer: "false true true false", options: ["false true true false (correct)", "true true true false -> NUM-NAN-SELF-EQUAL", "false true false false -> EQ-STRINGS-BY-IDENTITY", "false true true true -> VAL-EQUAL-BY-CONTENT"] }
+    interaction:
+      {
+        kind: predict,
+        id: strict,
+        answer: "false true true false",
+        options:
+          [
+            "false true true false (correct)",
+            "true true true false -> NUM-NAN-SELF-EQUAL",
+            "false true false false -> EQ-STRINGS-BY-IDENTITY",
+            "false true true true -> VAL-EQUAL-BY-CONTENT",
+          ],
+      }
     doubt: "Why would a value not be equal to itself?"
     facts: [is-strictly-equal, number-equal, same-value-non-number, nan-ieee, java-equality]
 
@@ -319,8 +571,29 @@ segments:
     terms_used: [strict-equality, nan, primitive]
     words: 170-230
     code: "console.log(null == undefined, null == 0, '' == 0, '0' == false);"
-    interaction: { kind: predict, id: loose, answer: "true false true true", options: ["true false true true (correct)", "true true true true -> EQ-NULL-LOOSE-ZERO", "true false true false -> EQ-BOOLEAN-TRUTHINESS"] }
-    explain: { id: e2-zero-false, prompt: "In one sentence, why is \"0\" == false true even though \"0\" is truthy?", rubric: ["the boolean side becomes a number: false becomes 0", "the string \"0\" becomes the number 0", "== never asks whether a value is truthy"] }
+    interaction:
+      {
+        kind: predict,
+        id: loose,
+        answer: "true false true true",
+        options:
+          [
+            "true false true true (correct)",
+            "true true true true -> EQ-NULL-LOOSE-ZERO",
+            "true false true false -> EQ-BOOLEAN-TRUTHINESS",
+          ],
+      }
+    explain:
+      {
+        id: e2-zero-false,
+        prompt: 'In one sentence, why is "0" == false true even though "0" is truthy?',
+        rubric:
+          [
+            "the boolean side becomes a number: false becomes 0",
+            'the string "0" becomes the number 0',
+            "== never asks whether a value is truthy",
+          ],
+      }
     doubt: "Isn't x == false just a way to ask whether x is falsy?"
     facts: [is-loosely-equal, to-number, same-value-zero-users]
 
@@ -330,7 +603,19 @@ segments:
     terms_used: [loose-equality, coercion, object, primitive]
     words: 150-210
     code: "price object with valueOf 100 and toString 'Rs 100'; then runnable [] == false walkthrough"
-    interaction: { kind: predict, id: to-primitive, answer: "true false Rs 100", options: ["true false Rs 100 (correct)", "false true Rs 100 -> EQ-OBJECT-TOSTRING-FIRST", "false false Rs 100 -> EQ-OBJECT-NEVER-LOOSE-EQUAL"], role: transfer }
+    interaction:
+      {
+        kind: predict,
+        id: to-primitive,
+        answer: "true false Rs 100",
+        options:
+          [
+            "true false Rs 100 (correct)",
+            "false true Rs 100 -> EQ-OBJECT-TOSTRING-FIRST",
+            "false false Rs 100 -> EQ-OBJECT-NEVER-LOOSE-EQUAL",
+          ],
+        role: transfer,
+      }
     doubt: "Why valueOf first?"
     facts: [to-primitive, to-string, is-loosely-equal]
 
@@ -340,8 +625,21 @@ segments:
     terms_used: [object, reference, mutation]
     words: 120-170
     code: examples/values-shallow-copy.js
-    interaction: { kind: predict, id: shallow, answer: "chess 3", options: ["chess 3 (correct)", "chess 2 -> COPY-SPREAD-DEEP", "go 3 -> COPY-SPREAD-ALIAS"] }
-    visual: { component: MemoryDiagram, example: values-shallow-copy, gate: shallow, new_parts: [nested-reference], pauseAt: [4] }
+    interaction:
+      {
+        kind: predict,
+        id: shallow,
+        answer: "chess 3",
+        options: ["chess 3 (correct)", "chess 2 -> COPY-SPREAD-DEEP", "go 3 -> COPY-SPREAD-ALIAS"],
+      }
+    visual:
+      {
+        component: MemoryDiagram,
+        example: values-shallow-copy,
+        gate: shallow,
+        new_parts: [nested-reference],
+        pauseAt: [4],
+      }
     doubt: "Is a shallow copy a copy or not?"
     facts: [shallow-copy, object-assign]
 
@@ -351,7 +649,18 @@ segments:
     terms_used: [shallow-copy, reference, identity]
     words: 150-210
     code: "class Point; shared object used twice; structuredClone; then runnable JSON round-trip losses and DataCloneError"
-    interaction: { kind: predict, id: structured, answer: "false true false", options: ["false true false (correct)", "true true false -> COPY-CLONE-KEEPS-CLASS", "false false false -> COPY-CLONE-SPLITS-SHARED"] }
+    interaction:
+      {
+        kind: predict,
+        id: structured,
+        answer: "false true false",
+        options:
+          [
+            "false true false (correct)",
+            "true true false -> COPY-CLONE-KEEPS-CLASS",
+            "false false false -> COPY-CLONE-SPLITS-SHARED",
+          ],
+      }
     doubt: "Why not JSON.parse(JSON.stringify(x))?"
     facts: [deep-copy, structured-clone]
 

@@ -1,0 +1,576 @@
+{
+  "id": "values-shallow-copy",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "const original = { name: \"chess\", players: [\"Asha\", \"Ben\"] };\nconst copy = { ...original };\ncopy.name = \"go\";\ncopy.players.push(\"Chen\");\nconsole.log(original.name, original.players.length);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 61
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "original",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "copy",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "Two names, no objects yet."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 2,
+        "endCol": 29
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "original",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "copy",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"chess\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Asha\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Ben\""
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "The literal made two objects: the outer object, and an array that its players property points to."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 17
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "original",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "copy",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"chess\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Asha\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Ben\""
+            }
+          ]
+        },
+        {
+          "id": "obj2",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"chess\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "The spread made one new outer object and copied each property's value into it, and since the value of players is an arrow, both outer objects now point to the same array."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 26
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "original",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "copy",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"chess\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Asha\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Ben\""
+            }
+          ]
+        },
+        {
+          "id": "obj2",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"go\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "copy.name = \"go\" changed a property of the new outer object only, so original still says \"chess\"."
+    },
+    {
+      "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 1,
+        "endLine": 5,
+        "endCol": 52
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "original",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "copy",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"chess\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Asha\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Ben\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Chen\""
+            }
+          ]
+        },
+        {
+          "id": "obj2",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"go\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "copy.players.push(\"Chen\") followed the shared arrow and mutated the one array both objects use."
+    },
+    {
+      "step": 6,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "original",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "copy",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"chess\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj1",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Asha\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Ben\""
+            },
+            {
+              "kind": "primitive",
+              "type": "string",
+              "text": "\"Chen\""
+            }
+          ]
+        },
+        {
+          "id": "obj2",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"go\""
+              }
+            },
+            {
+              "key": "players",
+              "value": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "console": [
+        "chess 3"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

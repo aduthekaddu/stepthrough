@@ -1,0 +1,655 @@
+{
+  "id": "values-pass-object",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "function rename(user) {\n  user.name = \"Riya\";\n  user = { name: \"Kabir\" };\n  return user.name;\n}\nconst player = { name: \"Aditya\" };\nrename(player);\nconsole.log(player.name);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 6,
+        "startCol": 1,
+        "endLine": 6,
+        "endCol": 34
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The function declaration already made a function object, which is an object like any other, and the name rename points to it."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 7,
+        "startCol": 1,
+        "endLine": 7,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Aditya\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "player points to one object whose name is \"Aditya\"."
+    },
+    {
+      "step": 3,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 2,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "rename",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "rename() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "param",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Aditya\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "The call pushed a new stack frame with its own box of names, and the parameter user got a copy of player's arrow, so it points to the same object."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 27
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "rename",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "rename() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "param",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Riya\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "user.name = \"Riya\" followed user's arrow and changed the shared object, which player sees because it points to the same object."
+    },
+    {
+      "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 19
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "rename",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "rename() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "param",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Riya\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj2",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Kabir\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "user = { name: \"Kabir\" } made a new object and moved only the arrow in the rename() box, while player's arrow stayed put."
+    },
+    {
+      "step": 6,
+      "kind": "return",
+      "span": null,
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "rename",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "rename() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "param",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Riya\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "obj2",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Kabir\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 7,
+      "kind": "statement",
+      "span": {
+        "startLine": 8,
+        "startCol": 1,
+        "endLine": 8,
+        "endCol": 25
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Riya\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "The call is over and its box is gone; nothing points to the Kabir object any more, so the diagram drops it, and player still reaches the object named \"Riya\"."
+    },
+    {
+      "step": 8,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "rename",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "player",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "rename",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Riya\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [
+        "Riya"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}
