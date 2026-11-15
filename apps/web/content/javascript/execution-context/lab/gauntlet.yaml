@@ -230,7 +230,7 @@ items:
       - answer: "undefined undefined"
         misconception: EXC-GLOBAL-ASSIGN-MAKES-LOCAL
         feedback: "var only declares a. b = 5 assigns to a name that no record has, and non-strict code turns that into a global object property."
-    explain: "The line means var a = (b = 5). b is not declared anywhere, so in sloppy mode the assignment creates globalThis.b. a is local to init's record."
+    explain: "The line means var a = (b = 5). b is not declared anywhere, so in sloppy mode the assignment creates globalThis.b. a lives in init's record, so outside init the name a cannot be found, and typeof gives \"undefined\"."
 
   - id: g14-var-and-function-same-name
     level: 4

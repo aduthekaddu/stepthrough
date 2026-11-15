@@ -7,7 +7,7 @@ frontmatter:
   outcomes:
     - Describe what an execution context and an environment record hold, and draw the call stack and records for a small program
     - Predict the state of every var, let, const, function and parameter binding after declaration instantiation, and explain hoisting as its visible effect
-    - Explain the temporal dead zone (including typeof and shadowing), why let and const were designed with it, and how sloppy and strict code differ for undeclared names
+    - Explain the temporal dead zone (including typeof and an inner name that shadows an outer one), why let and const were designed with it, and how sloppy and strict code differ for undeclared names
   sources:
     - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
     - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records

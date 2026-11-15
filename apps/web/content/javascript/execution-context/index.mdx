@@ -7,7 +7,7 @@ prereqs: [js-values]
 outcomes:
   - Describe what an execution context and an environment record hold, and draw the call stack and records for a small program
   - Predict the state of every var, let, const, function and parameter binding after declaration instantiation, and explain hoisting as its visible effect
-  - Explain the temporal dead zone (including typeof and shadowing), why let and const were designed with it, and how sloppy and strict code differ for undeclared names
+  - Explain the temporal dead zone (including typeof and an inner name that shadows an outer one), why let and const were designed with it, and how sloppy and strict code differ for undeclared names
 sources:
   - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
   - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records
@@ -69,7 +69,7 @@ function double(n) {
 
 The call printed `8`. So the engine (the program that runs JavaScript, such as V8 inside Node and Chrome) does not start by running line 1. First it reads the whole script and finds the pieces of code that create names in it. Such a piece of code is called a <Term id="declaration">declaration</Term>. The kinds are `var`, `let`, `const`, `function` and `class` declarations, and the parameters of a function.
 
-For each declaration that belongs to the script itself, the engine creates a binding (from lesson 1.1: a name paired with a value) before any line runs. Code inside `{ }` blocks has a few extra rules, which lesson 1.3 covers. Running code is therefore two steps: first set up all the names, then run the lines in order.
+For each declaration that belongs to the script itself, the engine creates a binding (from lesson 1.1: a name paired with a value) before any line runs. Code inside `{ }` blocks has a few extra rules, which lesson 1.3 covers. Running code is therefore two steps: first set up the script's names, then run the lines in order.
 
 For a `function` declaration, the binding already holds the function at the end of the first step. That is why line 1 could call it. You can check this without calling it:
 
@@ -94,7 +94,7 @@ The picture hides built-in names such as `console`. Look at the first step befor
 
 Watch what each step changed. Running a line changed the value in a row that already existed. It never added a row.
 
-You might ask: "Is this table a real thing in memory?" The spec says environment records are a description. A real engine may store variables any way it likes, as long as every program behaves exactly as if these tables existed. So the tables are a model that predicts behaviour exactly. They are not a map of memory.
+You might ask: "Is this table a real thing in memory?" The spec calls environment records "specification mechanisms": a way to describe behaviour. A real engine may store variables any way it likes, as long as every program gives the same values and errors as if these tables existed. So the tables are a model that predicts what your code does. They are not a map of memory.
 
 <Sidenote>The spec says: "Environment Records are purely specification mechanisms and need not correspond to any specific artefact of an ECMAScript implementation." ([ECMAScript 9.1](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records))</Sidenote>
 
@@ -133,17 +133,17 @@ Running a script creates the first execution context. Calling a function creates
 
 The stack of execution contexts is the call stack from lesson 0.1 (the list of function calls that have started and not finished, newest on top). The spec calls it the execution context stack. The running context is always the one on top.
 
-Is an execution context the same as a stack frame from lesson 0.1? A stack frame was the general idea of one entry per call. In JavaScript, the spec calls each entry an execution context, and each engine decides how to lay it out in memory.
+Is an execution context the same as a stack frame from lesson 0.1? For this course, yes. "Stack frame" is the general word; "execution context" is the spec's name for what JavaScript keeps in each call stack entry. Each engine decides how to lay it out in memory.
 
-When `greet` returned, its context left the stack, and nothing referred to its record any more. Lesson 1.3 shows when a record lives on after its call has ended.
+Lesson 1.3 shows when a record outlives its call.
 
-<Sidenote>Spec fields: code evaluation state, Function, Realm (the built-ins, such as `Array`, and the global record), ScriptOrModule, LexicalEnvironment, VariableEnvironment and PrivateEnvironment (for `#private` class names). "It is impossible for ECMAScript code to directly access or observe an execution context." ([ECMAScript 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)). The pictures draw one record per call; the spec sometimes splits it in two (lesson 1.3), with the same lookup results here. They also hide `arguments`, an object every non-arrow function call gets.</Sidenote>
+<Sidenote>Spec fields: code evaluation state, Function, Realm (the built-ins and the global record), ScriptOrModule, LexicalEnvironment, VariableEnvironment and PrivateEnvironment (for `#private` class names). "It is impossible for ECMAScript code to directly access or observe an execution context." ([ECMAScript 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)). The pictures draw one record per call; the spec sometimes splits it in two (lesson 1.3), with the same lookup results here. They also hide `arguments`, an object every non-arrow function call gets.</Sidenote>
 
 </Segment>
 
 <Segment id="s05-each-call" goal="Every call gets a new execution context and a new record, so each call has its own local bindings">
 
-Every call creates a new execution context and a new function environment record. Now test that rule on a harder case: a function that calls itself before its first call has finished. Does the second call overwrite the first call's `label`, or does each call keep its own?
+Now test the rule on a harder case: a function that calls itself before its first call has finished. Does the second call overwrite the first call's `label`, or does each call keep its own?
 
 <Predict
   id="countdown"
@@ -177,11 +177,11 @@ A function's code is shared by every call. Its bindings are not.
 
 In the `greet` example, `greeting` was not in `greet`'s record, but the engine still found it. How?
 
-Every environment record has a link to the record around it, called its <Term id="outer-reference">outer reference</Term> (the spec field is `[[OuterEnv]]`). The global record is the outermost one, so its outer reference is `null`, meaning nothing.
+Every environment record has a link to the record around it, called its <Term id="outer-reference">outer reference</Term> (the spec field is `[[OuterEnv]]`). The global record is the outermost one, so its outer reference is `null`: there is no record further out.
 
 A lookup checks the current record first. If the name is not there, it follows the outer reference and checks that record. It stops at the first record that has the name.
 
-The chain of records a lookup walks has a teaching name: the <Term id="scope-chain">scope chain</Term>. The spec does not use this term. "Scope" here means the part of the code where a name can be used; lesson 1.3 goes deeper. So what happens when the chain runs out?
+The chain of records a lookup walks has a teaching name: the <Term id="scope-chain">scope chain</Term>. The spec does not use this term. "Scope" here means the part of the code where a name refers to one particular binding; lesson 1.3 goes deeper. So what happens when the chain runs out?
 
 <Predict
   id="lookup"
@@ -213,7 +213,7 @@ You might ask: "Why does `full`'s record point to `page`, and not to whoever cal
 
 The outermost record is different from the others. Its name is the <Term id="global-environment">global environment record</Term>, and it has two parts.
 
-One part is backed by a real object that your code can touch, the <Term id="global-object">global object</Term>. Your code can always reach it as `globalThis`, and in a browser page it is also called `window`. At the top level of a script, `var` and `function` declarations become properties of this object.
+One part is backed by a real object that your code can touch, the <Term id="global-object">global object</Term>. Your code can always reach it as `globalThis`, and in a browser page it is also called `window`. At the top level of a classic script, `var` and `function` declarations become properties of this object. A classic script is code loaded the old way: by a browser `<script>` tag without `type="module"`, or run with `node -e`. Modules behave differently; see below.
 
 The other part is a plain table, like the records you have seen so far. It holds top-level `let`, `const` and `class` bindings, which are not properties of the global object.
 
@@ -235,13 +235,13 @@ console.log(globalThis.a, globalThis.b, typeof globalThis.f);`}
 
 The output is `1 undefined function`. `a` and `f` are properties of the global object. `b` lives only in the table part of the global environment record.
 
-You might ask: "Why keep two kinds of global names?" Before ES2015 (the 2015 edition of JavaScript), every global declaration created a property on the global object. The new `let`, `const` and `class` needed a state with no value yet, and an object property has no way to be marked "not yet initialized". So `var` and `function` stayed on the object, so that old code kept working, and the new kinds got their own table. Segment 13 gives the source.
+You might ask: "Why keep two kinds of global names?" Before ES2015 (the 2015 edition of JavaScript), every global declaration created a property on the global object. The new `let`, `const` and `class` needed a state with no value yet, and an object property has no way to be marked "not yet initialized". A missing property would not work either: it would look exactly like a name that was never declared. So `var` and `function` stayed on the object, so that old code kept working, and the new kinds got their own table. Segment 13 gives the source.
 
-In a module (a file that uses `import` and `export`, or a Node CommonJS file), top-level declarations belong to the module and never touch `globalThis`. Most code you write in Next.js and Node is modules. The snippets in these lessons run as classic scripts, like a browser `<script>` tag.
+Modules are different. In an ES module (a file that uses `import` and `export`) and in a Node CommonJS module (a file that uses `require` and `module.exports`), top-level declarations belong to the module and do not become properties of `globalThis`. The snippets in these lessons run as classic scripts.
 
 <Sidenote>Measured in Node 26: as a classic script, `var x = 1; console.log(globalThis.x)` prints 1. Inside an ES module it prints undefined. MDN: in "Node.js CommonJS modules and native ECMAScript modules, top-level variable declarations are scoped to the module." ([MDN var](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var))</Sidenote>
 
-A top-level `let` is still a global name. Every part of the script can read it. It is just not a property of the global object:
+A top-level `let` is still a global name. Every part of the script can read it. It is just not a property of the global object. (`"b" in globalThis` asks whether `globalThis` has a property named `b`.)
 
 <Code runnable code={`let b = 2;
 console.log(b, globalThis.b, "b" in globalThis); // → 2 undefined false`} />
@@ -262,6 +262,8 @@ Here is what declaration instantiation leaves in each binding, and what the decl
 - **`const x`.** Exists with no value. `const x = 5;` gives it its value, and the binding can never be reassigned.
 - **`class C`.** Exists with no value. Its line creates the class and gives it to `C`.
 - **Parameter.** Holds the argument passed in. If none was passed, it holds its default value (`a = 7`), or `undefined` if it has no default. Parameters are filled left to right.
+
+Here a `var` meets a parameter with the same name, and the parameter's binding is kept:
 
 <Code runnable code={`function show(a) {
   var a;
@@ -294,21 +296,21 @@ console.log(outer());`}
 
 The answer was `reached`. `inner` was declared after `return`, so execution never reached its line. Even so, declaration instantiation had created `inner`'s function object the moment `outer` was called.
 
-In the runnable example below, a `var` is declared twice and keeps its value. The second `var color;` has no `=`, so its line does nothing.
+In the runnable example below, a `var` is declared twice and keeps its value. The binding already exists, and the second `var color;` has no `=`, so there is nothing for its line to do.
+
+<Sidenote>The spec's own summary: var variables "are created when their containing Environment Record is instantiated and are initialized to undefined when created", while let and const variables "are created when their containing Environment Record is instantiated but may not be accessed in any way until the variable's LexicalBinding is evaluated." ([ECMAScript 14.3](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-variable-statement))</Sidenote>
 
 <Code runnable code={`var color = "red";
 var color;
 console.log(color); // → red`} />
 
-<Sidenote>The spec's own summary: var variables "are created when their containing Environment Record is instantiated and are initialized to undefined when created", while let and const variables "are created when their containing Environment Record is instantiated but may not be accessed in any way until the variable's LexicalBinding is evaluated." ([ECMAScript 14.3](https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-variable-statement))</Sidenote>
-
 </Segment>
 
 <Segment id="s09-hoisting" goal="Hoisting is a teaching name for the effects of declaration instantiation; no code moves">
 
-There is a word everybody uses for these effects: <Term id="hoisting">hoisting</Term>. MDN says it "refers to the process whereby the interpreter appears to move the declaration of functions, variables, classes, or imports to the top of their scope, prior to execution of the code." Notice the word "appears". Hoisting is a teaching name. The spec does not define it; the closest it gets is a grammar group called HoistableDeclaration, which holds the function declaration forms.
+There is a word most tutorials use for these effects: <Term id="hoisting">hoisting</Term>. MDN says it "refers to the process whereby the interpreter appears to move the declaration of functions, variables, classes, or imports to the top of their scope, prior to execution of the code." Notice the word "appears". Hoisting is a teaching name. The spec does not define it. It uses the word only informally, in a few notes, and it names a grammar group HoistableDeclaration for the function declaration forms.
 
-MDN lists four behaviours that people call hoisting. A function can be called before its line. A `var` can be read before its line, and gives `undefined`. A `let`, `const` or `class` changes what a name means even above its line. An `import` takes effect before the rest of the code runs. The first three are effects of declaration instantiation. The `import` case comes from how modules load, which is lesson 1.10.
+MDN lists four behaviours that people call hoisting. A function can be called before its line. A `var` can be read before its line, and gives `undefined`. A `let`, `const` or `class` makes the name refer to its own, not yet initialized binding even above its line (segment 10). An `import` takes effect before the rest of the code runs. The first three are effects of declaration instantiation. The `import` case comes from how modules load, which is lesson 1.10.
 
 You might ask: "Then why does everyone say declarations move to the top?" Picturing the declaration lifted to the top predicts the `var` and function cases well. But it predicts `undefined` for `let`, which is wrong, and it hides the fact that there are two separate moments. Now replay the hook with the visualizer.
 
@@ -326,7 +328,7 @@ Declaration instantiation creates `let`, `const` and `class` bindings but leaves
 
 During the TDZ, any read of the name, or any assignment to it, throws a `ReferenceError`. Node words it as `Cannot access 'total' before initialization`. The value on the right of `=` is computed before the binding gets it, so even `let x = x;` throws: the right-hand `x` is read while `x` is still in its TDZ.
 
-The binding is still real, and lookups find it. That matters when an outer record has a binding with the same name, because a lookup checks the current record before it follows the outer reference.
+The binding still exists in the record, and lookups find it. That matters when an outer record has a binding with the same name, because a lookup checks the current record before it follows the outer reference. The inner binding hides, or shadows, the outer one.
 
 <Predict
   id="tdz-shadow"
@@ -347,11 +349,11 @@ check();`}
   explain="Declaration instantiation for the call creates an uninitialized level in check's record. The lookup on line 3 finds it first and reads it, which throws."
 />
 
-<Viz example="ec-tdz-shadow" view="scope" gate="tdz-shadow" pauseAt={[3]} title="A shadowed name in its dead zone" />
+<Viz example="ec-tdz-shadow" view="scope" gate="tdz-shadow" pauseAt={[3]} title="An inner let in its dead zone" />
 
 Calling `check` ran declaration instantiation for that call, and it created `check`'s own `level` binding with no value. The lookup for `level` on line 3 checked `check`'s record first, found that binding in its TDZ, and stopped there. It never reached the global `level`, so `"outer"` was never possible.
 
-The trace engine words the error differently from Node. The error type is the same; only the message text belongs to each engine.
+The visualizer's engine (engine262, which produces these traces) words the error differently from Node. The error type is the same; only the message text belongs to each engine.
 
 Blocks, the code between `{` and `}`, get their own records for `let` and `const` too. Lesson 1.3 covers block records. The runnable example below throws for the same reason.
 
@@ -440,7 +442,7 @@ let limit = 10;`}
   explain="Same lines, different order of execution. read now runs while limit is still uninitialized, so the read throws ReferenceError: Cannot access 'limit' before initialization."
 />
 
-The lines are the same, but the call now runs while `limit` is still in its TDZ, so it throws. The order of execution decides, not the position in the file.
+The statements are the same; only their order changed. The call now runs while `limit` is still in its TDZ, so it throws. The order of execution decides, not the position in the file.
 
 </Segment>
 
@@ -461,7 +463,7 @@ Options 2 and 4 let one name mean different variables at different places, or at
 const isOdd = (n) => (n === 0 ? false : isEven(n - 1));
 console.log(isEven(4)); // → true`} />
 
-After nearly two years of discussion, the committee chose option 3, the temporal dead zone. One rule came with it: inside one scope, a name has exactly one binding.
+After nearly two years of discussion, the committee chose option 3, the temporal dead zone, and it shipped with `let` and `const` in ES2015. One rule came with it: inside one scope, a name has exactly one binding.
 
 One more consequence follows from this choice. A `const` binding gets one value and can never be reassigned. (The value can still be an object whose contents change, as lesson 1.1 showed.) If a `const` started as `undefined`, like a `var`, code could read it before and after its line and see two different values. With the TDZ, any read before the line throws, so a `const` binding is only ever seen with its one value. The same rule turns a quiet bug, reading `undefined` too early, into an error on the exact line.
 
@@ -540,7 +542,7 @@ console.log(total, globalThis.total);`}
   explain="The lookup for total found nothing, so in non-strict code the assignment created globalThis.total. Reading total later finds it through the global record."
 />
 
-<Viz example="ec-implicit-global" view="scope" gate="sloppy" pauseAt={[2]} title="An implicit global appears" />
+<Viz example="ec-implicit-global" view="scope" gate="sloppy" pauseAt={[2]} title="An assignment creates a global" />
 
 The output is `42 42`. JavaScript has two sets of rules. The stricter set is called <Term id="strict-mode">strict mode</Term>. Code that is not in strict mode is "non-strict code" in the spec, and people informally call it sloppy mode. This script has no `"use strict"` line, so it ran in sloppy mode.
 
@@ -575,7 +577,7 @@ Measured in Node 26: as an ES module (`.mjs`) the code throws, because modules a
 
 <Segment id="s16-misconceptions" goal="The wrong models in one place, each with the line of code that breaks it">
 
-Each wrong model below predicts a wrong answer for code you have now run. Confident wrong beliefs are the easiest ones to fix.
+Each wrong model below predicts a wrong answer for code you have now run. They are common beliefs, and each one breaks on one line of code.
 
 - **"A name exists only after its line runs."** `double(4)` works above `function double` (segments 2 and 8).
 - **"Hoisting moves the whole line."** `price` read early is undefined, not 100 (segment 9).
@@ -602,7 +604,7 @@ Each wrong model below predicts a wrong answer for code you have now run. Confid
 
 <Segment id="s17-lab" goal="Fifteen predictions, from warm-up to default parameters, each checked against Node">
 
-Fifteen short programs, from easy to hard. For each one, type exactly what Node prints, one line per `console.log`. If a line throws, type only the error name, such as ReferenceError, and stop there. Pick your confidence before you reveal. Every answer comes from running the code in Node 26 as a classic script. Plan about 25 minutes. Item 15 goes one step past the lesson: parameters have a dead zone too.
+Fifteen short programs, from easy to hard. For each one, type exactly what Node prints, one line per `console.log`. If a line throws, type only the error name, such as ReferenceError, and stop there. Pick your confidence before you reveal. Every answer comes from running the code in Node 26 as a classic script (`node -e`). Plan about 25 minutes. Item 15 goes one step past the lesson: a parameter can be in a dead zone too, while an earlier default value reads it.
 
 <Predict
   kind="text"
@@ -815,7 +817,7 @@ console.log(typeof a, typeof b);`}
   wrong={[
     { match: "undefined undefined", misconception: "EXC-GLOBAL-ASSIGN-MAKES-LOCAL", feedback: "var only declares a. b = 5 assigns to a name that no record has, and non-strict code turns that into a global object property." },
   ]}
-  explain={"The line means var a = (b = 5). b is not declared anywhere, so in sloppy mode the assignment creates globalThis.b. a is local to init's record."}
+  explain={"The line means var a = (b = 5). b is not declared anywhere, so in sloppy mode the assignment creates globalThis.b. a lives in init's record, so outside init the name a cannot be found, and typeof gives \"undefined\"."}
 />
 
 <Predict
@@ -856,7 +858,7 @@ console.log(pair());`}
 
 <Segment id="s18-in-the-wild" goal="Where execution contexts and the TDZ show up in React, Zod, Express and Java">
 
-**React and Next.js.** A component near the top of a file can use a `const` style object or helper declared lower in the same file. It works because React calls the component later, when it renders, and by then the whole module has run. Time matters, not position. Code at module level that runs right away and reads a `const` declared below it throws the TDZ error instead. You will also meet the same message, `Cannot access 'X' before initialization`, when two modules import each other in a circle; lesson 1.10 (modules) explains that case.
+**React and Next.js.** A component near the top of a file can use a `const` style object or helper declared lower in the same file. It works because React calls the component later, when it renders, and by then the whole module has run. Time matters, not position. In the stand-in below, the last line plays React's part: it calls the component after the whole file has run. Code at module level that runs right away and reads a `const` declared below it throws the TDZ error instead. You will also meet the same message, `Cannot access 'X' before initialization`, when two modules import each other in a circle; lesson 1.10 (modules) explains that case.
 
 <Code runnable code={`function Badge() {
   return { type: "span", props: { style: badgeStyle } };
@@ -885,7 +887,7 @@ function reply(path) {
 }
 console.log(routes[0].handler({ path: "/health" })); // → ok /health`} />
 
-**Java, for contrast.** Java checks reads of unassigned locals when the code compiles. The Java Language Specification says every local variable must be "definitely assigned" before its value is read, or the program does not compile (JLS 16). A Java local's scope also starts at its own declaration (JLS 6.3). So if a method reads `level` above `String level = ...;` and the class has a field named `level`, the read means the field. That is option 2, the "lexical window" that JavaScript's designers rejected. Java methods, on the other hand, are visible in the whole class body, much like function declarations in a JavaScript script. JavaScript does its checks at run time, with the TDZ.
+**Java, for contrast.** Java checks reads of unassigned locals when the code compiles. The Java Language Specification says every local variable must be "definitely assigned" before its value is read, or the program does not compile (JLS 16). A Java local's scope also starts at its own declaration, with its initializer (JLS 6.3). So if a method reads `level` above `String level = ...;` and the class has a field named `level`, the read means the field. That is option 2, the "lexical window" that JavaScript's designers rejected. Java methods, on the other hand, are visible in the whole class body, much like function declarations in a JavaScript script. JavaScript does its checks at run time, with the TDZ.
 
 </Segment>
 
@@ -936,7 +938,7 @@ console.log(routes[0].handler({ path: "/health" })); // → ok /health`} />
   prompt="Explain to a junior, in three sentences, what happens between calling a function and its first line running, and why reading a let early throws while reading a var early gives undefined."
   rubric={[
     "The call pushes a new execution context with a new function environment record",
-    "Declaration instantiation fills that record before the first line: parameters get arguments, var gets undefined, function declarations get functions, let and const stay uninitialized",
+    "Declaration instantiation fills that record before the first line: parameters get arguments (or defaults), var gets undefined, function declarations get functions, let, const and class stay uninitialized",
     "Reading an uninitialized binding throws a ReferenceError until the declaration line runs (the temporal dead zone); var already holds undefined, so reading it works",
     "No code moves; hoisting is just the name for these effects"
   ]}
