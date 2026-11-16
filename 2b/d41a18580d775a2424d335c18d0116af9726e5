@@ -1,0 +1,21 @@
+apps/web/e2e/lesson.spec.ts
+  s_8f5c837e77b092::t_04c7ab803ae1db 253-263
+apps/web/app/globals.css
+  s_8f5c837e77b092::t_05c66723381d51 171-173
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2bd41a18580d775a2424d335c18d0116af9726e5",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
