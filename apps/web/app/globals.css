@@ -79,6 +79,8 @@ body {
   font-optical-sizing: auto;
   font-size: 17px;
   line-height: 1.55;
+  /* A long path or URL breaks instead of widening the page on a phone. */
+  overflow-wrap: break-word;
   @media (width >= 40rem) {
     font-size: 19px;
     line-height: 1.6;

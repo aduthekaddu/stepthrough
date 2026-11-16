@@ -38,6 +38,15 @@ const deepest = recursion.frames.reduce(
 );
 
 describe('layoutScene', () => {
+  it('makes a narrow scene tall enough for every lane label, even before the heap has objects', () => {
+    const scene = sceneAt(aliasing, 0, 'both', 340);
+    expect(scene.narrow).toBe(true);
+    expect(scene.heap).toHaveLength(0);
+    for (const lane of scene.lanes) {
+      expect(lane.y + METRICS.laneLabel, lane.label).toBeLessThanOrEqual(scene.height);
+    }
+  });
+
   it('grows the stack upward from the oldest call', () => {
     const { frames } = sceneAt(recursion, deepest, 'scope', 640);
     expect(frames.map((f) => f.frame.fn)).toEqual(['(script)', 'fact', 'fact', 'fact']);
