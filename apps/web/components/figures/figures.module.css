@@ -90,6 +90,14 @@
   }
 }
 
+.dimmable {
+  transition: opacity 120ms var(--ease);
+}
+
+.dimmable[data-dim] {
+  opacity: 0.35;
+}
+
 .stack {
   display: grid;
   gap: 16px;
@@ -208,10 +216,18 @@
   gap: 8px;
 }
 
+.pair[data-always] {
+  grid-template-columns: 1fr 1fr;
+}
+
 @container (width >= 420px) {
   .pair {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.spanAt {
+  display: grid;
 }
 
 /* Arrows: down on a narrow picture, right on a wide one. */
@@ -291,6 +307,18 @@
   --cell: clamp(4.5rem, 30cqi, 6rem);
 }
 
+.byteGrid[data-small] {
+  --cell: clamp(1.4rem, 8.5cqi, 2.2rem);
+}
+
+.bits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-block-start: 8px;
+}
+
 .bytes {
   display: grid;
   grid-auto-flow: column;
@@ -300,10 +328,12 @@
   list-style: none;
 }
 
-.byte {
+/* `.bytes > .byte` beats the prose rule `li + li { margin-top }` from the lesson column. */
+.bytes > .byte {
   display: grid;
   justify-items: center;
   gap: 2px;
+  margin: 0;
 }
 
 .byteAt {
@@ -369,67 +399,4 @@
   block-size: 6px;
   border: 1.5px solid var(--ink);
   border-block-start: 0;
-}
-
-/* Sticky layout (prototype A): the picture sticks while captions scroll past it. */
-
-.story {
-  display: grid;
-  margin-block: 8px 24px;
-}
-
-.storyStage {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 2;
-  margin: 0;
-}
-
-.storyCount {
-  font: 500 13px / 1 var(--mono);
-  font-variant-numeric: tabular-nums;
-}
-
-.storySteps {
-  position: relative;
-  z-index: 1;
-}
-
-.storyStep {
-  display: grid;
-  align-content: center;
-  min-block-size: 42svh;
-}
-
-.storyStep p {
-  margin: 0;
-  padding: 12px 14px;
-  border-inline-start: 3px solid var(--rule);
-  background: var(--paper);
-  transition: border-color 120ms var(--ease);
-}
-
-.storyStep[data-active] p {
-  border-inline-start-color: var(--accent);
-}
-
-.storyAside {
-  padding-block: 16px;
-}
-
-@media (width >= 64rem) {
-  .story {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    column-gap: 32px;
-  }
-
-  .storyStage {
-    grid-area: 1 / 2;
-    align-self: start;
-    inset-block-start: 24px;
-  }
-
-  .storySteps {
-    grid-area: 1 / 1;
-  }
 }

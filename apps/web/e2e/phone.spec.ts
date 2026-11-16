@@ -7,6 +7,7 @@ const PAGES = [
   'learn/javascript/execution-context/',
   'learn/demo/components/',
   'playground/viz/',
+  'playground/figures/',
 ];
 const WIDTHS = [360, 390, 430];
 

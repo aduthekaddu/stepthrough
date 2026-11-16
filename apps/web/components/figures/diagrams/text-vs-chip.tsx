@@ -6,7 +6,7 @@ const SOURCE = `function add(a, b) {
   return a + b;
 }`;
 
-/** Steps: 0 the source file, 1 the CPU that cannot read it, 2 a missing piece in between. */
+/** Steps: 0 the two parts, 1 the CPU cannot read the text, 2 a missing piece in between. */
 function Draw({ step }: DiagramProps) {
   const missing = step >= 2;
   return (
@@ -23,11 +23,9 @@ function Draw({ step }: DiagramProps) {
         </Reveal>
         <Flow show={missing} />
       </Reveal>
-      <Reveal show={step >= 1}>
-        <Unit kind="cpu" label="the chip" title="CPU">
-          <p className={styles.note}>runs instructions written as numbers</p>
-        </Unit>
-      </Reveal>
+      <Unit kind="cpu" label="the chip" title="CPU">
+        <p className={styles.note}>runs instructions written as numbers</p>
+      </Unit>
     </div>
   );
 }

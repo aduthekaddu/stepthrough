@@ -66,7 +66,6 @@ const components = {
       diagram: slug,
       title: z.string().min(1),
       gate: slug.optional(),
-      layout: z.enum(['card', 'sticky']).optional(),
       children,
     }),
     Figure,

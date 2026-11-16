@@ -5,37 +5,43 @@ import type { DiagramProps, DiagramSpec } from '../registry.ts';
 const VALUES = [12, 200, 0, 255, 61, 7, 128, 3];
 const READ_AT = 3;
 
-/** 1000 needs ten bits, so it takes two bytes: 00000011 and 11101000 (3 × 256 + 232). */
-const BIG = ['00000011', '11101000'].map((text): Byte => ({ text }));
-
-/** Steps: 0 a row of bytes, 1 a read by address, 2 a number that needs two bytes, 3 a Uint8Array. */
+/**
+ * 1000 = 3 × 256 + 232 takes two bytes. x86-64 stores the low byte first, so it sits in
+ * addresses 6 and 7 as 232, 3 (checked: new Uint8Array(new Uint16Array([1000]).buffer)).
+ * Steps: 0 a row of bytes, 1 a read by address, 2 a number that needs two bytes, 3 a Uint8Array.
+ */
 function Draw({ step }: DiagramProps) {
-  const ram: Byte[] = VALUES.map((v, i) => ({
+  const values = step >= 2 ? [...VALUES.slice(0, 6), 232, 3] : VALUES;
+  const ram: Byte[] = values.map((v, i) => ({
     text: String(v),
     at: String(i),
-    focus: step === 1 && i === READ_AT,
-    dim: step === 1 && i !== READ_AT,
+    focus: (step === 1 && i === READ_AT) || (step === 2 && i >= 6),
+    dim: (step === 1 && i !== READ_AT) || (step === 2 && i < 6),
   }));
   return (
     <div className={styles.stack}>
       <div>
         <p className={styles.rowLabel}>memory · address above, value inside</p>
-        <ByteRow bytes={ram} label="Memory, eight bytes" />
-        <Reveal show={step === 1}>
-          <p className={styles.note}>
-            read address {READ_AT} → {VALUES[READ_AT]}
-          </p>
-        </Reveal>
-      </div>
-      <Reveal show={step >= 2}>
-        <p className={styles.rowLabel}>1000 is bigger than 255</p>
-        <div className={styles.byteGrid} data-wide="">
-          <ByteRow bytes={BIG} label="1000 as two bytes" />
+        <div className={styles.byteGrid}>
+          <ByteRow bytes={ram} label="Memory, eight bytes" />
           <div className={styles.spans}>
-            <Span cells={2}>one number, two bytes side by side</Span>
+            <Reveal
+              show={step === 1}
+              className={styles.spanAt}
+              style={{ gridColumn: '4 / span 1' }}
+            >
+              <Span cells={1}>read</Span>
+            </Reveal>
+            <Reveal
+              show={step === 2}
+              className={styles.spanAt}
+              style={{ gridColumn: '7 / span 2' }}
+            >
+              <Span cells={2}>1000</Span>
+            </Reveal>
           </div>
         </div>
-      </Reveal>
+      </div>
       <Reveal show={step >= 3}>
         <p className={styles.rowLabel}>
           <code>new Uint8Array(4)</code> · index above

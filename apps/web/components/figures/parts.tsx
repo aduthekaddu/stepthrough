@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import styles from './figures.module.css';
 
 /**
@@ -9,13 +9,28 @@ export function Reveal({
   show,
   children,
   className,
+  style,
 }: {
   show: boolean;
   children: ReactNode;
   className?: string | undefined;
+  style?: CSSProperties | undefined;
 }) {
   return (
-    <div className={`${styles.reveal} ${className ?? ''}`} data-show={show || undefined}>
+    <div
+      className={`${styles.reveal} ${className ?? ''}`}
+      style={style}
+      data-show={show || undefined}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Keeps a part on screen but fades it back, so the eye goes to what the step is about. */
+export function Dim({ dim, children }: { dim: boolean; children: ReactNode }) {
+  return (
+    <div className={styles.dimmable} data-dim={dim || undefined}>
       {children}
     </div>
   );
