@@ -1,0 +1,10 @@
+id: FND-LINE-BY-LINE
+belief: "JavaScript is interpreted one line at a time: the engine reads a line, runs it, then reads the next."
+predicts: "A file whose last line has a syntax error prints everything before that line, then fails."
+truth: "The engine parses the whole script before it runs any of it. An early error, such as a duplicate let, stops the script before line 1 runs (ParseScript happens before ScriptEvaluation)."
+counterexample: 'console.log("one"); let total = 1; let total = 2; prints nothing and reports SyntaxError.'
+sources:
+  - "https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions"
+  - 'inferred: the common phrase "JavaScript is an interpreted language"; confirm with the learner''s answers'
+lessons:
+  - fnd-how-programs-run

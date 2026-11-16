@@ -1,0 +1,363 @@
+{
+  "id": "ec-global-setup",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "var count = 2;\nlet unit = \"kg\";\nconst limit = 10;\nfunction label(n) {\n  return n + \" \" + unit;\n}\ncount = count + 1;\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 14
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "label",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "count",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            },
+            {
+              "name": "unit",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "limit",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "label",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 1 has not run yet, but the global record already has all four names: label holds a function, count holds undefined, and unit and limit exist with no value at all."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 2,
+        "endCol": 16
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "label",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "count",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "unit",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "limit",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "label",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 1 ran. It did not add a row; it changed the value in the count row from undefined to 2."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 17
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "label",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "count",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "unit",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"kg\""
+              }
+            },
+            {
+              "name": "limit",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "label",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 2 ran and gave unit its first value."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 7,
+        "startCol": 1,
+        "endLine": 7,
+        "endCol": 18
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "label",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "count",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "unit",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"kg\""
+              }
+            },
+            {
+              "name": "limit",
+              "decl": "const",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "label",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 3 gave limit its value. The function on lines 4 to 6 needs no step, because its row was filled before line 1. Line 7 runs next and leaves count at 3."
+    },
+    {
+      "step": 5,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "label",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "count",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            },
+            {
+              "name": "unit",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"kg\""
+              }
+            },
+            {
+              "name": "limit",
+              "decl": "const",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "10"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "label",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

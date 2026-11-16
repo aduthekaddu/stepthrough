@@ -1,0 +1,1599 @@
+{
+  "id": "ec-countdown",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "function countdown(n) {\n  var label = \"n=\" + n;\n  if (n > 0) countdown(n - 1);\n  console.log(label);\n}\ncountdown(2);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 6,
+        "startCol": 1,
+        "endLine": 6,
+        "endCol": 13
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Only the script's context is on the stack. countdown is a function in the global record."
+    },
+    {
+      "step": 2,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 2,
+        "endCol": 23
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "First call: a new context and a new record. n is 2 and label is undefined."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "label now holds \"n=2\". This line calls countdown again while the first call is still running, so the first call pauses here."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 14,
+        "endLine": 3,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 5,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 2,
+        "endCol": 23
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 6,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 7,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 14,
+        "endLine": 3,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 8,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 2,
+        "endCol": 23
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "countdown",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "countdown() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 9,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "countdown",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "countdown() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=0\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 10,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "countdown",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "countdown() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=0\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The first call to reach this line is the third one, with n = 0. Three countdown records exist at the same time, one per call, each with its own n and label. Each call will log its own label as the stack unwinds."
+    },
+    {
+      "step": 11,
+      "kind": "return",
+      "span": {
+        "startLine": 4,
+        "startCol": 15,
+        "endLine": 4,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "countdown",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "countdown() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "0"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=0\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "n=0"
+      ],
+      "narration": null
+    },
+    {
+      "step": 12,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "n=0"
+      ],
+      "narration": null
+    },
+    {
+      "step": 13,
+      "kind": "return",
+      "span": {
+        "startLine": 4,
+        "startCol": 15,
+        "endLine": 4,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "countdown",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "countdown() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=1\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "n=0",
+        "n=1"
+      ],
+      "narration": null
+    },
+    {
+      "step": 14,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "n=0",
+        "n=1"
+      ],
+      "narration": null
+    },
+    {
+      "step": 15,
+      "kind": "return",
+      "span": {
+        "startLine": 4,
+        "startCol": 15,
+        "endLine": 4,
+        "endCol": 15
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "countdown",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "countdown() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            },
+            {
+              "name": "label",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"n=2\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "n=0",
+        "n=1",
+        "n=2"
+      ],
+      "narration": null
+    },
+    {
+      "step": 16,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "countdown",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "countdown",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "n=0",
+        "n=1",
+        "n=2"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

@@ -1,0 +1,12 @@
+id: EXC-HOIST-FN-AS-VAR
+belief: "Function declarations are set up like var: the name exists early but holds undefined until its line runs."
+predicts: 'Calling a function declaration above its line throws "TypeError: f is not a function"; typeof f above the line is "undefined".'
+truth: Declaration instantiation creates the function object for every function declaration and stores it in the binding before any statement runs. Only function expressions start as undefined (when assigned to a var).
+counterexample: console.log(typeof f); function f() {} prints function.
+sources:
+  - https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation
+  - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-functiondeclarationinstantiation
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function
+  - Inferred
+lessons:
+  - js-execution-context

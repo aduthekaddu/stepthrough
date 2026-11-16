@@ -1,0 +1,10 @@
+id: FND-STACK-IS-ALL-MEMORY
+belief: "The call stack can grow until the computer's RAM is full."
+predicts: "Deep recursion fails only after using gigabytes, and the computer slows down first."
+truth: 'Each thread''s stack is a fixed-size block set up by the OS, and V8 limits JavaScript to a smaller region of it: --stack-size defaults to 984 KB ("default size of stack region v8 is allowed to use"). About ten thousand small frames fit. Objects in the heap can use far more memory than that.'
+counterexample: "A no-argument recursive function reached depth 12517 before RangeError in Node v26 (measured; varies by engine and frame size)."
+sources:
+  - "https://man7.org/linux/man-pages/man7/pthreads.7.html"
+  - "inferred"
+lessons:
+  - fnd-how-programs-run

@@ -1,0 +1,10 @@
+id: COPY-SPREAD-ALIAS
+belief: Spread just gives another reference to the same object, like let b = a.
+predicts: After `const copy = { ...original }; copy.name = "go"`, original.name is "go".
+truth: Spread creates a new object with its own identity. Top-level property writes on the copy do not touch the original; only nested objects are shared.
+counterexample: "const o = { n: 1 }; const c = { ...o }; c.n = 2; console.log(o.n, o === c) prints 1 false."
+sources:
+  - https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy
+  - Inferred (over-applying aliasing); confirm from the learner's answers.
+lessons:
+  - js-values

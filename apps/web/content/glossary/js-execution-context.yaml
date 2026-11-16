@@ -1,0 +1,82 @@
+declaration:
+  term: declaration
+  definition: "Code that creates a name: a var, let, const, function or class declaration, or a function's parameter list. Each kind starts in a different state before the code runs."
+  aliases: []
+  introducedIn: js-execution-context
+environment-record:
+  term: environment record
+  definition: "A table of bindings the engine keeps for running code: one for the script, and a new one for every function call. Each record also has an outer reference to the record around it."
+  aliases: []
+  spec: Environment Record
+  introducedIn: js-execution-context
+execution-context:
+  term: execution context
+  definition: "What the engine keeps for one piece of code that is running: which function it is (or the script), how far it has got, and which environment records it uses to look up names. The call stack is a stack of these."
+  aliases: []
+  spec: execution context (fields Function, Realm, LexicalEnvironment, VariableEnvironment)
+  introducedIn: js-execution-context
+function-environment:
+  term: function environment record
+  definition: "The environment record made for one call of a function. It holds that call's parameters and the names declared at the top level of the function body."
+  aliases: []
+  spec: Function Environment Record
+  introducedIn: js-execution-context
+outer-reference:
+  term: outer reference
+  definition: "The link from an environment record to the record that surrounds it in the code. When a name is not in a record, the lookup follows this link."
+  aliases: []
+  spec: "[[OuterEnv]]"
+  introducedIn: js-execution-context
+scope-chain:
+  term: scope chain
+  definition: "Teaching name, not a spec term, for the chain of environment records joined by outer references. A lookup walks it from the innermost record outward and stops at the first record that has the name."
+  aliases: []
+  spec: GetIdentifierReference walks [[OuterEnv]]
+  introducedIn: js-execution-context
+global-environment:
+  term: global environment record
+  definition: "The outermost environment record, shared by all scripts on a page. It has two parts: an object part backed by the global object, for var and function declarations, and a declarative part for let, const and class."
+  aliases: []
+  spec: Global Environment Record ([[ObjectRecord]] and [[DeclarativeRecord]])
+  introducedIn: js-execution-context
+global-object:
+  term: global object
+  definition: "The object whose properties are global names. Code can always reach it as globalThis; in a browser page it is also called window. Top-level var and function declarations in a classic script become its properties; let, const and class do not."
+  aliases: []
+  spec: global object (realm.[[GlobalObject]])
+  introducedIn: js-execution-context
+declaration-instantiation:
+  term: declaration instantiation
+  definition: "The step that runs before the first statement of a script or function call. It creates a binding for every declaration that belongs to that script or function body and gives each one its starting state. Teaching material often calls it the creation phase."
+  aliases: [creation phase]
+  spec: GlobalDeclarationInstantiation, FunctionDeclarationInstantiation
+  introducedIn: js-execution-context
+hoisting:
+  term: hoisting
+  definition: "Teaching name, not a spec term, for the visible effects of declaration instantiation: a declared name can be used, or changes how code behaves, above the line that declares it. No code moves."
+  aliases: [hoisted]
+  introducedIn: js-execution-context
+tdz:
+  term: temporal dead zone
+  definition: "The time between the creation of a let, const or class binding and the moment its declaration has finished running. The binding exists but has no value, and any read or write of it throws a ReferenceError."
+  aliases: [TDZ]
+  spec: uninitialized binding (GetBindingValue throws a ReferenceError)
+  introducedIn: js-execution-context
+function-expression:
+  term: function expression
+  definition: "A function written where a value is expected, such as on the right of =. Its function object is made only when that expression runs, unlike a function declaration."
+  aliases: []
+  spec: FunctionExpression, ArrowFunction
+  introducedIn: js-execution-context
+strict-mode:
+  term: strict mode
+  definition: 'A stricter set of rules turned on by a "use strict" line at the start of a script or function, and always on inside modules and classes. Code without it is informally called sloppy mode.'
+  aliases: [sloppy mode]
+  spec: strict mode code (11.2.2); non-strict code
+  introducedIn: js-execution-context
+implicit-global:
+  term: implicit global
+  definition: "A property of the global object created by assigning to a name that is not declared anywhere on the scope chain. Only non-strict code does this; strict code throws a ReferenceError instead."
+  aliases: []
+  spec: PutValue on an unresolvable reference
+  introducedIn: js-execution-context

@@ -1,0 +1,7 @@
+id: DEMO-CONST-FREEZES-OBJECT
+belief: "Demo belief for const freezes object."
+predicts: Shown only in the component demo.
+truth: Shown only in the component demo.
+counterexample: Shown only in the component demo.
+sources: []
+lessons: [js-demo]

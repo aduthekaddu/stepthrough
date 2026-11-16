@@ -1,0 +1,7 @@
+id: DEMO-TYPEOF-NAMES-EXACT-TYPE
+belief: "Demo belief for typeof names exact type."
+predicts: Shown only in the component demo.
+truth: Shown only in the component demo.
+counterexample: Shown only in the component demo.
+sources: []
+lessons: [js-demo]

@@ -1,0 +1,152 @@
+---
+id: js-demo
+track: demo
+title: "Component demo: names, objects and typeof"
+minutes: 10
+prereqs: []
+outcomes:
+  - Predict what a second name for an object sees after a change
+  - Say what typeof returns for null and for arrays
+  - Run code in the browser and read its console output
+sources:
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+interviewTags: [frontend, fullstack]
+status: draft
+verifiedAt: 2026-11
+---
+
+<Segment id="s01-hook" goal="Changing an object through one name is visible through every name for it">
+
+Read the four lines below and decide what the last one prints. Commit to an answer before you run anything.
+
+<Predict
+  id="hook"
+  prompt="What does this print?"
+  code={`const a = { n: 1 };
+const b = a;
+b.n = 2;
+console.log(a.n);`}
+  answer="b"
+  options={[
+    { id: "a", text: "`1`", misconception: "DEMO-ASSIGN-COPIES", feedback: "You read `const b = a` as making a copy of the object. It makes a second name for the same object, so the change through `b` is visible through `a`." },
+    { id: "b", text: "`2`", feedback: "Both names point at one object, so a change made through `b` is seen through `a`." },
+    { id: "c", text: "It throws a `TypeError`, because `a` is a constant", misconception: "DEMO-CONST-FREEZES-OBJECT", feedback: "`const` stops you from pointing `a` at something else. It does not stop anyone from changing the object that `a` points at." }
+  ]}
+  explain="Assigning an object to a new name copies the reference, not the object. Both names now lead to the same object."
+/>
+
+
+<Viz example="demo-aliasing" view="memory" gate="hook" title="Aliasing" />
+
+</Segment>
+
+<Segment id="s02-reference" goal="A variable that holds an object holds a reference to it">
+
+The line `const b = a` did not build a second object. It gave the object a second name. What `b` holds is a way to find the object, the same way to find it that `a` holds. JavaScript calls that a <Term id="demo-reference">reference</Term>.<Sidenote>MDN calls objects a reference type: two distinct objects are never equal, even when their properties match.</Sidenote> Run the code to see it. Then change `const b = a` to `const b = { ...a }` and run it again.
+
+<Code runnable code={`const a = { n: 1 };
+const b = a;
+b.n = 2;
+console.log(a.n); // → 2
+console.log(a === b); // → true`} />
+
+<Callout kind="misconception" title="“const makes the object read-only”">
+
+`const` fixes which object a name points at. The object itself can still change. To stop changes to the object, use `Object.freeze`.
+
+</Callout>
+
+</Segment>
+
+<Segment id="s03-typeof" goal='typeof returns "object" for null and for arrays'>
+
+To ask JavaScript what kind of value something is, you can put the word `typeof` in front of it. It gives back the name of the type as a string. That word is the <Term id="demo-typeof">typeof</Term> operator.<Sidenote>MDN explains the history: the first implementation stored a type tag with each value, and `null` ended up with the tag used for objects.</Sidenote>
+
+<Predict
+  id="typeof-null"
+  kind="text"
+  prompt="What does this print? Type the exact output."
+  code={`console.log(typeof null);
+console.log(typeof []);`}
+  answer={`object
+object`}
+  wrong={[
+    { match: "null\narray", misconception: "DEMO-TYPEOF-NAMES-EXACT-TYPE", feedback: "`typeof` does not have a separate name for `null` or for arrays. It reports both as \"object\"." },
+    { match: "null\nobject", misconception: "DEMO-TYPEOF-NULL-IS-NULL", feedback: "`null` is its own type in the language, but `typeof null` has returned \"object\" since the first version of JavaScript." }
+  ]}
+  explain='`typeof` returns "object" for `null` and for arrays. To tell an array apart, use `Array.isArray`.'
+/>
+
+<Callout kind="aside">
+
+`Array.isArray([])` returns `true`, and `Array.isArray({})` returns `false`.
+
+</Callout>
+
+</Segment>
+
+<Segment id="s04-copy" goal="Spreading an array into new brackets builds a new array">
+
+<Predict
+  id="spread-copy"
+  prompt="What does this print?"
+  code={`const list = [1, 2];
+const copy = [...list];
+copy.push(3);
+console.log(list.length);`}
+  answer="a"
+  options={[
+    { id: "a", text: "`2`", feedback: "The brackets build a new array, and `push` changes only that new array." },
+    { id: "b", text: "`3`", misconception: "DEMO-SPREAD-SHARES-ARRAY", feedback: "You read `[...list]` as a second name for `list`. The brackets build a new array and copy the items into it, so `push` changes only the copy." },
+    { id: "c", text: "It throws, because `list` is a constant", misconception: "DEMO-CONST-FREEZES-OBJECT", feedback: "`const` stops `list` from pointing at a different array. Changing an array, as `push` does, is allowed." }
+  ]}
+  explain="`[...list]` creates a new array. Changing it leaves the original alone."
+/>
+
+</Segment>
+
+<Segment id="s05-sandbox" goal="Runnable code runs apart from the page and is stopped after 2 seconds">
+
+The code on this page runs in a <Term id="demo-sandbox">sandbox</Term>: a separate place with its own memory, so a mistake in it cannot freeze the lesson. A loop that never ends would run forever, so the sandbox stops any run that takes longer than two seconds.
+
+<Code runnable code={`console.log('start');
+while (true) {}`} />
+
+<Callout kind="warning" title="Nothing after the loop runs">
+
+The sandbox ends the whole run, so a `console.log` after the loop never prints.
+
+</Callout>
+
+</Segment>
+
+<Segment id="s06-close" goal="Check your model with an explanation, a card and an interview question">
+
+<ExplainBack
+  id="explain-reference"
+  prompt="Explain to a junior developer, in three sentences, why changing `b.n` changed `a.n`."
+  rubric={["Both names hold a reference to one object", "Assignment copies the reference, not the object", "`const` fixes the name, not the object"]}
+/>
+
+<Card
+  id="assignment-copies-reference"
+  kind="recall"
+  front="After `const b = a`, where `a` holds an object, how many objects exist?"
+  back="One. `b` holds a second reference to the same object."
+/>
+
+<Card
+  id="typeof-null"
+  kind="predict"
+  front="What does `console.log(typeof null)` print?"
+  back="`object`. typeof has reported null as an object since the first version of JavaScript."
+/>
+
+<InterviewQ
+  id="copy-object"
+  question="How would you copy an object so that changing the copy leaves the original alone?"
+  rubric={["Spread `{ ...obj }` or `Object.assign` make a shallow copy", "A shallow copy still shares nested objects", "`structuredClone` makes a deep copy of plain data"]}
+/>
+
+</Segment>

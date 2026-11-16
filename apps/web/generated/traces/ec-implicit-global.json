@@ -1,0 +1,291 @@
+{
+  "id": "ec-implicit-global",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "function save() {\n  total = 42;\n}\nsave();\nconsole.log(total);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 7
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "save",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "save",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The picture shows one global name, save; built-in names such as console are hidden. No record has a binding called total."
+    },
+    {
+      "step": 2,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 2,
+        "endCol": 13
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "save",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "save",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "save() call",
+          "parentId": "env0",
+          "bindings": []
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "save",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "save is running. It declares nothing, so its record shows no bindings, and the global record still has no total."
+    },
+    {
+      "step": 3,
+      "kind": "return",
+      "span": {
+        "startLine": 2,
+        "startCol": 11,
+        "endLine": 2,
+        "endCol": 11
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "save",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "save",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "implicit",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "42"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "save() call",
+          "parentId": "env0",
+          "bindings": []
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "save",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 1,
+        "endLine": 5,
+        "endCol": 19
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "save",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "implicit",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "42"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "save",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "save has returned. The lookup for total found nothing, and this code is not strict, so the engine created a property named total on the global object. It outlived the call because it lives on the global object, not in save's record."
+    },
+    {
+      "step": 5,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "save",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "total",
+              "decl": "implicit",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "42"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "save",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "42"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

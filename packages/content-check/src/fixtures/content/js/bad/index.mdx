@@ -1,0 +1,31 @@
+---
+id: js-bad
+track: js
+title: Bad lesson
+minutes: 10
+prereqs: [js-missing]
+outcomes: [One]
+sources: [https://some-blog.example.com/post]
+status: draft
+verifiedAt: 2025-01
+---
+
+Some opening words that are not a prediction. We will delve into a binding here.
+
+<Segment id="s01" goal="Wrong answers">
+<Predict
+  id="p1"
+  prompt="What does this print?"
+  code={`console.log(typeof null);`}
+  answer="a"
+  options={[
+    { id: "a", text: "null", feedback: "No." },
+    { id: "b", text: "object", feedback: "Yes." },
+    { id: "c", text: "undefined", misconception: "VAL-NOPE", feedback: "No." }
+  ]}
+  explain="typeof null is a historical quirk."
+/>
+<Viz example="missing" view="scope" />
+<Code runnable code={`console.log(3); // → 4`} />
+<Term id="unknown-term">thing</Term>
+</Segment>

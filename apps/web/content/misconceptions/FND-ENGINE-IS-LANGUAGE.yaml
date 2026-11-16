@@ -1,0 +1,10 @@
+id: FND-ENGINE-IS-LANGUAGE
+belief: "What V8 does (JIT tiers, stack limits, where values are stored) is a rule of JavaScript."
+predicts: "Every engine compiles hot functions, every engine allows about the same call depth, and the spec says objects go on the heap."
+truth: "The ECMAScript spec describes behaviour (results, errors, order). Speed, compilation tiers, stack size and memory layout are engine choices. Firefox, Safari and Node can all differ, and V8 changes between versions."
+counterexample: "Firefox reports InternalError: too much recursion where V8 reports RangeError: Maximum call stack size exceeded; the spec mentions neither a stack limit nor a heap."
+sources:
+  - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion"
+  - "https://tc39.es/ecma262/multipage/overview.html#sec-hosts-and-implementations"
+lessons:
+  - fnd-how-programs-run

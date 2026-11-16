@@ -1,0 +1,10 @@
+id: VAL-TYPEOF-NULL
+belief: typeof null returns "null".
+predicts: "`typeof null` prints null."
+truth: typeof null returns "object". The spec lists this case on its own; MDN explains it as a bug kept from the first implementation, where null had the object type tag 0.
+counterexample: console.log(typeof null) prints object.
+sources:
+  - https://tc39.es/ecma262/#sec-typeof-operator
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+lessons:
+  - js-values

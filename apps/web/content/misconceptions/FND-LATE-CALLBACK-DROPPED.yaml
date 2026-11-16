@@ -1,0 +1,10 @@
+id: FND-LATE-CALLBACK-DROPPED
+belief: "If the thread is busy when a timer is due, the timer's callback is skipped."
+predicts: "A 0 ms timer behind a 100 ms busy loop never prints."
+truth: "The callback waits. It runs late, after the busy code finishes. A timer delay is a minimum, not a deadline."
+counterexample: "The busy-loop example prints loop done, then timer."
+sources:
+  - "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model"
+  - "inferred"
+lessons:
+  - fnd-how-programs-run

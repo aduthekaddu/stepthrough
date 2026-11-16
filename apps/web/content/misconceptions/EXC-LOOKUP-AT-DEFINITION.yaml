@@ -1,0 +1,10 @@
+id: EXC-LOOKUP-AT-DEFINITION
+belief: A function looks up the outer names it uses when it is written (defined), so a name that had no value yet at that point stays undefined inside it.
+predicts: function read() { return limit; } let limit = 10; console.log(read()); prints undefined.
+truth: A name inside a function body is looked up each time that line runs. When read runs on the last line, limit has been initialized, so the lookup finds 10.
+counterexample: The code above prints 10.
+sources:
+  - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-resolvebinding
+  - Inferred; close to CLO-SNAPSHOT planned for lesson 1.3 (research/pedagogy.md §5.1). Merge the two when 1.3 lands.
+lessons:
+  - js-execution-context

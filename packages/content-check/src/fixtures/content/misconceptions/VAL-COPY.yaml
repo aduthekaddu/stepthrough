@@ -1,0 +1,7 @@
+id: VAL-COPY
+belief: Assigning an object to a new name copies the object.
+predicts: A change through the new name does not show through the old one.
+truth: Assignment copies the reference; both names point at one object.
+counterexample: "let a = {n: 1}; let b = a; b.n = 2; a.n is 2"
+sources: [https://developer.mozilla.org/en-US/docs/Glossary/Object_reference]
+lessons: [js-good]

@@ -1,0 +1,11 @@
+id: FND-UNCALLED-UNCHECKED
+belief: "Code inside a function that is never called is never looked at, so errors there cannot matter."
+predicts: "A syntax error inside a never-called function does not stop the rest of the file."
+truth: "The whole script is parsed first, function bodies included. Early errors anywhere in the script stop all of it. V8 skips full compilation of unused functions but its preparser still checks their syntax."
+counterexample: 'A file that logs "one" and has function neverCalled() { let a = 1; let a = 2; } prints nothing and throws SyntaxError.'
+sources:
+  - "https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions"
+  - "https://v8.dev/blog/preparser"
+  - "inferred"
+lessons:
+  - fnd-how-programs-run

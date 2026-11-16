@@ -1,0 +1,11 @@
+id: FND-OPTIMIZED-CHANGES-MEANING
+belief: "Once V8 optimizes a function for numbers, calling it with other types gives a wrong answer or an error."
+predicts: 'After many add(number, number) calls, add("ab", "cd") gives NaN or a TypeError.'
+truth: "Optimized code checks its guesses. When a check fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter, which follows the spec. The result never changes, only the speed."
+counterexample: 'The p-deopt snippet prints 100000, then abcd; --trace-deopt shows "reason: not a Smi" at that moment.'
+sources:
+  - "https://v8.dev/blog/maglev"
+  - "https://v8.dev/blog/sparkplug"
+  - "inferred"
+lessons:
+  - fnd-how-programs-run

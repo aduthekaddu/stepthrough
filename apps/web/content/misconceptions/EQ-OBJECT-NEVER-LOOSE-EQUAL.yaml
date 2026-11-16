@@ -1,0 +1,10 @@
+id: EQ-OBJECT-NEVER-LOOSE-EQUAL
+belief: An object can never be == to a primitive, just as with ===.
+predicts: Any comparison of an object with a number or string using == is false.
+truth: Steps 11 and 12 of IsLooselyEqual convert the object with ToPrimitive and compare again, so an object can be == to a primitive.
+counterexample: console.log([1, 2] == "1,2") prints true.
+sources:
+  - https://tc39.es/ecma262/#sec-islooselyequal
+  - Inferred (over-applying the === rule); confirm from the learner's answers.
+lessons:
+  - js-values

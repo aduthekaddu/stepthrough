@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DO_NOT_TRACK: 1
+  NEXT_TELEMETRY_DISABLED: 1
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: read
+    env:
+      DEPLOY: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: node packages/content-check/src/cli.ts apps/web/content
+      - name: Lab solutions pass and starters fail
+        run: pnpm --filter @stepthrough/web labs
+      - id: pages
+        if: env.DEPLOY == 'true'
+        uses: actions/configure-pages@v6
+      - run: pnpm --filter @stepthrough/web build
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+      - name: Generated traces match the committed ones
+        run: |
+          changes=$(git status --porcelain -- apps/web/generated)
+          if [ -n "$changes" ]; then echo "$changes"; git diff -- apps/web/generated; exit 1; fi
+      - run: pnpm --filter @stepthrough/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @stepthrough/web e2e
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          PLAYWRIGHT_CHANNEL: chromium
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-traces
+          path: apps/web/test-results
+          if-no-files-found: ignore
+      - if: env.DEPLOY == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/web/out
+
+  deploy:
+    needs: check
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

@@ -1,0 +1,551 @@
+{
+  "id": "ec-first-call",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "var greeting = \"Hi\";\nfunction greet(name) {\n  var line = greeting + \", \" + name;\n  let tail = \"!\";\n  return line + tail;\n}\nconsole.log(greet(\"Asha\"));\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "One execution context is on the stack: the one for the script. greet is already a function, and greeting is undefined."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 7,
+        "startCol": 1,
+        "endLine": 7,
+        "endCol": 27
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "greeting now holds \"Hi\". The next step calls greet."
+    },
+    {
+      "step": 3,
+      "kind": "enter",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 36
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "greet",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "greet() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "name",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            },
+            {
+              "name": "line",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            },
+            {
+              "name": "tail",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The call pushed a second execution context and made a new record for this call. Before line 3 runs, name is \"Asha\", line is undefined and tail has no value."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 17
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "greet",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "greet() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "name",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            },
+            {
+              "name": "line",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi, Asha\""
+              }
+            },
+            {
+              "name": "tail",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 3 ran, so line holds \"Hi, Asha\". greeting was not in greet's record; segment 6 shows how the engine found it."
+    },
+    {
+      "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 3,
+        "endLine": 5,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "greet",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "greet() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "name",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            },
+            {
+              "name": "line",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi, Asha\""
+              }
+            },
+            {
+              "name": "tail",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"!\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Line 4 gave tail its value. Next, greet returns \"Hi, Asha!\", its context leaves the stack, and nothing refers to its record any more, so the picture drops it."
+    },
+    {
+      "step": 6,
+      "kind": "return",
+      "span": {
+        "startLine": 5,
+        "startCol": 17,
+        "endLine": 5,
+        "endCol": 17
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "greet",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi\""
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "greet() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "name",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            },
+            {
+              "name": "line",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi, Asha\""
+              }
+            },
+            {
+              "name": "tail",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"!\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 7,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "greet",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "greeting",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Hi\""
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "greet",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "Hi, Asha!"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

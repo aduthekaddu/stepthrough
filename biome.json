@@ -1,0 +1,30 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!research",
+      "!**/*.md",
+      "!examples/**/trace.json",
+      "!**/next-env.d.ts",
+      "!**/content/**/examples",
+      "!**/content/**/lab",
+      "!**/fixtures",
+      "!apps/web/generated"
+    ]
+  },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
+  "linter": { "enabled": true, "rules": { "preset": "recommended" } },
+  "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "always" } },
+  "css": { "parser": { "tailwindDirectives": true, "cssModules": true } },
+  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } },
+  "overrides": [
+    {
+      "includes": ["apps/web/viz-fixtures/**", "**/examples/**/*.js"],
+      "linter": { "enabled": false },
+      "formatter": { "enabled": false }
+    }
+  ]
+}

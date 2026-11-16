@@ -1,0 +1,10 @@
+id: NUM-NAN-SELF-EQUAL
+belief: Any value is === to itself, including NaN.
+predicts: For `const x = 0 / 0`, `x === x` is true.
+truth: Number::equal returns false whenever either side is NaN, so NaN is the only value that is not === to itself. The rule comes from IEEE 754 floating point.
+counterexample: const x = 0 / 0; console.log(x === x) prints false.
+sources:
+  - https://tc39.es/ecma262/#sec-numeric-types-number-equal
+  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN
+lessons:
+  - js-values

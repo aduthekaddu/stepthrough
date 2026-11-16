@@ -1,0 +1,244 @@
+{
+  "id": "values-primitive-copy",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "let a = 5;\nlet b = a;\na = 6;\nconsole.log(a, b);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 10
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "The Global box lists the names this script declares; both exist already but hold nothing yet, a waiting state that lesson 1.2 explains."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 2,
+        "startCol": 1,
+        "endLine": 2,
+        "endCol": 10
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "5"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "The name a now holds the number 5, a primitive, written inside its row."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 6
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "5"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "5"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "let b = a read the value of a, which is 5, and gave b that value, and nothing links the two names."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 18
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "6"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "5"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [],
+      "narration": "a = 6 changed only the row for a, so the row for b still says 5."
+    },
+    {
+      "step": 5,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "a",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "6"
+              }
+            },
+            {
+              "name": "b",
+              "decl": "let",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "5"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [],
+      "console": [
+        "6 5"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

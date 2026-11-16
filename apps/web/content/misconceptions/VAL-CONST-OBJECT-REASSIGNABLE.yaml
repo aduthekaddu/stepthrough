@@ -1,0 +1,10 @@
+id: VAL-CONST-OBJECT-REASSIGNABLE
+belief: const only protects primitive values; a const that holds an object can be pointed at a new object.
+predicts: "`const s = {...}; s = { theme: 'blue' };` runs without error and s.theme becomes 'blue'."
+truth: Every const binding is immutable, whatever it holds. Assigning to it throws a TypeError ("Assignment to constant variable.").
+counterexample: "const s = {}; s = {}; throws TypeError: Assignment to constant variable."
+sources:
+  - https://tc39.es/ecma262/#sec-declarative-environment-records-setmutablebinding-n-v-s
+  - Inferred (an over-correction of VAL-CONST-FREEZES); confirm from the learner's answers.
+lessons:
+  - js-values

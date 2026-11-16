@@ -1,0 +1,10 @@
+id: FND-SAME-CODE-SAME-SPEED
+belief: "The same function with the same kind of input always takes the same time."
+predicts: "Call 100,000 of a function takes as long as call 1."
+truth: "In V8 a function starts as interpreted bytecode. If it runs often, V8 may compile it to machine code, and later calls usually get faster. The speed of a call depends on the engine's state, not only on the code."
+counterexample: "node --trace-opt shows a hot function being marked for optimization to MAGLEV after many calls."
+sources:
+  - "https://v8.dev/blog/maglev"
+  - "inferred"
+lessons:
+  - fnd-how-programs-run

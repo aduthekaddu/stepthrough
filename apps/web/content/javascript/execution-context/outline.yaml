@@ -1,0 +1,519 @@
+frontmatter:
+  id: js-execution-context
+  track: javascript
+  title: Execution context, hoisting and the TDZ
+  minutes: 90
+  prereqs: [js-values]
+  outcomes:
+    - Describe what an execution context and an environment record hold, and draw the call stack and records for a small program
+    - Predict the state of every var, let, const, function and parameter binding after declaration instantiation, and explain hoisting as its visible effect
+    - Explain the temporal dead zone (including typeof and an inner name that shadows an outer one), why let and const were designed with it, and how sloppy and strict code differ for undeclared names
+  sources:
+    - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+    - https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records
+    - https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation
+    - https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-functiondeclarationinstantiation
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+    - https://developer.mozilla.org/en-US/docs/Glossary/Hoisting
+  interviewTags: [frontend, fullstack, javascript]
+  status: draft
+  verifiedAt: 2026-11
+
+# Every behaviour the lesson states rests on one of these. Spec text was read from the
+# multipage edition on 2026-11-15; Node outputs are from Node 26.13.1 run as classic scripts (node -e).
+facts:
+  - id: f-ec-def
+    text: "An execution context is a specification device that is used to track the runtime evaluation of code by an ECMAScript implementation. At most one is running per agent: the running execution context."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+  - id: f-ec-stack
+    text: "The execution context stack is used to track execution contexts. The running execution context is always the top element. A new execution context is created whenever control is transferred to code not associated with the running one, and is pushed onto the stack."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+  - id: f-ec-fields
+    text: "State components for all execution contexts: code evaluation state; Function (the function object, or null for a Script or Module); Realm; ScriptOrModule. Additional components for ECMAScript code: LexicalEnvironment identifies the Environment Record used to resolve identifier references; VariableEnvironment identifies the Environment Record that holds bindings created by VariableStatements; PrivateEnvironment (class private names)."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+  - id: f-ec-not-observable
+    text: "An execution context is purely a specification mechanism and need not correspond to any particular artefact of an ECMAScript implementation. It is impossible for ECMAScript code to directly access or observe an execution context. The same is said of Environment Records."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts
+  - id: f-env-def
+    text: "Environment Record is a specification type used to define the association of Identifiers to specific variables and functions. Each time a FunctionDeclaration, BlockStatement or Catch clause is evaluated, a new one is created. Every Environment Record has an [[OuterEnv]] field, which is either null or a reference to an outer Environment Record."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-environment-records
+  - id: f-fn-env
+    text: "A Function Environment Record corresponds to the invocation of an ECMAScript function object, and contains bindings for the top-level declarations within that function. NewFunctionEnvironment sets its [[OuterEnv]] to func.[[Environment]]."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-newfunctionenvironment
+  - id: f-global-env
+    text: "A Global Environment Record is a record encapsulating an Object Environment Record (whose binding object is the global object) and a Declarative Environment Record. The [[ObjectRecord]] holds built-in globals and bindings from FunctionDeclaration and VariableStatement in global code; all other declarations in global code go in the [[DeclarativeRecord]]. Its [[OuterEnv]] is null."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-global-environment-records
+  - id: f-lookup
+    text: "GetIdentifierReference(env, name): if env is null, return an unresolvable reference; if env.HasBinding(name), return a reference to env; otherwise recurse with env.[[OuterEnv]]. ResolveBinding starts from the running execution context's LexicalEnvironment."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-getidentifierreference
+  - id: f-getvalue
+    text: "GetValue: if the reference is unresolvable, throw a ReferenceError; otherwise for an environment reference return base.GetBindingValue(name)."
+    url: https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-getvalue
+  - id: f-uninit-read
+    text: "Declarative GetBindingValue: If the binding exists but is uninitialized a ReferenceError is thrown, regardless of the value of strict."
+    url: https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-declarative-environment-records-getbindingvalue-n-s
+  - id: f-typeof
+    text: 'typeof: if the operand is an unresolvable reference, return "undefined". Otherwise call GetValue, which throws for an uninitialized binding.'
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-typeof-operator-runtime-semantics-evaluation
+  - id: f-putvalue
+    text: "PutValue on an unresolvable reference: if strict, throw a ReferenceError; else Set(globalObj, name, value, false)."
+    url: https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-putvalue
+  - id: f-script-eval
+    text: "ScriptEvaluation creates scriptContext with Function null and LexicalEnvironment = VariableEnvironment = the global environment, pushes it, runs GlobalDeclarationInstantiation, then evaluates the script's statements, then removes the context."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-runtime-semantics-scriptevaluation
+  - id: f-gdi
+    text: "GlobalDeclarationInstantiation: lexically declared names are created with CreateImmutableBinding (const) or CreateMutableBinding (let, class) and 'only instantiated here but not initialized'; for each function declaration (last one wins) InstantiateFunctionDeclaration creates the function object and CreateGlobalFunctionBinding stores it; var names that are not function names get CreateGlobalVarBinding, which creates and initializes them to undefined only if the global object has no such own property yet (so var Object; keeps the built-in). Conflicts with existing lexical names throw a SyntaxError before any binding is made."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-globaldeclarationinstantiation
+  - id: f-call
+    text: "PrepareForOrdinaryCall creates calleeContext with Function = func, LexicalEnvironment = VariableEnvironment = NewFunctionEnvironment(func), and pushes it. [[Call]] then evaluates the body and removes calleeContext, restoring the caller's context."
+    url: https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-prepareforordinarycall
+  - id: f-body
+    text: "EvaluateFunctionBody: Perform FunctionDeclarationInstantiation(funcObj, argList), then evaluate the FunctionStatementList."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-runtime-semantics-evaluatefunctionbody
+  - id: f-fdi
+    text: "FunctionDeclarationInstantiation: parameters are created and bound to the arguments (left to right; created uninitialized unless names repeat); each var name not already a parameter is created and initialized to undefined; lexically declared names are 'only instantiated here but not initialized'; each function declaration's function object is created and stored. 'A var with the same name as a formal parameter initially has the same value as the corresponding initialized parameter.' Non-strict functions put top-level let/const in a separate record (for direct eval)."
+    url: https://tc39.es/ecma262/multipage/ordinary-and-exotic-objects-behaviours.html#sec-functiondeclarationinstantiation
+  - id: f-let-note
+    text: "let and const variables are created when their containing Environment Record is instantiated but may not be accessed in any way until the variable's LexicalBinding is evaluated. let x; with no initializer sets undefined at that point. const without an initializer is a SyntaxError."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-let-and-const-declarations
+  - id: f-var-note
+    text: "Var variables are created when their containing Environment Record is instantiated and are initialized to undefined when created. A VariableDeclaration with an Initializer is assigned when it is executed. var x; (no initializer) evaluates to: Return empty."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-statements-and-declarations.html#sec-variable-statement
+  - id: f-fn-eval
+    text: "Evaluating a FunctionDeclaration returns empty (does nothing). A FunctionExpression evaluates to InstantiateOrdinaryFunctionExpression; an ArrowFunction to InstantiateArrowFunctionExpression, so those function objects are created when the expression runs."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-function-definitions-runtime-semantics-evaluation
+  - id: f-strict-code
+    text: "Global code is strict if it begins with a Use Strict Directive; module code is always strict; all parts of a class are strict; function code is strict if it is inside strict code or begins with the directive. Code that is not strict is called non-strict code."
+    url: https://tc39.es/ecma262/multipage/ecmascript-language-source-code.html#sec-strict-mode-code
+  - id: f-strict-annex
+    text: "Annex C: Assignment to an undeclared identifier or otherwise unresolvable reference does not create a property in the global object. In strict mode code it throws a ReferenceError."
+    url: https://tc39.es/ecma262/multipage/strict-mode-of-ecmascript.html#sec-strict-mode-of-ecmascript
+  - id: f-mdn-hoisting
+    text: "Hoisting is not a term normatively defined in the ECMAScript specification. MDN lists four behaviours that may be regarded as hoisting: value hoisting (function declarations), declaration hoisting (var: value undefined), a declaration changing behaviour in its scope before its line (let, const, class), and side effects of a declaration produced before the rest of the code (import)."
+    url: https://developer.mozilla.org/en-US/docs/Glossary/Hoisting
+  - id: f-mdn-tdz
+    text: "A let, const or class variable is in a TDZ from the start of the block until code execution reaches the place where it is declared and initialized. 'The term temporal is used because the zone depends on the order of execution (time) rather than the order in which the code is written (position).' typeof in the TDZ throws a ReferenceError. let at the top level of a script does not create a property on globalThis."
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let
+  - id: f-mdn-var
+    text: "In a script, a top-level var is added as a non-configurable property of the global object. In Node.js CommonJS modules and ES modules, top-level declarations are scoped to the module and not added to the global object. Duplicate var declarations do not lose the value unless they have an initializer."
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var
+  - id: f-mdn-function
+    text: "Function declarations are hoisted to the top of the enclosing function or global scope. Function expressions are not hoisted: notHoisted(); var notHoisted = function () {} throws TypeError: notHoisted is not a function."
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function
+  - id: f-hopl-tdz
+    text: "Wirfs-Brock and Eich, JavaScript: The First 20 Years (HOPL 2020), pp. 111-113: Waldemar Horwat listed four semantics for a name used above its block-level declaration: A1 lexical dead zone, A2 lexical window, B1 temporal dead zone, B2 temporal window. A2 and B2 let one name mean different bindings at different points or times; A1 prevents mutually recursive functions. TC39 chose B1. Rules: one binding per name in a scope; let, const, class, import, block functions and parameters are dead until initialized; accessing or assigning an uninitialized binding is a runtime error. Global object properties cannot be marked uninitialized, so global let, const and class are not global object properties."
+    url: https://doi.org/10.1145/3386327
+  - id: f-node-messages
+    text: 'Measured in Node 26.13.1: reading a let/const/class in its TDZ throws "ReferenceError: Cannot access ''x'' before initialization"; reading an undeclared name throws "ReferenceError: x is not defined"; calling undefined throws "TypeError: x is not a function". engine262 (the trace engine) words the TDZ error "x cannot be used before initialization". The message text is engine-specific.'
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Cant_access_lexical_declaration_before_init
+  - id: f-module-var
+    text: "Measured in Node 26.13.1: inside an ES module, var x = 1; console.log(globalThis.x) prints undefined; as a classic script (node -e) it prints 1."
+    url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var
+  - id: f-jls
+    text: "Java (JLS 6.3): the scope of a local variable 'is the rest of the block, starting with the declaration's own initializer'; the scope of a class member 'is the entire body' of the class. JLS 16: every local variable must be definitely assigned before any access of its value, or a compile-time error occurs."
+    url: https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.3
+  - id: f-zod
+    text: "Zod docs, Recursive objects: 'To define a self-referential type, use a getter on the key. This lets JavaScript resolve the cyclical schema at runtime.'"
+    url: https://zod.dev/api#recursive-objects
+
+vocabulary:
+  - { term: program, status: from fnd-how-programs-run }
+  - {
+      term: engine,
+      status: from fnd-how-programs-run,
+      reminder: "the program that runs JavaScript, such as V8 inside Node and Chrome",
+    }
+  - {
+      term: call stack,
+      status: from fnd-how-programs-run,
+      reminder: "the list of function calls that have started and not finished, newest on top",
+    }
+  - { term: stack frame, status: from fnd-how-programs-run }
+  - { term: value, status: from js-values }
+  - { term: binding, status: from js-values, reminder: "a name paired with a value" }
+  - { term: object, status: from js-values }
+  - {
+      term: typeof,
+      status: from js-values,
+      reminder: "the operator that returns a value's type as a string",
+    }
+  - {
+      term: declaration,
+      id: declaration,
+      status: new,
+      segment: s02-setup-first,
+      definition: "Code that creates a name: var, let, const, function or class, or a function's parameters.",
+    }
+  - {
+      term: environment record,
+      id: environment-record,
+      status: new,
+      segment: s03-records,
+      spec: Environment Record,
+      definition: "A table of bindings; one for the script and one per function call.",
+    }
+  - {
+      term: execution context,
+      id: execution-context,
+      status: new,
+      segment: s04-context,
+      spec: execution context,
+      definition: "What the engine keeps for one running piece of code: which function, how far it has got, which records it uses.",
+    }
+  - {
+      term: function environment record,
+      id: function-environment,
+      status: new,
+      segment: s04-context,
+      spec: Function Environment Record,
+      definition: "The record made for one call of a function.",
+    }
+  - {
+      term: outer reference,
+      id: outer-reference,
+      status: new,
+      segment: s06-lookup,
+      spec: "[[OuterEnv]]",
+      definition: "The link from a record to the record around it.",
+    }
+  - {
+      term: scope chain,
+      id: scope-chain,
+      status: new (teaching name),
+      segment: s06-lookup,
+      definition: "The chain of records joined by outer references that a lookup walks.",
+    }
+  - {
+      term: global environment record,
+      id: global-environment,
+      status: new,
+      segment: s07-global,
+      spec: Global Environment Record,
+      definition: "The outermost record, with an object part and a declarative part.",
+    }
+  - {
+      term: global object,
+      id: global-object,
+      status: new,
+      segment: s07-global,
+      definition: "The object behind global var and function names; globalThis.",
+    }
+  - {
+      term: declaration instantiation,
+      id: declaration-instantiation,
+      status: new,
+      segment: s08-instantiation,
+      spec: "GlobalDeclarationInstantiation, FunctionDeclarationInstantiation",
+      definition: "The setup step before the first statement. Teaching name: creation phase.",
+    }
+  - {
+      term: hoisting,
+      id: hoisting,
+      status: new (teaching name),
+      segment: s09-hoisting,
+      definition: "The visible effect of declaration instantiation.",
+    }
+  - {
+      term: temporal dead zone,
+      id: tdz,
+      status: new,
+      segment: s10-tdz,
+      spec: "uninitialized binding",
+      definition: "The time a let/const/class binding exists without a value.",
+    }
+  - {
+      term: function expression,
+      id: function-expression,
+      status: new,
+      segment: s14-functions,
+      spec: FunctionExpression,
+      definition: "A function written as a value; created when its expression runs.",
+    }
+  - {
+      term: strict mode,
+      id: strict-mode,
+      status: new,
+      segment: s15-strict,
+      spec: strict mode code,
+      definition: 'Stricter rules from "use strict", modules and classes; the rest is sloppy mode.',
+    }
+  - {
+      term: implicit global,
+      id: implicit-global,
+      status: new,
+      segment: s15-strict,
+      definition: "A global object property created by assigning to an undeclared name in sloppy mode.",
+    }
+  - {
+      term: block environment record,
+      status: forward reference to js-closures (lesson 1.3),
+      segment: s10-tdz,
+    }
+
+misconceptions:
+  main:
+    [
+      EXC-TOP-TO-BOTTOM,
+      EXC-HOIST-MOVES-CODE,
+      EXC-TDZ-IS-UNDEFINED,
+      EXC-HOIST-LET-NOT-HOISTED,
+      EXC-TDZ-IS-SPATIAL,
+      EXC-HOIST-ALL-FUNCTIONS,
+      EXC-GLOBAL-LET-ON-OBJECT,
+      EXC-GLOBAL-ASSIGN-MAKES-LOCAL,
+    ]
+  secondary:
+    [
+      EXC-HOIST-FN-AS-VAR,
+      EXC-LOCALS-PERSIST,
+      EXC-CALL-NO-WAIT,
+      EXC-LOOKUP-MISSING-IS-UNDEFINED,
+      EXC-TYPEOF-UNDECLARED-THROWS,
+      EXC-GLOBAL-NOTHING-ON-OBJECT,
+      EXC-TDZ-TYPEOF-SAFE,
+      EXC-GLOBAL-ASSIGN-ALWAYS-WORKS,
+    ]
+  added_after_review: [EXC-IMPLICIT-NOT-PROPERTY, EXC-LOOKUP-AT-DEFINITION]
+  gauntlet_only:
+    [
+      EXC-VAR-REDECLARE-RESETS,
+      EXC-HOIST-CLASS-LIKE-FUNCTION,
+      EXC-HOIST-VAR-BEATS-FUNCTION,
+      EXC-HOIST-FN-LINE-ASSIGNS,
+      EXC-TDZ-PARAMS-EXEMPT,
+    ]
+  notes: "Entries whose sources say Inferred are hypotheses until the learner's logged answers confirm them."
+
+segments:
+  - id: s01-hook
+    goal: "A name can be read before its line, and var and let disagree about what you get"
+    terms_introduced: []
+    terms_used: []
+    words: 40-80
+    code: examples in the Predict (hook)
+    interaction:
+      {
+        kind: predict,
+        id: hook,
+        targets: [EXC-HOIST-MOVES-CODE, EXC-TOP-TO-BOTTOM, EXC-TDZ-IS-UNDEFINED],
+      }
+    note: "Reveal real output; defer the explanation to s09 and s10."
+  - id: s02-setup-first
+    goal: "The engine sets up every declared name before the first line runs"
+    terms_introduced: [declaration]
+    terms_used: [engine, binding]
+    words: 100-150
+    interaction:
+      - { kind: predict, id: call-early, targets: [EXC-TOP-TO-BOTTOM, EXC-HOIST-FN-AS-VAR] }
+      - { kind: run, code: "console.log(typeof double) before function double prints function" }
+    doubt: "If code runs top to bottom, how can line 1 call a function from line 2?"
+  - id: s03-records
+    goal: "Names live in a table of bindings called an environment record"
+    terms_introduced: [environment-record]
+    terms_used: [declaration, binding]
+    words: 120-170
+    visual:
+      {
+        component: Viz,
+        example: ec-global-setup,
+        view: scope,
+        gate: call-early,
+        pauseAt: [1],
+        new_parts: [record box, binding rows, decl kind label, uninitialized state],
+      }
+    interaction: { kind: step, id: viz-global-setup }
+    doubt: "Is the record a real thing in memory?"
+  - id: s04-context
+    goal: "Each running piece of code has an execution context that points to its records"
+    terms_introduced: [execution-context, function-environment]
+    terms_used: [environment-record, call stack]
+    words: 150-220
+    visual:
+      {
+        component: Viz,
+        example: ec-first-call,
+        view: scope,
+        pauseAt: [2],
+        new_parts: [stack region, function record],
+      }
+    interaction:
+      - {
+          kind: predict,
+          id: call-order,
+          targets: [EXC-CALL-NO-WAIT],
+          note: "concrete case first: a call pauses the caller",
+        }
+      - { kind: step, id: viz-first-call }
+    doubt: "Is an execution context the same thing as a stack frame from lesson 0.1?"
+  - id: s05-each-call
+    goal: "Every call gets a new execution context and a new record, so each call has its own local bindings"
+    terms_introduced: []
+    terms_used: [execution-context, function-environment, call stack]
+    words: 90-140
+    interaction: { kind: predict, id: countdown, targets: [EXC-LOCALS-PERSIST, EXC-CALL-NO-WAIT] }
+    visual:
+      { component: Viz, example: ec-countdown, view: scope, gate: countdown, pauseAt: [7, 12] }
+  - id: s06-lookup
+    goal: "A lookup walks outer references until it finds the name or runs out of records"
+    terms_introduced: [outer-reference, scope-chain]
+    terms_used: [environment-record, typeof]
+    words: 140-200
+    interaction:
+      {
+        kind: predict,
+        id: lookup,
+        targets: [EXC-LOOKUP-MISSING-IS-UNDEFINED, EXC-TYPEOF-UNDECLARED-THROWS],
+      }
+    visual:
+      {
+        component: Viz,
+        example: ec-lookup,
+        view: scope,
+        gate: lookup,
+        pauseAt: [4],
+        new_parts: [outer arrow],
+      }
+    doubt: "Why does the outer of full point to page and not to whoever called it?"
+  - id: s07-global
+    goal: "The global record has two parts, and only var and function land on the global object"
+    terms_introduced: [global-environment, global-object]
+    terms_used: [environment-record, declaration]
+    words: 150-220
+    interaction:
+      - {
+          kind: predict,
+          id: globals,
+          targets: [EXC-GLOBAL-LET-ON-OBJECT, EXC-GLOBAL-NOTHING-ON-OBJECT],
+        }
+      - {
+          kind: run,
+          code: "let b = 2; b, globalThis.b, 'b' in globalThis prints 2 undefined false",
+        }
+    doubt: "Why would the language keep two kinds of global names?"
+  - id: s08-instantiation
+    goal: "Declaration instantiation gives each declaration kind its own starting state"
+    terms_introduced: [declaration-instantiation]
+    terms_used: [declaration, environment-record, execution-context]
+    words: 180-240
+    code: "table of kinds; runnable var redeclare (var color twice prints red)"
+    interaction:
+      {
+        kind: predict,
+        id: unreachable,
+        targets: [EXC-TOP-TO-BOTTOM, EXC-HOIST-FN-AS-VAR],
+        transfer: true,
+      }
+  - id: s09-hoisting
+    goal: "Hoisting is a teaching name for the effects of declaration instantiation; no code moves"
+    terms_introduced: [hoisting]
+    terms_used: [declaration-instantiation]
+    words: 120-180
+    visual: { component: Viz, example: ec-hook-replay, view: scope, gate: hook, pauseAt: [1] }
+    interaction: { kind: step, id: viz-hook-replay }
+    doubt: "Then why does everyone say declarations move to the top?"
+  - id: s10-tdz
+    goal: "A let or const binding exists before its line but has no value, and touching it throws"
+    terms_introduced: [tdz]
+    terms_used: [declaration-instantiation, outer-reference]
+    words: 150-210
+    interaction:
+      {
+        kind: predict,
+        id: tdz-shadow,
+        targets: [EXC-HOIST-LET-NOT-HOISTED, EXC-TDZ-IS-UNDEFINED, EXC-HOIST-MOVES-CODE],
+      }
+    visual: { component: Viz, example: ec-tdz-shadow, view: scope, gate: tdz-shadow, pauseAt: [3] }
+    note: "One sentence: blocks get their own records too (lesson 1.3); runnable block example."
+  - id: s11-typeof
+    goal: "typeof does not protect you from a binding in its TDZ"
+    terms_introduced: []
+    terms_used: [tdz, scope-chain, typeof]
+    words: 90-140
+    interaction:
+      {
+        kind: predict,
+        id: tdz-typeof,
+        targets: [EXC-TDZ-TYPEOF-SAFE, EXC-TYPEOF-UNDECLARED-THROWS],
+      }
+  - id: s12-temporal
+    goal: "The dead zone is about when code runs, not where it is written"
+    terms_introduced: []
+    terms_used: [tdz]
+    words: 90-140
+    interaction:
+      - { kind: predict, id: temporal, targets: [EXC-TDZ-IS-SPATIAL] }
+      - { kind: predict, id: temporal-moved, modify: true, targets: [EXC-TDZ-IS-SPATIAL] }
+  - id: s13-why-tdz
+    goal: "The TDZ was chosen so one name means one binding and a const is never seen with two values"
+    terms_introduced: []
+    terms_used: [tdz, global-object, environment-record]
+    words: 180-250
+    interaction:
+      - {
+          kind: run,
+          code: "isEven/isOdd const arrows that call each other print true (why option 1 was rejected)",
+        }
+      - { kind: explain, id: why-tdz }
+    doubt: "Would it not be simpler to give let undefined, like var?"
+  - id: s14-functions
+    goal: "Only function declarations get their function object during instantiation"
+    terms_introduced: [function-expression]
+    terms_used: [declaration-instantiation, tdz]
+    words: 140-200
+    interaction:
+      {
+        kind: predict,
+        id: fn-forms,
+        targets: [EXC-HOIST-ALL-FUNCTIONS, EXC-HOIST-FN-AS-VAR, EXC-TOP-TO-BOTTOM],
+      }
+    visual:
+      { component: Viz, example: ec-function-forms, view: scope, gate: fn-forms, pauseAt: [1] }
+  - id: s15-strict
+    goal: "Assigning to an undeclared name creates a global in sloppy mode and throws in strict mode"
+    terms_introduced: [strict-mode, implicit-global]
+    terms_used: [scope-chain, global-object]
+    words: 160-230
+    interaction:
+      - {
+          kind: predict,
+          id: sloppy,
+          targets: [EXC-GLOBAL-ASSIGN-MAKES-LOCAL, EXC-LOOKUP-MISSING-IS-UNDEFINED],
+        }
+      - { kind: predict, id: strict, modify: true, targets: [EXC-GLOBAL-ASSIGN-ALWAYS-WORKS] }
+    visual: { component: Viz, example: ec-implicit-global, view: scope, gate: sloppy, pauseAt: [2] }
+  - id: s16-misconceptions
+    goal: "The wrong models in one place, each with the line of code that breaks it"
+    words: 100-150
+    interaction: { kind: explain, id: one-model }
+  - id: s17-lab
+    goal: "Fifteen predictions, from warm-up to default parameters, each checked against Node"
+    interaction: { kind: gauntlet, file: lab/gauntlet.yaml, count: 15 }
+  - id: s18-in-the-wild
+    goal: "Where execution contexts and the TDZ show up in React, Express, Prisma, Zod and Java"
+    words: 200-300
+  - id: s19-interview
+    goal: "Three interview questions with what a strong answer contains"
+    interaction: { kind: interview, ids: [iq-hoisting, iq-tdz-design, iq-trace] }
+  - id: s20-explain
+    goal: "Explain the lesson to a junior in three sentences"
+    interaction: { kind: explain, id: explain-back }
+  - id: s21-cards
+    goal: "Five review cards across formats"
+    cards:
+      [
+        card-predict-new-surface,
+        card-discriminate-var,
+        card-discriminate-let,
+        card-why-tdz,
+        card-trace-instantiation,
+      ]
+
+predict_count:
+  lesson: 14 # hook, call-early, call-order, countdown, lookup, globals, unreachable, tdz-shadow, tdz-typeof, temporal, temporal-moved, fn-forms, sloppy, strict
+  note: "Above the recipe's 8 to 12: the brief's scope needs every one, and the 250-word interaction rule needed call-order. The lab adds 15 more."
+  next_frame_pauses: 9 # global-setup [1], first-call [2], countdown [7, 12], lookup [4], hook-replay [1], tdz-shadow [3], function-forms [1], implicit-global [2]
+  explains: 3 # why-tdz, one-model, explain-back
+  gauntlet: 15
+
+review_changes:
+  - "Codex (gpt-6.1-terra) and opencode (deepseek-v4.1-flash) findings and the fixes are listed in review.md."

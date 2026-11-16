@@ -1,0 +1,9 @@
+id: EQ-NULL-LOOSE-ZERO
+belief: Under ==, null is converted to 0, so null == 0 is true.
+predicts: null == 0 prints true.
+truth: IsLooselyEqual has a rule only for null with undefined. No step converts null to a number, so null == 0 falls through to "Return false". (Relational operators such as >= do use ToNumber, so null >= 0 is true.)
+counterexample: console.log(null == 0) prints false.
+sources:
+  - https://tc39.es/ecma262/#sec-islooselyequal
+lessons:
+  - js-values

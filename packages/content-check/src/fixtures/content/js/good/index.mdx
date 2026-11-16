@@ -1,0 +1,38 @@
+---
+id: js-good
+track: js
+title: Good lesson
+minutes: 10
+prereqs: []
+outcomes: [Explain aliasing]
+sources: [https://developer.mozilla.org/en-US/docs/Glossary/Object_reference]
+interviewTags: [frontend]
+status: draft
+verifiedAt: 2026-11
+---
+
+<Segment id="s01-hook" goal="Aliasing surprises people">
+<Predict
+  id="hook"
+  prompt="What does this print?"
+  code={`let a = { n: 1 };
+let b = a;
+b.n = 2;
+console.log(a.n);`}
+  answer="two"
+  options={[
+    { id: "one", text: "1", misconception: "VAL-COPY", feedback: "Assignment does not copy the object." },
+    { id: "two", text: "2", feedback: "Both names point at one object." },
+    { id: "err", text: "TypeError", misconception: "VAL-COPY", feedback: "Nothing here throws." }
+  ]}
+  explain="Assignment copies the reference, so both names reach one object."
+/>
+</Segment>
+
+<Segment id="s02-binding" goal="A name points at a value">
+Each name is a <Term id="binding">binding</Term>. Later we talk about bindings again.
+
+<Viz example="counter" view="scope" />
+
+<Code runnable code={`console.log(1 + 1); // → 2`} />
+</Segment>

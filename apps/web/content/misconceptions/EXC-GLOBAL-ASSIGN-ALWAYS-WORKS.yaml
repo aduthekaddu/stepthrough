@@ -1,0 +1,10 @@
+id: EXC-GLOBAL-ASSIGN-ALWAYS-WORKS
+belief: Assigning to an undeclared name always creates a global, in every kind of code.
+predicts: '"use strict"; function save() { total = 42; } save(); console.log(total); prints 42.'
+truth: In strict mode code, and so in every module and class body, assigning to an unresolvable name throws a ReferenceError.
+counterexample: "The code above throws ReferenceError: total is not defined."
+sources:
+  - https://tc39.es/ecma262/multipage/strict-mode-of-ecmascript.html#sec-strict-mode-of-ecmascript
+  - https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-putvalue
+lessons:
+  - js-execution-context

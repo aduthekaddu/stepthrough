@@ -1,0 +1,9 @@
+id: COPY-CLONE-KEEPS-CLASS
+belief: structuredClone copies a class instance as an instance of the same class.
+predicts: structuredClone(new Point(1)) instanceof Point is true.
+truth: The structured clone algorithm does not walk or copy the prototype chain. A class instance comes back as a plain object with the same own data properties.
+counterexample: class P {} console.log(structuredClone(new P()) instanceof P) prints false.
+sources:
+  - https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+lessons:
+  - js-values

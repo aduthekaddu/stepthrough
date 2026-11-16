@@ -1,0 +1,361 @@
+{
+  "id": "ec-function-forms",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "console.log(typeof declared);\nfunction declared() {}\nvar expressed = function () {};\nconst arrow = () => {};\nconsole.log(typeof expressed, typeof arrow);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 1,
+        "startCol": 1,
+        "endLine": 1,
+        "endCol": 29
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "declared",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "expressed",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            },
+            {
+              "name": "arrow",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "declared",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Before line 1: declared already holds a function, expressed holds undefined, and arrow is in its TDZ."
+    },
+    {
+      "step": 2,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 1,
+        "endLine": 3,
+        "endCol": 31
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "declared",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "expressed",
+              "decl": "var",
+              "state": {
+                "kind": "primitive",
+                "type": "undefined",
+                "text": "undefined"
+              }
+            },
+            {
+              "name": "arrow",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "declared",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "function"
+      ],
+      "narration": "Line 1 printed function. Line 2 got no step: a function declaration does nothing when execution reaches it."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 4,
+        "startCol": 1,
+        "endLine": 4,
+        "endCol": 23
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "declared",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "expressed",
+              "decl": "var",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            },
+            {
+              "name": "arrow",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "declared",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "expressed",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "function"
+      ],
+      "narration": "Line 3 ran. The function expression was evaluated just now, and only now does expressed hold a function."
+    },
+    {
+      "step": 4,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 1,
+        "endLine": 5,
+        "endCol": 44
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "declared",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "expressed",
+              "decl": "var",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            },
+            {
+              "name": "arrow",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "declared",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "expressed",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "arrow",
+          "arrow": true,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "function"
+      ],
+      "narration": "Line 4 created the arrow function and ended arrow's TDZ. All three names now hold functions."
+    },
+    {
+      "step": 5,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "declared",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "expressed",
+              "decl": "var",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            },
+            {
+              "name": "arrow",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "declared",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "function",
+          "name": "expressed",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj2",
+          "kind": "function",
+          "name": "arrow",
+          "arrow": true,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "function",
+        "function function"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}

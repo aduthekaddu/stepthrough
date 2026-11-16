@@ -1,0 +1,11 @@
+id: EQ-STRINGS-BY-IDENTITY
+belief: Like Java's == on String objects, === on two strings checks whether they are the same string object, so a string built at run time is not === to an equal literal.
+predicts: '"chess" === "ch" + "ess" is false.'
+truth: Strings are primitives with no identity. SameValueNonNumber compares two strings by length and code units, so equal text is always ===.
+counterexample: console.log("chess" === "ch" + "ess") prints true.
+sources:
+  - https://tc39.es/ecma262/#sec-samevaluenonnumber
+  - https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.21.3
+  - Transfer from Java (JLS 15.21.3); inferred for learners who know Java.
+lessons:
+  - js-values

@@ -1,0 +1,10 @@
+id: EQ-BOOLEAN-TRUTHINESS
+belief: x == false asks whether x is falsy, and x == true asks whether x is truthy.
+predicts: '"0" == false is false, because the string "0" is truthy.'
+truth: == never uses truthiness (ToBoolean). When one side is a boolean, IsLooselyEqual converts it to a number (false to 0, true to 1) and compares again, so "0" == false becomes 0 == 0.
+counterexample: console.log("0" == false) prints true, yet if ("0") runs its block.
+sources:
+  - https://tc39.es/ecma262/#sec-islooselyequal
+  - https://tc39.es/ecma262/#sec-toboolean
+lessons:
+  - js-values

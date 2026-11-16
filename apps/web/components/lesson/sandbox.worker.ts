@@ -1,0 +1,1 @@
+import '@stepthrough/sandbox/worker';

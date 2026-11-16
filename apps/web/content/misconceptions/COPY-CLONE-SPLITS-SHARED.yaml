@@ -1,0 +1,10 @@
+id: COPY-CLONE-SPLITS-SHARED
+belief: A deep clone makes a separate copy every time it meets an object, so an object that appeared twice becomes two different copies.
+predicts: For data with left and right pointing to one object, clone.left === clone.right is false.
+truth: structuredClone keeps a map of objects it has already copied and reuses the copy, so shared references stay shared and cycles stay cycles.
+counterexample: "const s = {}; const c = structuredClone({ a: s, b: s }); console.log(c.a === c.b) prints true."
+sources:
+  - https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+  - Inferred; confirm from the learner's answers.
+lessons:
+  - js-values

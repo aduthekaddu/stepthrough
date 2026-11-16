@@ -1,0 +1,1046 @@
+{
+  "id": "factorial",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "function factorial(n) {\n  if (n === 1) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\nconst result = factorial(3);\nconsole.log(result);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 7,
+        "startCol": 1,
+        "endLine": 7,
+        "endCol": 28
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The script is about to call factorial(3). Only the script's frame is on the stack."
+    },
+    {
+      "step": 2,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 3
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "factorial(3) gets a frame, with n = 3."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 3,
+        "endLine": 5,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "n is not 1, so this call needs factorial(2) before it can multiply. It waits here, in the middle of the line."
+    },
+    {
+      "step": 4,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 3
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "factorial",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "factorial() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 3,
+        "endLine": 5,
+        "endCol": 30
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "factorial",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "factorial() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 6,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 4,
+        "endCol": 3
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "factorial",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "factorial",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "factorial() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "factorial() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 7,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 5,
+        "endLine": 3,
+        "endCol": 13
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "factorial",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "factorial",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "factorial() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "factorial() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Three frames of factorial are on the stack at once, with n = 3, n = 2 and n = 1. This call has n = 1, so it will return 1 without calling again. This is the base case."
+    },
+    {
+      "step": 8,
+      "kind": "return",
+      "span": {
+        "startLine": 3,
+        "startCol": 12,
+        "endLine": 3,
+        "endCol": 12
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "factorial",
+          "envId": "env2"
+        },
+        {
+          "callId": "call3",
+          "fn": "factorial",
+          "envId": "env3"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "factorial() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env3",
+          "kind": "function",
+          "label": "factorial() call #3",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 9,
+      "kind": "return",
+      "span": {
+        "startLine": 5,
+        "startCol": 28,
+        "endLine": 5,
+        "endCol": 28
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        },
+        {
+          "callId": "call2",
+          "fn": "factorial",
+          "envId": "env2"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env2",
+          "kind": "function",
+          "label": "factorial() call #2",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 10,
+      "kind": "return",
+      "span": {
+        "startLine": 5,
+        "startCol": 28,
+        "endLine": 5,
+        "endCol": 28
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "factorial",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "factorial() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "n",
+              "decl": "param",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "3"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 11,
+      "kind": "statement",
+      "span": {
+        "startLine": 8,
+        "startCol": 1,
+        "endLine": 8,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "6"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "The results came back in reverse order: 1, then 2 × 1 = 2, then 3 × 2 = 6. Only the script's frame is left."
+    },
+    {
+      "step": 12,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "factorial",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "result",
+              "decl": "const",
+              "state": {
+                "kind": "primitive",
+                "type": "number",
+                "text": "6"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "factorial",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [
+        "6"
+      ],
+      "narration": null
+    }
+  ],
+  "uncaught": null
+}
