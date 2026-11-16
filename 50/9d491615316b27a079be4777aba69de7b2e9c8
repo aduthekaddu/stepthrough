@@ -1,0 +1,31 @@
+research/pedagogy.md
+  s_8f5c837e77b092::t_9c860ec7a7064e 48
+apps/web/scripts/check-labs.ts
+  s_8f5c837e77b092::t_4716fdfe0d68dd 8-9,18,21-27,40,44-45
+research/prior-art.md
+  s_8f5c837e77b092::t_9c860ec7a7064e 221
+.github/workflows/ci.yml
+  s_8f5c837e77b092::t_27b994d50ff36a 51-53
+apps/web/e2e/lesson.spec.ts
+  s_8f5c837e77b092::t_27b994d50ff36a 208
+CLAUDE.md
+  s_8f5c837e77b092::t_9c860ec7a7064e 4
+apps/web/next-env.d.ts
+  s_8f5c837e77b092::t_bb442b8b242718 3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "509d491615316b27a079be4777aba69de7b2e9c8",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
