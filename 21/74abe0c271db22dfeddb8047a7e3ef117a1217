@@ -1,0 +1,21 @@
+apps/web/content/demo/layout-cards/index.mdx
+  s_8f5c837e77b092::t_867d6f2d51e757 1-117
+apps/web/content/demo/layout-sticky/index.mdx
+  s_8f5c837e77b092::t_fa01c25f4f38a4 1-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2174abe0c271db22dfeddb8047a7e3ef117a1217",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
