@@ -1,0 +1,529 @@
+.github/workflows/ci.yml
+  s_8f5c837e77b092::t_c7a39888d5bbdf 1-82
+.gitignore
+  s_2a56c3b7f09e96::t_49f9098e601e02 1-18
+AGENTS.md
+  s_8f5c837e77b092::t_d8e5fe7355e247 1-3
+CLAUDE.md
+  s_8f5c837e77b092::t_7e0d41cc9f3851 1-11
+DECISIONS.md
+  s_8f5c837e77b092::t_39c03be732a058 1-32
+LICENSE
+  s_8f5c837e77b092::t_5ddba572742ff0 1-21
+LICENSE-CONTENT
+  s_8f5c837e77b092::t_cd4297581722c5 1-435
+apps/web/app/globals.css
+  s_2a56c3b7f09e96::t_13a4daf5c455f4 1-258
+apps/web/app/layout.tsx
+  s_2a56c3b7f09e96::t_b7e1a016088fd0 1-42
+apps/web/app/learn/[track]/[lesson]/page.tsx
+  s_2a56c3b7f09e96::t_533d68b75fb3a7 1-71
+apps/web/app/lesson.css
+  s_2a56c3b7f09e96::t_3e362732359af3 1-901
+apps/web/app/page.tsx
+  s_2a56c3b7f09e96::t_23de8872726600 1-38
+apps/web/app/playground/viz/GateButton.tsx
+  s_2a56c3b7f09e96::t_35f4bd2507443c 1-18
+apps/web/app/playground/viz/page.tsx
+  s_2a56c3b7f09e96::t_c15ab1ceee6c1a 1-96
+apps/web/components/continue-link.tsx
+  s_2a56c3b7f09e96::t_e9ae8a05dc6fd5 1-22
+apps/web/components/lesson/blocks.tsx
+  s_2a56c3b7f09e96::t_d56ede429d42f2 1-55
+apps/web/components/lesson/code.tsx
+  s_2a56c3b7f09e96::t_e7c640b5334a5b 1-11
+apps/web/components/lesson/editor.ts
+  s_2a56c3b7f09e96::t_a19cfb4c304d0e 1-30
+apps/web/components/lesson/inline.tsx
+  s_2a56c3b7f09e96::t_3a5f8d40487bd9 1-11
+apps/web/components/lesson/lesson-scope.tsx
+  s_2a56c3b7f09e96::t_c7e947118e3acd 1-150
+apps/web/components/lesson/popover-support.tsx
+  s_2a56c3b7f09e96::t_ec41222ca5fed7 1-43
+apps/web/components/lesson/predict-model.test.ts
+  s_2a56c3b7f09e96::t_9ff43871ece670 1-78
+apps/web/components/lesson/predict-model.ts
+  s_2a56c3b7f09e96::t_0b92e14dfe5d48 1-56
+apps/web/components/lesson/predict-view.tsx
+  s_2a56c3b7f09e96::t_276043c24b02d1 1-336
+apps/web/components/lesson/predict.tsx
+  s_2a56c3b7f09e96::t_7e8ce196d13029 1-58
+apps/web/components/lesson/review.tsx
+  s_2a56c3b7f09e96::t_ae6bab6efc8571 1-133
+apps/web/components/lesson/runnable-code.tsx
+  s_2a56c3b7f09e96::t_d7ce4744f6c41b 1-118
+apps/web/components/lesson/sandbox.worker.ts
+  s_2a56c3b7f09e96::t_09d8396c8efb72 1
+apps/web/components/lesson/sidenote.tsx
+  s_2a56c3b7f09e96::t_b82c253636f7b1 1-60
+apps/web/components/lesson/term.tsx
+  s_2a56c3b7f09e96::t_645c98118733ea 1-32
+apps/web/components/theme-toggle.tsx
+  s_2a56c3b7f09e96::t_6440a97e1459b2 1-83
+apps/web/components/viz/CodePane.tsx
+  s_2a56c3b7f09e96::t_4bc3dfde56d9c3 1-43
+apps/web/components/viz/Diagram.tsx
+  s_2a56c3b7f09e96::t_c57693001b27ed 1-423
+apps/web/components/viz/Stepper.tsx
+  s_2a56c3b7f09e96::t_683dc6d7499416 1-156
+apps/web/components/viz/Viz.tsx
+  s_2a56c3b7f09e96::t_d8ffa8496146f3 1-46
+apps/web/components/viz/VizPanel.tsx
+  s_2a56c3b7f09e96::t_3dd8e07c4b75e1 1-323
+apps/web/components/viz/layout.test.ts
+  s_2a56c3b7f09e96::t_29a9e40d4896bf 1-116
+apps/web/components/viz/layout.ts
+  s_2a56c3b7f09e96::t_0f4f22e5d38a21 1-450
+apps/web/components/viz/model.ts
+  s_8f5c837e77b092::t_14dc9af62f2072 1-396
+apps/web/components/viz/panel-state.test.ts
+  s_2a56c3b7f09e96::t_47e06842551ec6 1-105
+apps/web/components/viz/panel-state.ts
+  s_2a56c3b7f09e96::t_c2293b3afa8dc4 1-134
+apps/web/components/viz/predictions.ts
+  s_2a56c3b7f09e96::t_72bbad1346f5b8 1-48
+apps/web/components/viz/test-traces.ts
+  s_2a56c3b7f09e96::t_092c2019923f23 1-9
+apps/web/components/viz/viz.module.css
+  s_2a56c3b7f09e96::t_fa3e1403b0f0dc 1-720
+apps/web/content/demo/components/examples/demo-aliasing.js
+  s_2a56c3b7f09e96::t_d989e319d3d025 1-4
+apps/web/content/demo/components/index.mdx
+  s_2a56c3b7f09e96::t_7ad025b0ec8d28 1-152
+apps/web/content/foundations/how-programs-run/examples/factorial.js
+  s_2a56c3b7f09e96::t_c94016ec4e9238 1-8
+apps/web/content/foundations/how-programs-run/examples/factorial.narration.yaml
+  s_2a56c3b7f09e96::t_37b4ed2ec06fd5 1-29
+apps/web/content/foundations/how-programs-run/examples/nested-calls.js
+  s_2a56c3b7f09e96::t_3527df8d727efa 1-10
+apps/web/content/foundations/how-programs-run/examples/nested-calls.narration.yaml
+  s_2a56c3b7f09e96::t_ad9497497653d3 1-36
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_8f5c837e77b092::t_f4d28946d079e3 1-746
+apps/web/content/foundations/how-programs-run/outline.yaml
+  s_8f5c837e77b092::t_a768a6a5fbc72f 1-590
+apps/web/content/foundations/how-programs-run/review.md
+  s_8f5c837e77b092::t_49b884c1974480 1-100
+apps/web/content/glossary/fnd-how-programs-run.yaml
+  s_2a56c3b7f09e96::t_4f67394a283213 1-104
+apps/web/content/glossary/js-demo.yaml
+  s_2a56c3b7f09e96::t_fde4b8a0695f44 1-16
+apps/web/content/glossary/js-execution-context.yaml
+  s_2a56c3b7f09e96::t_ecede86a94cf13 1-82
+apps/web/content/glossary/js-values.yaml
+  s_2a56c3b7f09e96::t_65a160c87880ff 1-90
+apps/web/content/javascript/execution-context/examples/ec-countdown.js
+  s_2a56c3b7f09e96::t_b270b73920d1ae 1-6
+apps/web/content/javascript/execution-context/examples/ec-countdown.narration.yaml
+  s_2a56c3b7f09e96::t_556865d6a2b760 1-26
+apps/web/content/javascript/execution-context/examples/ec-first-call.js
+  s_2a56c3b7f09e96::t_3aeeaef760f286 1-7
+apps/web/content/javascript/execution-context/examples/ec-first-call.narration.yaml
+  s_2a56c3b7f09e96::t_4505842b69768c 1-31
+apps/web/content/javascript/execution-context/examples/ec-function-forms.js
+  s_2a56c3b7f09e96::t_91fcad1427f9c8 1-5
+apps/web/content/javascript/execution-context/examples/ec-function-forms.narration.yaml
+  s_2a56c3b7f09e96::t_7d35efcf9d7e7f 1-23
+apps/web/content/javascript/execution-context/examples/ec-global-setup.js
+  s_2a56c3b7f09e96::t_a2b44d6ed4faee 1-7
+apps/web/content/javascript/execution-context/examples/ec-global-setup.narration.yaml
+  s_2a56c3b7f09e96::t_ac35823cbbdf79 1-26
+apps/web/content/javascript/execution-context/examples/ec-hook-replay.js
+  s_2a56c3b7f09e96::t_8e045bf00d914c 1-4
+apps/web/content/javascript/execution-context/examples/ec-hook-replay.narration.yaml
+  s_2a56c3b7f09e96::t_18b7f719ba6676 1-18
+apps/web/content/javascript/execution-context/examples/ec-implicit-global.js
+  s_2a56c3b7f09e96::t_565da11d54d687 1-5
+apps/web/content/javascript/execution-context/examples/ec-implicit-global.narration.yaml
+  s_2a56c3b7f09e96::t_b8a10b7b9556e3 1-19
+apps/web/content/javascript/execution-context/examples/ec-lookup.js
+  s_2a56c3b7f09e96::t_b20fb0cf4334fd 1-8
+apps/web/content/javascript/execution-context/examples/ec-lookup.narration.yaml
+  s_2a56c3b7f09e96::t_ab0373aab4e07d 1-29
+apps/web/content/javascript/execution-context/examples/ec-tdz-shadow.js
+  s_2a56c3b7f09e96::t_10ed7d6c739deb 1-6
+apps/web/content/javascript/execution-context/examples/ec-tdz-shadow.narration.yaml
+  s_2a56c3b7f09e96::t_7520fe5df4cdde 1-19
+apps/web/content/javascript/execution-context/index.mdx
+  s_8f5c837e77b092::t_83781757979ac6 1-973
+apps/web/content/javascript/execution-context/lab/gauntlet.yaml
+  s_2a56c3b7f09e96::t_f35ad44eecab11 1-271
+apps/web/content/javascript/execution-context/outline.yaml
+  s_2a56c3b7f09e96::t_1eb86938d9161a 1-519
+apps/web/content/javascript/execution-context/review.md
+  s_8f5c837e77b092::t_28fa6bb932f01c 1-94
+apps/web/content/javascript/values-and-references/examples/values-alias.js
+  s_2a56c3b7f09e96::t_f05bbc774022ac 1-4
+apps/web/content/javascript/values-and-references/examples/values-alias.narration.yaml
+  s_2a56c3b7f09e96::t_5bb03923e11eeb 1-26
+apps/web/content/javascript/values-and-references/examples/values-pass-object.js
+  s_2a56c3b7f09e96::t_4688442acf58ff 1-8
+apps/web/content/javascript/values-and-references/examples/values-pass-object.narration.yaml
+  s_2a56c3b7f09e96::t_f8b04a412d168a 1-40
+apps/web/content/javascript/values-and-references/examples/values-primitive-copy.js
+  s_2a56c3b7f09e96::t_be7ac374634c08 1-4
+apps/web/content/javascript/values-and-references/examples/values-primitive-copy.narration.yaml
+  s_2a56c3b7f09e96::t_547a272de2f027 1-25
+apps/web/content/javascript/values-and-references/examples/values-reassign.js
+  s_2a56c3b7f09e96::t_a582886f2a716d 1-6
+apps/web/content/javascript/values-and-references/examples/values-reassign.narration.yaml
+  s_2a56c3b7f09e96::t_0929a91f947cb4 1-30
+apps/web/content/javascript/values-and-references/examples/values-shallow-copy.js
+  s_2a56c3b7f09e96::t_e50b9d416b72bc 1-5
+apps/web/content/javascript/values-and-references/examples/values-shallow-copy.narration.yaml
+  s_2a56c3b7f09e96::t_55927d5216e43a 1-26
+apps/web/content/javascript/values-and-references/index.mdx
+  s_8f5c837e77b092::t_c08b715228d9f0 1-817
+apps/web/content/javascript/values-and-references/lab/README.md
+  s_2a56c3b7f09e96::t_092725b221eb84 1-114
+apps/web/content/javascript/values-and-references/lab/lab.test.js
+  s_8f5c837e77b092::t_1d21549174bc1b 1-213
+apps/web/content/javascript/values-and-references/lab/solution.js
+  s_8f5c837e77b092::t_9817ebabfefb6d 1-97
+apps/web/content/javascript/values-and-references/lab/starter.js
+  s_2a56c3b7f09e96::t_d647c5d8fd0a45 1-43
+apps/web/content/javascript/values-and-references/outline.yaml
+  s_2a56c3b7f09e96::t_fee13d87ba97f7 1-695
+apps/web/content/javascript/values-and-references/review.md
+  s_8f5c837e77b092::t_f3834d674db998 1-94
+apps/web/content/misconceptions/COPY-CLONE-KEEPS-CLASS.yaml
+  s_2a56c3b7f09e96::t_7aac16ba5b6303 1-9
+apps/web/content/misconceptions/COPY-CLONE-SPLITS-SHARED.yaml
+  s_2a56c3b7f09e96::t_c3980e12eeb5b5 1-10
+apps/web/content/misconceptions/COPY-SPREAD-ALIAS.yaml
+  s_2a56c3b7f09e96::t_c7b2631d10fe5f 1-10
+apps/web/content/misconceptions/COPY-SPREAD-DEEP.yaml
+  s_2a56c3b7f09e96::t_0f4d005a1dfad0 1-10
+apps/web/content/misconceptions/DEMO-ASSIGN-COPIES.yaml
+  s_2a56c3b7f09e96::t_8bf3505351e3ff 1-7
+apps/web/content/misconceptions/DEMO-CONST-FREEZES-OBJECT.yaml
+  s_2a56c3b7f09e96::t_cb420f90d2697b 1-7
+apps/web/content/misconceptions/DEMO-SPREAD-SHARES-ARRAY.yaml
+  s_2a56c3b7f09e96::t_29993d0dc91cbe 1-7
+apps/web/content/misconceptions/DEMO-TYPEOF-NAMES-EXACT-TYPE.yaml
+  s_2a56c3b7f09e96::t_e793449b27ff49 1-7
+apps/web/content/misconceptions/DEMO-TYPEOF-NULL-IS-NULL.yaml
+  s_2a56c3b7f09e96::t_435c7f72603414 1-7
+apps/web/content/misconceptions/EQ-BOOLEAN-TRUTHINESS.yaml
+  s_2a56c3b7f09e96::t_ae23bcc34f00b5 1-10
+apps/web/content/misconceptions/EQ-NULL-LOOSE-ZERO.yaml
+  s_2a56c3b7f09e96::t_795c27df405bc0 1-9
+apps/web/content/misconceptions/EQ-OBJECT-NEVER-LOOSE-EQUAL.yaml
+  s_2a56c3b7f09e96::t_6b9ffaf4db1b93 1-10
+apps/web/content/misconceptions/EQ-OBJECT-TOSTRING-FIRST.yaml
+  s_2a56c3b7f09e96::t_4377f614300e94 1-10
+apps/web/content/misconceptions/EQ-STRINGS-BY-IDENTITY.yaml
+  s_2a56c3b7f09e96::t_9be51c3c8b0a51 1-11
+apps/web/content/misconceptions/EXC-CALL-NO-WAIT.yaml
+  s_2a56c3b7f09e96::t_d6fc20f926093c 1-11
+apps/web/content/misconceptions/EXC-GLOBAL-ASSIGN-ALWAYS-WORKS.yaml
+  s_2a56c3b7f09e96::t_b8a49f70b691fb 1-10
+apps/web/content/misconceptions/EXC-GLOBAL-ASSIGN-MAKES-LOCAL.yaml
+  s_2a56c3b7f09e96::t_30d02d7d7a54c3 1-11
+apps/web/content/misconceptions/EXC-GLOBAL-LET-ON-OBJECT.yaml
+  s_2a56c3b7f09e96::t_893dd76d0e201b 1-10
+apps/web/content/misconceptions/EXC-GLOBAL-NOTHING-ON-OBJECT.yaml
+  s_2a56c3b7f09e96::t_ef6a70f19e64f6 1-11
+apps/web/content/misconceptions/EXC-HOIST-ALL-FUNCTIONS.yaml
+  s_2a56c3b7f09e96::t_63656bebb7fbc3 1-10
+apps/web/content/misconceptions/EXC-HOIST-CLASS-LIKE-FUNCTION.yaml
+  s_2a56c3b7f09e96::t_755863c2d29ffa 1-11
+apps/web/content/misconceptions/EXC-HOIST-FN-AS-VAR.yaml
+  s_2a56c3b7f09e96::t_0d3510ef7d179b 1-12
+apps/web/content/misconceptions/EXC-HOIST-FN-LINE-ASSIGNS.yaml
+  s_2a56c3b7f09e96::t_aac5b75bf01aa1 1-10
+apps/web/content/misconceptions/EXC-HOIST-LET-NOT-HOISTED.yaml
+  s_2a56c3b7f09e96::t_ed444ea073058a 1-11
+apps/web/content/misconceptions/EXC-HOIST-MOVES-CODE.yaml
+  s_2a56c3b7f09e96::t_03c9a3397f31f9 1-10
+apps/web/content/misconceptions/EXC-HOIST-VAR-BEATS-FUNCTION.yaml
+  s_2a56c3b7f09e96::t_18a7c6734c8600 1-10
+apps/web/content/misconceptions/EXC-IMPLICIT-NOT-PROPERTY.yaml
+  s_2a56c3b7f09e96::t_7ac44cad9b2182 1-10
+apps/web/content/misconceptions/EXC-LOCALS-PERSIST.yaml
+  s_2a56c3b7f09e96::t_5d0c1a5dceabe5 1-10
+apps/web/content/misconceptions/EXC-LOOKUP-AT-DEFINITION.yaml
+  s_2a56c3b7f09e96::t_83096d68424f4e 1-10
+apps/web/content/misconceptions/EXC-LOOKUP-MISSING-IS-UNDEFINED.yaml
+  s_2a56c3b7f09e96::t_61b73931705a83 1-10
+apps/web/content/misconceptions/EXC-TDZ-IS-SPATIAL.yaml
+  s_2a56c3b7f09e96::t_ea985851d32e0e 1-10
+apps/web/content/misconceptions/EXC-TDZ-IS-UNDEFINED.yaml
+  s_2a56c3b7f09e96::t_30573dec706e47 1-10
+apps/web/content/misconceptions/EXC-TDZ-PARAMS-EXEMPT.yaml
+  s_2a56c3b7f09e96::t_c1d691e0d0c3a6 1-11
+apps/web/content/misconceptions/EXC-TDZ-TYPEOF-SAFE.yaml
+  s_2a56c3b7f09e96::t_4a0c3fe7c3ecd4 1-10
+apps/web/content/misconceptions/EXC-TOP-TO-BOTTOM.yaml
+  s_2a56c3b7f09e96::t_2aef00704ec289 1-11
+apps/web/content/misconceptions/EXC-TYPEOF-UNDECLARED-THROWS.yaml
+  s_2a56c3b7f09e96::t_d3da2a23bbec58 1-10
+apps/web/content/misconceptions/EXC-VAR-REDECLARE-RESETS.yaml
+  s_2a56c3b7f09e96::t_a6b7458351c680 1-11
+apps/web/content/misconceptions/FND-BYTE-ANY-NUMBER.yaml
+  s_2a56c3b7f09e96::t_698eb2be8b1b26 1-10
+apps/web/content/misconceptions/FND-DOM-IS-JS.yaml
+  s_2a56c3b7f09e96::t_3b2c637249f275 1-10
+apps/web/content/misconceptions/FND-ENGINE-IS-LANGUAGE.yaml
+  s_2a56c3b7f09e96::t_748c6169bafb01 1-10
+apps/web/content/misconceptions/FND-JIT-CACHES-RESULTS.yaml
+  s_2a56c3b7f09e96::t_447662dbc60aad 1-10
+apps/web/content/misconceptions/FND-JS-COMPILED-AHEAD.yaml
+  s_2a56c3b7f09e96::t_36c0329a2ee1b6 1-11
+apps/web/content/misconceptions/FND-JS-PREEMPTED.yaml
+  s_2a56c3b7f09e96::t_12953e5f6ee771 1-11
+apps/web/content/misconceptions/FND-LATE-CALLBACK-DROPPED.yaml
+  s_2a56c3b7f09e96::t_d95d451836568d 1-10
+apps/web/content/misconceptions/FND-LINE-BY-LINE.yaml
+  s_2a56c3b7f09e96::t_f943de70a00a5b 1-10
+apps/web/content/misconceptions/FND-OPTIMIZED-CHANGES-MEANING.yaml
+  s_2a56c3b7f09e96::t_ebe37afc1113a4 1-11
+apps/web/content/misconceptions/FND-RECURSION-RUNS-FOREVER.yaml
+  s_2a56c3b7f09e96::t_0f7ce2d21ff254 1-10
+apps/web/content/misconceptions/FND-REDECLARE-REPLACES.yaml
+  s_2a56c3b7f09e96::t_a741122e43ada4 1-10
+apps/web/content/misconceptions/FND-RETURN-FREES-ALL.yaml
+  s_2a56c3b7f09e96::t_e4c657fa520a72 1-10
+apps/web/content/misconceptions/FND-SAME-CODE-SAME-SPEED.yaml
+  s_2a56c3b7f09e96::t_902af30f19b914 1-10
+apps/web/content/misconceptions/FND-STACK-IS-ALL-MEMORY.yaml
+  s_2a56c3b7f09e96::t_ef1d91d1926efd 1-10
+apps/web/content/misconceptions/FND-TABS-SHARE-MEMORY.yaml
+  s_2a56c3b7f09e96::t_693fc298b524f2 1-11
+apps/web/content/misconceptions/FND-UNCALLED-UNCHECKED.yaml
+  s_2a56c3b7f09e96::t_360bdfc9928c6b 1-11
+apps/web/content/misconceptions/MEM-PRIMITIVES-ON-STACK.yaml
+  s_2a56c3b7f09e96::t_cdc08bc1bcfd56 1-11
+apps/web/content/misconceptions/NUM-NAN-SELF-EQUAL.yaml
+  s_2a56c3b7f09e96::t_d06bea86027e54 1-10
+apps/web/content/misconceptions/VAL-ASSIGN-COPIES-OBJECT.yaml
+  s_2a56c3b7f09e96::t_33f52fb1673a0f 1-11
+apps/web/content/misconceptions/VAL-CONST-FREEZES.yaml
+  s_2a56c3b7f09e96::t_5f6edf02e30177 1-10
+apps/web/content/misconceptions/VAL-CONST-OBJECT-REASSIGNABLE.yaml
+  s_2a56c3b7f09e96::t_e9298c42d098bb 1-10
+apps/web/content/misconceptions/VAL-EQUAL-BY-CONTENT.yaml
+  s_2a56c3b7f09e96::t_01fdcfdd136aa2 1-10
+apps/web/content/misconceptions/VAL-EVERYTHING-IS-OBJECT.yaml
+  s_2a56c3b7f09e96::t_622079eff6f8df 1-11
+apps/web/content/misconceptions/VAL-PASS-BY-REFERENCE.yaml
+  s_2a56c3b7f09e96::t_033dee1b1e9ae4 1-11
+apps/web/content/misconceptions/VAL-REASSIGN-MUTATES.yaml
+  s_2a56c3b7f09e96::t_8779a3b3c0d755 1-10
+apps/web/content/misconceptions/VAL-TYPEOF-ARRAY.yaml
+  s_2a56c3b7f09e96::t_b9b280e7ed4ba0 1-9
+apps/web/content/misconceptions/VAL-TYPEOF-NULL.yaml
+  s_2a56c3b7f09e96::t_3d0485c0660e7b 1-10
+apps/web/e2e/lesson.spec.ts
+  s_8f5c837e77b092::t_ebecdec0e372ca 1-252
+apps/web/e2e/serve.ts
+  s_8f5c837e77b092::t_26fe2a21f4c1de 1-43
+apps/web/e2e/viz.spec.ts
+  s_8f5c837e77b092::t_8856ef0e18c9f4 1-113
+apps/web/generated/traces/demo-aliasing.json
+  s_8f5c837e77b092::t_ab46f97b7c259c 1-301
+apps/web/generated/traces/ec-countdown.json
+  s_8f5c837e77b092::t_2a7256924de1ed 1-1599
+apps/web/generated/traces/ec-first-call.json
+  s_8f5c837e77b092::t_885564b8f2e369 1-551
+apps/web/generated/traces/ec-function-forms.json
+  s_8f5c837e77b092::t_e991c3808c1427 1-361
+apps/web/generated/traces/ec-global-setup.json
+  s_8f5c837e77b092::t_e79d56ffd27f6d 1-363
+apps/web/generated/traces/ec-hook-replay.json
+  s_8f5c837e77b092::t_ec5d147d4d1f22 1-198
+apps/web/generated/traces/ec-implicit-global.json
+  s_8f5c837e77b092::t_8f44cfa61ab71b 1-291
+apps/web/generated/traces/ec-lookup.json
+  s_8f5c837e77b092::t_e865b40e24fcd8 1-659
+apps/web/generated/traces/ec-tdz-shadow.json
+  s_8f5c837e77b092::t_afdf021821ef7a 1-321
+apps/web/generated/traces/factorial.json
+  s_8f5c837e77b092::t_70cb143ef115bf 1-1046
+apps/web/generated/traces/fixtures/aliasing.json
+  s_8f5c837e77b092::t_5101a6883af174 1-437
+apps/web/generated/traces/fixtures/closure-counter.json
+  s_8f5c837e77b092::t_d26e3886c7b358 1-1175
+apps/web/generated/traces/fixtures/cycle-and-holes.json
+  s_8f5c837e77b092::t_b2442cdc0fcaba 1-361
+apps/web/generated/traces/fixtures/for-let-closures.json
+  s_8f5c837e77b092::t_6b5952bd37b580 1-1029
+apps/web/generated/traces/fixtures/hoisting-tdz.json
+  s_8f5c837e77b092::t_7279b12d83886a 1-456
+apps/web/generated/traces/fixtures/recursion-fact.json
+  s_8f5c837e77b092::t_ca6be44cd114f7 1-989
+apps/web/generated/traces/nested-calls.json
+  s_8f5c837e77b092::t_3a188bbb690423 1-1224
+apps/web/generated/traces/values-alias.json
+  s_8f5c837e77b092::t_d0bd528ee5668b 1-301
+apps/web/generated/traces/values-pass-object.json
+  s_8f5c837e77b092::t_e88478e0df14e3 1-660
+apps/web/generated/traces/values-primitive-copy.json
+  s_8f5c837e77b092::t_94c3fc590039b4 1-244
+apps/web/generated/traces/values-reassign.json
+  s_8f5c837e77b092::t_fcd1eabc7b8bda 1-470
+apps/web/generated/traces/values-shallow-copy.json
+  s_8f5c837e77b092::t_9e96d36c08f169 1-576
+apps/web/lib/content.ts
+  s_2a56c3b7f09e96::t_40df8f55fd3b36 1-133
+apps/web/lib/learner.ts
+  s_2a56c3b7f09e96::t_7679bb93798290 1-128
+apps/web/lib/theme.ts
+  s_2a56c3b7f09e96::t_39a0a30e1e6e42 1-7
+apps/web/lib/tracks.ts
+  s_2a56c3b7f09e96::t_bfbc34358ea344 1-10
+apps/web/mdx-components.tsx
+  s_2a56c3b7f09e96::t_6cbfe315f9e76e 1-65
+apps/web/next-env.d.ts
+  s_8f5c837e77b092::t_428d85753d3e54 1-7
+apps/web/next.config.ts
+  s_8f5c837e77b092::t_323cb9e0e8863f 1-19
+apps/web/package.json
+  s_8f5c837e77b092::t_a0cfe230813c39 1-54
+apps/web/playwright.config.ts
+  s_8f5c837e77b092::t_8caabe36438c5c 1-25
+apps/web/postcss.config.mjs
+  s_2a56c3b7f09e96::t_bdf668c466e7d7 1
+apps/web/scripts/build-traces.ts
+  s_2a56c3b7f09e96::t_bf9d0f875b8b88 1-79
+apps/web/scripts/check-labs.ts
+  s_8f5c837e77b092::t_d7a3dfacb54416 1-50
+apps/web/scripts/narration-expect.test.ts
+  s_2a56c3b7f09e96::t_eb719e9cc45021 1-109
+apps/web/scripts/narration.test.ts
+  s_2a56c3b7f09e96::t_40bd719b770c62 1-43
+apps/web/scripts/narration.ts
+  s_2a56c3b7f09e96::t_bc316fe04091f6 1-175
+apps/web/tsconfig.json
+  s_2a56c3b7f09e96::t_7e65f0cbed7783 1-12
+apps/web/types/interestfor.d.ts
+  s_2a56c3b7f09e96::t_f1111e9e0f6e6a 1-2
+apps/web/vitest.config.ts
+  s_2a56c3b7f09e96::t_769e181a7f40ad 1-10
+apps/web/viz-fixtures/aliasing.js
+  s_2a56c3b7f09e96::t_dbbfae1332f2c5 1-5
+apps/web/viz-fixtures/closure-counter.js
+  s_2a56c3b7f09e96::t_6b2b9ba39f1f46 1-11
+apps/web/viz-fixtures/closure-counter.narration.yaml
+  s_2a56c3b7f09e96::t_02d3cfaa74e663 1-3
+apps/web/viz-fixtures/cycle-and-holes.js
+  s_2a56c3b7f09e96::t_49fb7ee18d157b 1-4
+apps/web/viz-fixtures/for-let-closures.js
+  s_2a56c3b7f09e96::t_a635f89123801a 1-5
+apps/web/viz-fixtures/hoisting-tdz.js
+  s_2a56c3b7f09e96::t_1a0fb7c0015168 1-6
+apps/web/viz-fixtures/recursion-fact.js
+  s_2a56c3b7f09e96::t_0b45ae7f688f56 1-5
+biome.json
+  s_8f5c837e77b092::t_17a400a06431ad 1-30
+docs/architecture.md
+  s_8f5c837e77b092::t_89bf884bddea0c 1-71
+docs/lesson-components.md
+  s_2a56c3b7f09e96::t_bff5a951afd656 1-85
+docs/spec.md
+  s_8f5c837e77b092::t_2d061ab83ee745 1-482
+package.json
+  s_8f5c837e77b092::t_6835b32539eb60 1-23
+packages/content-check/package.json
+  s_2a56c3b7f09e96::t_56cb32c35bba05 1-32
+packages/content-check/src/cli.ts
+  s_2a56c3b7f09e96::t_13004d1481881c 1-13
+packages/content-check/src/fixtures/content/glossary/js-early.yaml
+  s_2a56c3b7f09e96::t_82416453af02f7 1-4
+packages/content-check/src/fixtures/content/glossary/js-good.yaml
+  s_2a56c3b7f09e96::t_e2cc88b9ef6f7e 1-5
+packages/content-check/src/fixtures/content/js/bad/index.mdx
+  s_2a56c3b7f09e96::t_eb2768609cc201 1-31
+packages/content-check/src/fixtures/content/js/early/index.mdx
+  s_2a56c3b7f09e96::t_e5f9b8d26b1827 1-17
+packages/content-check/src/fixtures/content/js/good/examples/counter.js
+  s_2a56c3b7f09e96::t_2223ff367c823e 1
+packages/content-check/src/fixtures/content/js/good/index.mdx
+  s_2a56c3b7f09e96::t_37e655ac900a9a 1-38
+packages/content-check/src/fixtures/content/misconceptions/VAL-COPY.yaml
+  s_2a56c3b7f09e96::t_91b44174c852a5 1-7
+packages/content-check/src/index.test.ts
+  s_2a56c3b7f09e96::t_d22b1a369260f2 1-49
+packages/content-check/src/index.ts
+  s_2a56c3b7f09e96::t_4253ae31df0bbc 1-140
+packages/content-check/src/mdx.ts
+  s_8f5c837e77b092::t_1ac4f0a2cf4719 1-156
+packages/content-check/src/rules.ts
+  s_2a56c3b7f09e96::t_59ca564edea8c5 1-446
+packages/content-check/src/run.ts
+  s_2a56c3b7f09e96::t_ed6875650b5ea4 1-28
+packages/content-check/src/schema.ts
+  s_2a56c3b7f09e96::t_0d05133ce94e08 1-102
+packages/content-check/tsconfig.json
+  s_2a56c3b7f09e96::t_a52226fb7f15e3 1-5
+packages/sandbox/package.json
+  s_2a56c3b7f09e96::t_2915a80656cf1f 1-18
+packages/sandbox/src/format.test.ts
+  s_2a56c3b7f09e96::t_94b2c3c879be85 1-38
+packages/sandbox/src/format.ts
+  s_2a56c3b7f09e96::t_1e75afbd6291a8 1-71
+packages/sandbox/src/index.ts
+  s_2a56c3b7f09e96::t_7d60ce0e68d4c8 1-38
+packages/sandbox/src/protocol.ts
+  s_2a56c3b7f09e96::t_a24a9b241e9053 1-15
+packages/sandbox/tsconfig.json
+  s_2a56c3b7f09e96::t_ad5999ae6a687e 1-5
+packages/srs/package.json
+  s_2a56c3b7f09e96::t_552422f528f249 1-20
+packages/srs/src/index.test.ts
+  s_2a56c3b7f09e96::t_50e951410c7e60 1-90
+packages/srs/src/index.ts
+  s_2a56c3b7f09e96::t_c31da752c9abad 1-86
+packages/srs/tsconfig.json
+  s_2a56c3b7f09e96::t_5b13edef0a0010 1-5
+packages/trace/package.json
+  s_2a56c3b7f09e96::t_7cf6ddc083fba1 1-21
+packages/trace/scripts/show.ts
+  s_2a56c3b7f09e96::t_33e1c01fea50f4 1-35
+packages/trace/src/generate.test.ts
+  s_2a56c3b7f09e96::t_6bbfad41534dc7 1-262
+packages/trace/src/generate.ts
+  s_2a56c3b7f09e96::t_d9119b6cf6cc21 1-663
+packages/trace/src/types.ts
+  s_2a56c3b7f09e96::t_e18f3a8c7cb18d 1-99
+packages/trace/tsconfig.json
+  s_2a56c3b7f09e96::t_8eef32bc4a2d8f 1-5
+pnpm-lock.yaml
+  s_2a56c3b7f09e96::t_f7e8dacabe14b0 1-3635
+pnpm-workspace.yaml
+  s_2a56c3b7f09e96::t_968bca438987d5 1-3
+research/pedagogy.md
+  s_8f5c837e77b092::t_d8890f9d13034e 1-708
+research/prior-art.md
+  s_8f5c837e77b092::t_16586becb37381 1-249
+research/stack.md
+  s_2a56c3b7f09e96::t_99819949d9ddad 1-283
+tsconfig.base.json
+  s_2a56c3b7f09e96::t_66ff05b0040305 1-19
+turbo.json
+  s_8f5c837e77b092::t_25abe20ff47251 1-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6dd608469fd52e3493a3c2a0d3ab91cfaa655ecf",
+  "prompts": {},
+  "sessions": {
+    "s_2a56c3b7f09e96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a64c6066-a053-473c-a5e7-16a641a7386f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    },
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
