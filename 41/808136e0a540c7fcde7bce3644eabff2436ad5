@@ -1,0 +1,55 @@
+apps/web/components/figures/registry.ts
+  s_8f5c837e77b092::t_d60558fc700a43 1-24
+packages/content-check/src/rules.ts
+  s_8f5c837e77b092::t_4f7407317bbeb9 67-75
+  s_8f5c837e77b092::t_fc944dbafa9124 117-121
+apps/web/components/figures/Figure.tsx
+  s_8f5c837e77b092::t_14ec9ee723ea14 1-46
+apps/web/components/figures/FigurePanel.tsx
+  s_8f5c837e77b092::t_e24fc638245004 80
+  s_8f5c837e77b092::t_175e76c6ba1a3e 1-79,81-94
+apps/web/components/lesson/deeper.module.css
+  s_8f5c837e77b092::t_e5396e98cee1b8 1-60
+apps/web/components/figures/parts.tsx
+  s_8f5c837e77b092::t_d4918be1c9d9a1 1-107
+apps/web/components/figures/FigureStory.tsx
+  s_8f5c837e77b092::t_8c6b4fc40a50cd 1-79
+apps/web/components/lesson/deeper.tsx
+  s_8f5c837e77b092::t_cca44f452c577f 1-15
+apps/web/components/figures/diagrams/text-vs-chip.tsx
+  s_8f5c837e77b092::t_6a798f48502480 1,4-35
+  s_8f5c837e77b092::t_e24fc638245004 2-3
+apps/web/components/figures/figures.module.css
+  s_8f5c837e77b092::t_3ecc1b5cfc16db 25,27
+  s_8f5c837e77b092::t_adbd94b05838ac 1-24,26,28-356,358,361-364,372-435
+  s_8f5c837e77b092::t_fd18114884e814 357,359-360,365-371
+apps/web/mdx-components.tsx
+  s_8f5c837e77b092::t_596e2a1cdbd736 4
+  s_8f5c837e77b092::t_345f5d0ed8d94a 7
+  s_8f5c837e77b092::t_53ac6d5b2803b7 76
+  s_8f5c837e77b092::t_b2ae12064e891b 63-75
+apps/web/components/figures/diagrams/memory-bytes.tsx
+  s_8f5c837e77b092::t_71b41d3a1da8a1 1,4-52
+  s_8f5c837e77b092::t_e24fc638245004 2-3
+apps/web/components/figures/use-steps.ts
+  s_8f5c837e77b092::t_e97c285eb91728 1-58
+apps/web/components/figures/diagrams/machine-code.tsx
+  s_8f5c837e77b092::t_cdee6cab292aed 1,4-51,55-62
+  s_8f5c837e77b092::t_e24fc638245004 2-3,52-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "41808136e0a540c7fcde7bce3644eabff2436ad5",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
