@@ -2,7 +2,7 @@
 
 One line each: date, decision, reason. Newest last.
 
-Developer-facing lines start with a Doc ID and status, such as `(stepthrough/adr-0001, Proposed)`. A Notion Decisions record with the same Doc ID holds the full context, and both copies change status together. Proposed means the owner has not accepted the decision yet. Product decisions, such as the name and the curriculum, carry no Doc ID.
+Developer-facing lines start with a Doc ID and status, such as `(stepthrough/adr-0001, Proposed)`. A Notion Decisions record with the same Doc ID holds the full context, and both copies change status together. Proposed means the owner has not accepted the decision yet. Product decisions, such as the name and the curriculum, and the Biome tool pick carry no Doc ID.
 
 - 2026-11-15: Working product name "Stepthrough" (the repo folder name); "Groundwork" stays in the spec as its original placeholder. Reason: the owner created the folder with this name; one constant changes it.
 - 2026-11-15: Biome for lint and format (spec §2 lets us pick). Reason: one fast tool instead of ESLint plus Prettier; Next 16 removed `next lint` anyway.
