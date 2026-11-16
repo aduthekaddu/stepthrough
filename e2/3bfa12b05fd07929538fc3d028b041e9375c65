@@ -1,0 +1,30 @@
+apps/web/components/lesson/highlight.tsx
+  s_8f5c837e77b092::t_991097cb9477aa 29,34
+apps/web/components/lesson/highlight.test.ts
+  s_8f5c837e77b092::t_bb162631cd93b0 8-10
+  s_8f5c837e77b092::t_cdec47f21c5ca2 1-7,11-23
+apps/web/vitest.config.ts
+  s_8f5c837e77b092::t_6c220a88c9ddce 6-7
+apps/web/app/globals.css
+  s_8f5c837e77b092::t_a16f72f13c45b4 82-83
+apps/web/e2e/phone.spec.ts
+  s_8f5c837e77b092::t_148eb2451a0ab7 11,17-19,26-27,29,32-34,45,59
+docs/design.md
+  s_8f5c837e77b092::t_269a7c4519cf5a 72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e23bfa12b05fd07929538fc3d028b041e9375c65",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
