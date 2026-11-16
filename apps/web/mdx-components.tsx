@@ -1,8 +1,10 @@
 import type { MDXComponents } from 'mdx/types';
 import type { ComponentProps, ComponentType, ReactNode } from 'react';
 import { z } from 'zod';
+import { Figure, Step } from '@/components/figures/Figure';
 import { Callout, InterviewQ } from '@/components/lesson/blocks';
 import { Code } from '@/components/lesson/code';
+import { Deeper } from '@/components/lesson/deeper';
 import { Segment } from '@/components/lesson/lesson-scope';
 import { Predict } from '@/components/lesson/predict';
 import { Card, ExplainBack } from '@/components/lesson/review';
@@ -58,6 +60,20 @@ const components = {
     InterviewQ,
   ),
   Viz,
+  Figure: parsed(
+    'Figure',
+    z.object({
+      diagram: slug,
+      title: z.string().min(1),
+      gate: slug.optional(),
+      layout: z.enum(['card', 'sticky']).optional(),
+      children,
+    }),
+    Figure,
+  ),
+  /** Unwrapped: Figure finds its captions by this exact component. */
+  Step,
+  Deeper: parsed('Deeper', z.object({ title: z.string().min(1), children }), Deeper),
   /** Fenced blocks are text diagrams whose columns must line up, so they scroll instead of wrapping. */
   pre: (props: ComponentProps<'pre'>) => (
     // biome-ignore lint/a11y/noNoninteractiveTabindex: keyboard users must be able to scroll a diagram wider than the column (axe scrollable-region-focusable).
