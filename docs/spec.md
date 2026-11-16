@@ -1,5 +1,9 @@
 # Stepthrough: Build Spec
 
+Doc ID: stepthrough/spec-product
+
+Status: In review. The owner has not approved it as a spec record yet; it stays the product intent the build follows.
+
 > **For Claude Code.** This is the full spec for **Stepthrough**. It's an interactive, first-principles learning site for software engineering. Read the whole document before you write any code. Start with **§12 Build Plan, Phase 0**. When this doc and your instincts disagree, follow the doc. When the doc is silent, choose the simpler option and record it in `DECISIONS.md`.
 
 ---
