@@ -1,0 +1,21 @@
+apps/web/components/viz/layout.test.ts
+  s_8f5c837e77b092::t_a38c115fc24172 41-49
+apps/web/components/viz/layout.ts
+  s_8f5c837e77b092::t_ad7df00459c216 434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "49a3562298b34552ccd5b591ff5e38cbe00ab14f",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
