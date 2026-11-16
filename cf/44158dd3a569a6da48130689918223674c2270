@@ -1,0 +1,28 @@
+LICENSE-CONTENT
+  s_8f5c837e77b092::t_373ebe71be7e14 5-435
+  s_8f5c837e77b092::t_410310ef7f3d35 1-4
+apps/web/next-env.d.ts
+  s_8f5c837e77b092::t_e0908ff606d8e2 3-4
+AGENTS.md
+  s_8f5c837e77b092::t_373ebe71be7e14 1-3
+README.md
+  s_8f5c837e77b092::t_96fff0f7dd31b0 1-80
+LICENSE
+  s_8f5c837e77b092::t_373ebe71be7e14 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cf44158dd3a569a6da48130689918223674c2270",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
