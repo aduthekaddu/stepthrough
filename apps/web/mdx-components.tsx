@@ -1,5 +1,5 @@
 import type { MDXComponents } from 'mdx/types';
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentProps, ComponentType, ReactNode } from 'react';
 import { z } from 'zod';
 import { Callout, InterviewQ } from '@/components/lesson/blocks';
 import { Code } from '@/components/lesson/code';
@@ -58,6 +58,11 @@ const components = {
     InterviewQ,
   ),
   Viz,
+  /** Fenced blocks are text diagrams whose columns must line up, so they scroll instead of wrapping. */
+  pre: (props: ComponentProps<'pre'>) => (
+    // biome-ignore lint/a11y/noNoninteractiveTabindex: keyboard users must be able to scroll a diagram wider than the column (axe scrollable-region-focusable).
+    <pre {...props} className="text-pre" tabIndex={0} />
+  ),
 } satisfies MDXComponents;
 
 export function useMDXComponents(inherited: MDXComponents): MDXComponents {

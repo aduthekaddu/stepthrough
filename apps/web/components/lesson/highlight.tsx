@@ -2,17 +2,21 @@ import { classHighlighter, highlightCode } from '@lezer/highlight';
 import { parser } from '@lezer/javascript';
 import type { ReactNode } from 'react';
 
-/** Highlights JavaScript at build time with the same `tok-*` classes the editor uses. */
+/**
+ * Highlights JavaScript at build time with the same `tok-*` classes the editor uses. Each
+ * source line is its own block, so a line that wraps on a narrow screen can hang its indent.
+ */
 export function highlightJs(code: string): ReactNode[] {
-  const out: ReactNode[] = [];
+  const lines: ReactNode[][] = [[]];
   highlightCode(
     code,
     parser.parse(code),
     classHighlighter,
     (text, classes) => {
-      out.push(
+      const line = lines.at(-1);
+      line?.push(
         classes ? (
-          <span key={out.length} className={classes}>
+          <span key={line.length} className={classes}>
             {text}
           </span>
         ) : (
@@ -20,15 +24,19 @@ export function highlightJs(code: string): ReactNode[] {
         ),
       );
     },
-    () => out.push('\n'),
+    () => lines.push([]),
   );
-  return out;
+  return lines.map((tokens, i) => (
+    // biome-ignore lint/suspicious/noArrayIndexKey: lines of a fixed string never reorder.
+    <span key={i} className="code-line">
+      {tokens}
+    </span>
+  ));
 }
 
 export function CodeBlock({ code }: { code: string }) {
   return (
-    // biome-ignore lint/a11y/noNoninteractiveTabindex: keyboard users must be able to scroll code wider than the column (axe scrollable-region-focusable).
-    <pre className="code-pre" tabIndex={0}>
+    <pre className="code-pre">
       <code>{highlightJs(code)}</code>
     </pre>
   );
