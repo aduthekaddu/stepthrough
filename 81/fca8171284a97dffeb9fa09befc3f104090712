@@ -1,0 +1,36 @@
+apps/web/content/javascript/execution-context/review.md
+  s_8f5c837e77b092::t_b8baed47b9cdf1 33
+apps/web/content/javascript/execution-context/index.mdx
+  s_8f5c837e77b092::t_6324f368770b26 869
+apps/web/content/foundations/how-programs-run/review.md
+  s_8f5c837e77b092::t_6324f368770b26 78,91
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_8f5c837e77b092::t_6324f368770b26 640,642,652
+apps/web/content/javascript/values-and-references/review.md
+  s_8f5c837e77b092::t_b8baed47b9cdf1 35,92
+DECISIONS.md
+  s_8f5c837e77b092::t_f864c23f92fcdc 24-31
+apps/web/content/javascript/values-and-references/index.mdx
+  s_8f5c837e77b092::t_6324f368770b26 697,707
+apps/web/content/foundations/how-programs-run/outline.yaml
+  s_8f5c837e77b092::t_6324f368770b26 485
+docs/spec.md
+  s_8f5c837e77b092::t_12f6e726e9e8ea 342
+  s_8f5c837e77b092::t_b8baed47b9cdf1 343,365-366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "81fca8171284a97dffeb9fa09befc3f104090712",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
