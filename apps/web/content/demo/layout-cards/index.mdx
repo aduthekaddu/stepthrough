@@ -1,0 +1,117 @@
+---
+id: demo-layout-cards
+track: demo
+title: "Layout B: one card per idea"
+minutes: 10
+prereqs: [fnd-how-programs-run]
+outcomes:
+  - Compare two visual-first layouts on a phone and a desktop
+sources:
+  - https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8
+interviewTags: [fullstack]
+status: draft
+verifiedAt: 2026-11
+---
+
+<Segment id="s01-hook" goal="Running a file is not reading it one line at a time">
+
+<Predict
+  id="p-hook"
+  prompt="What does this print when you run it?"
+  code={`console.log("one");
+console.log("two");
+let total = 1;
+let total = 2;`}
+  answer="b"
+  options={[
+    { id: "a", text: "one\ntwo\nSyntaxError: Identifier 'total' has already been declared", misconception: "FND-LINE-BY-LINE", feedback: "You pictured the file being read and run one line at a time, so the two logs would run before the bad line is reached. JavaScript reads and checks the whole file before it runs any line, and a repeated let is caught by that check. So nothing runs at all." },
+    { id: "b", text: "SyntaxError: Identifier 'total' has already been declared", feedback: "Right. The whole file is checked before any line runs, and a repeated let fails that check, so neither log runs." },
+    { id: "c", text: "one\ntwo", misconception: "FND-REDECLARE-REPLACES", feedback: "You expected the second let to replace the first, the way var allows. let refuses a second declaration of the same name in the same scope. With let, the file is rejected before anything runs." }
+  ]}
+  explain="JavaScript parses the whole script before it runs any of it. A repeated let is an early error, so the script never starts."
+/>
+
+Nothing printed, not even `one`. Keep your answer in mind: the lesson builds the machine from the chip up, and then explains it.
+
+</Segment>
+
+<Segment id="s02-program" goal="A program is instructions, and the CPU cannot read the text you write">
+
+<Figure diagram="text-vs-chip" title="Your text and the chip">
+  <Step>You write a <Term id="program">program</Term> as text, in a language like JavaScript, Java or C. Text written for people to read and change is <Term id="source-code">source code</Term>.</Step>
+  <Step>One chip does the work: the <Term id="cpu">CPU</Term>. It runs a small, fixed set of instructions, written as numbers. It cannot read `return a + b`.</Step>
+  <Step>So something must stand between your text and the chip, either translating the text or carrying it out. The rest of this lesson is about that something.</Step>
+</Figure>
+
+Run it: the software running JavaScript still holds your function as text.
+
+<Code runnable code={`function add(a, b) {
+  return a + b;
+}
+console.log(add(2, 3));
+console.log(add.toString());`} />
+
+</Segment>
+
+<Segment id="s03-machine-code" goal="The CPU runs only machine code: numbered instructions stored as bytes">
+
+<Figure diagram="machine-code" title="From C to machine code">
+  <Step>Computers store everything as bits, each a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>: 256 patterns, read as the numbers 0 to 255.</Step>
+  <Step>A <Term id="compiler">compiler</Term> translates code before it runs. gcc turned this C function into four bytes of <Term id="machine-code">machine code</Term>: instructions stored as numbers.</Step>
+  <Step>The first three bytes are one instruction, `lea`, used here to add `a` and `b`. The last byte, `c3`, is `ret`: go back to the code that called this one.</Step>
+  <Step>Each CPU family numbers its instructions its own way. An ARM chip, the kind in most phones, cannot use these x86-64 bytes, so a C program is compiled again for each family.</Step>
+</Figure>
+
+<Deeper title="The real compiler output">
+
+This is gcc 13.3 on x86-64 Linux, with `-O1 -fcf-protection=none`. Without that last flag, Ubuntu's gcc adds a 4-byte security instruction in front.
+
+<Code code={`// add.c                          gcc 13.3 -O1 -fcf-protection=none
+int add(int a, int b) {           // 8d 04 37    lea eax,[rdi+rsi*1]
+  return a + b;                   // c3          ret
+}`} />
+
+`lea` was designed for a different job, but compilers use it to add two numbers in one step. The inputs arrive in registers, tiny named storage slots inside the CPU, such as `rdi` and `rsi`. Java's `byte` type reads the same 256 patterns as -128 to 127.
+
+</Deeper>
+
+<ExplainBack
+  id="e-cpu"
+  prompt="In one sentence, why can't the CPU run add.js directly?"
+  rubric={["The CPU only runs machine code", "Machine code is instructions as numbers in that CPU family's own format", "A .js file is text, so something must translate it or carry it out"]}
+/>
+
+</Segment>
+
+<Segment id="s04-memory" goal="Memory is one long row of bytes, each with a numbered address">
+
+<Figure diagram="memory-bytes" title="Memory is a row of bytes">
+  <Step>While code runs, the CPU keeps instructions and data in <Term id="memory">memory</Term>, also called RAM: one long row of bytes. Each byte's position number is its <Term id="address">address</Term>.</Step>
+  <Step>To read or write a byte, the CPU gives its address. Real addresses are large numbers, usually written in hexadecimal, such as `7ffe3f1e4000`.</Step>
+  <Step>One byte stops at 255. A bigger number, such as 1000, uses several bytes side by side.</Step>
+  <Step>JavaScript never shows you real addresses. A `Uint8Array` behaves like a short row of bytes, and its indexes play the role of addresses.</Step>
+</Figure>
+
+<Predict
+  id="p-byte"
+  kind="text"
+  prompt="What does this print?"
+  code={`const cells = new Uint8Array(4);
+cells[1] = 200;
+cells[2] = 300;
+console.log(cells[1], cells[2]);`}
+  answer="200 44"
+  wrong={[
+    { match: "200 300", misconception: "FND-BYTE-ANY-NUMBER", feedback: "You expected each cell to hold any number. Each cell of a Uint8Array is one byte, and one byte holds only 0 to 255. 300 needs 9 bits, so only the lowest 8 bits are kept: 300 - 256 = 44." },
+    { match: "200 255", feedback: "You expected a too-big number to be capped at the largest byte value. That is what Uint8ClampedArray does. A plain Uint8Array keeps only the lowest 8 bits instead, so 300 becomes 300 - 256 = 44." }
+  ]}
+  explain="One byte holds 0 to 255. A Uint8Array keeps the lowest 8 bits of what you store (the spec's ToUint8), so 300 is stored as 44."
+/>
+
+<Deeper title="The rule in the specification">
+
+The specification calls this conversion [ToUint8](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8). It turns any number into one of the 256 values from 0 to 255. A `Uint8Array`'s bytes sit in real memory, but its indexes are not real addresses: the operating system and the engine pick the real ones and hide them.
+
+</Deeper>
+
+</Segment>
