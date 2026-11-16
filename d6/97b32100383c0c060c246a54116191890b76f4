@@ -1,0 +1,44 @@
+apps/web/components/viz/viz.module.css
+  s_8f5c837e77b092::t_3f7967362ddbcf 127
+  s_8f5c837e77b092::t_3439417d3be4f9 128,132-135
+  s_8f5c837e77b092::t_75f27420c6ef90 144-145
+  s_8f5c837e77b092::t_37b4a9aeaffc5f 136-137
+apps/web/app/lesson.css
+  s_8f5c837e77b092::t_09bfce9af67858 261-264,279,281-295
+  s_8f5c837e77b092::t_cab3c5aeb18df8 565-566
+  s_8f5c837e77b092::t_b98ecf19d713b3 568-569
+  s_8f5c837e77b092::t_81f7ff343c792c 113-115,567
+  s_8f5c837e77b092::t_3f7967362ddbcf 280
+  s_8f5c837e77b092::t_a076e6268f9660 296
+apps/web/e2e/phone.spec.ts
+  s_8f5c837e77b092::t_8bb418fbe54f58 1-60
+apps/web/components/lesson/highlight.tsx
+  s_8f5c837e77b092::t_e14e049bfa6521 5-8,10,16-17,19,27,29-34,39
+DECISIONS.md
+  s_8f5c837e77b092::t_77f83c60a961f1 33
+apps/web/mdx-components.tsx
+  s_8f5c837e77b092::t_123bb63ae48632 61-65
+  s_8f5c837e77b092::t_b6ab6653e48069 2
+apps/web/components/viz/CodePane.tsx
+  s_8f5c837e77b092::t_87b8292f216d6a 36
+docs/design.md
+  s_8f5c837e77b092::t_3f6dc9ea34b0d9 72
+apps/web/components/lesson/editor.ts
+  s_8f5c837e77b092::t_193a1e54cb7a61 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d697b32100383c0c060c246a54116191890b76f4",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
