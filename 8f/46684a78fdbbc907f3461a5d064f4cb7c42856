@@ -1,0 +1,40 @@
+docs/architecture.md
+  s_8f5c837e77b092::t_fa2ed513b23658 65,67,69,71
+apps/web/package.json
+  s_8f5c837e77b092::t_42368fc88ab9a9 9
+apps/web/playwright.config.ts
+  s_8f5c837e77b092::t_6e10a03ae4c3a0 5-6,9,18,22
+apps/web/e2e/serve.ts
+  s_8f5c837e77b092::t_6e10a03ae4c3a0 5-8,10,27-29
+.github/workflows/ci.yml
+  s_8f5c837e77b092::t_8ddd13ee3caa55 7,14,25-29,44-46,48-49,55,63-80
+  s_8f5c837e77b092::t_49f87a6bfac19a 1-6,8-13,15-24,30-43,47,50-54,56-62
+apps/web/scripts/check-labs.ts
+  s_8f5c837e77b092::t_7cf304b14e4297 1-42
+apps/web/e2e/viz.spec.ts
+  s_8f5c837e77b092::t_6e10a03ae4c3a0 4
+apps/web/e2e/lesson.spec.ts
+  s_8f5c837e77b092::t_6e10a03ae4c3a0 4,192,200-201,205,213
+  s_8f5c837e77b092::t_cc9cb1a0bef5fb 208
+DECISIONS.md
+  s_8f5c837e77b092::t_fa2ed513b23658 32
+apps/web/next.config.ts
+  s_8f5c837e77b092::t_5d9e614b170900 7
+  s_8f5c837e77b092::t_6e10a03ae4c3a0 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8f46684a78fdbbc907f3461a5d064f4cb7c42856",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
