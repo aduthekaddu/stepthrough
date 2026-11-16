@@ -431,6 +431,7 @@ export function layoutScene({ frame, changes, view, width, detached }: LayoutInp
   const bottoms = [
     envBottom,
     stackBottom,
+    ...lanes.map((lane) => lane.y + M.laneLabel),
     ...heapNodes.map((h) => h.rect.y + h.rect.h),
     ...ghostFrames.map((g) => g.rect.y + g.rect.h),
   ];
