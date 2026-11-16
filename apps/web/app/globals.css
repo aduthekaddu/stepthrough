@@ -168,8 +168,9 @@ a {
  * 48px right of the prose: [1fr] [prose 66ch] [48px] [sidenotes 240px] [1fr].
  */
 .lesson-grid {
-  /* FIG numbers restart in every lesson. */
-  counter-reset: viz-figure;
+  /* FIG and sidenote numbers restart in every lesson. One declaration: a second
+     `counter-reset` elsewhere would replace this one, not add to it. */
+  counter-reset: viz-figure sidenote;
   display: grid;
   grid-template-columns:
     [full-start] minmax(16px, 1fr)

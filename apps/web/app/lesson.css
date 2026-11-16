@@ -186,7 +186,6 @@
 }
 
 .lesson-grid {
-  counter-reset: sidenote;
   padding-bottom: 96px;
 }
 

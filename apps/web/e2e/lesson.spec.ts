@@ -250,3 +250,14 @@ test('a figure gated by a prediction unlocks on commit and stays unlocked after 
     'true',
   );
 });
+
+test('figures are numbered in order through a lesson', async ({ page }) => {
+  await page.goto('learn/javascript/execution-context/');
+  // The number is CSS-generated text, which Chrome's own accessibility tree includes.
+  const cdp = await page.context().newCDPSession(page);
+  const { nodes } = await cdp.send('Accessibility.getFullAXTree');
+  const text = nodes.filter((n) => n.role?.value === 'StaticText').map((n) => n.name?.value ?? '');
+  const labels = text.flatMap((t, i) => (t === 'FIG ' ? [`FIG ${text[i + 1]}`] : []));
+  expect(labels.length).toBeGreaterThan(1);
+  expect(labels).toEqual(labels.map((_, i) => `FIG ${i + 1}`));
+});
