@@ -8,28 +8,30 @@ const PAGES = [
   'learn/demo/components/',
   'playground/viz/',
 ];
-const WIDTHS = [360, 390, 430];
+const WIDTHS = [320, 360, 390, 430];
 
 const { defaultBrowserType: _, ...pixel } = devices['Pixel 7'];
 test.use(pixel);
 
 /**
- * Elements that make the page wider than the screen, and boxes that scroll sideways.
- * Preformatted text diagrams (`.text-pre`) may scroll inside their own box; nothing else may.
+ * Elements that make the page wider than the screen, and boxes whose content is wider than
+ * the box, whether it scrolls or is cut off. Preformatted text diagrams (`.text-pre`) may
+ * scroll inside their own box; nothing else may.
  */
 function sidewaysOverflow(page: Page) {
   return page.evaluate(() => {
     const viewport = document.documentElement.clientWidth;
     const name = (el: Element) =>
       el.tagName.toLowerCase() + (el.classList[0] ? `.${el.classList[0]}` : '');
-    const scrollsSideways = (el: Element) =>
-      el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(el).overflowX);
+    const tooWide = (el: Element) =>
+      el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== 'visible';
     const outside: string[] = [];
-    const scrollers: string[] = [];
+    const tooWideBoxes: string[] = [];
     for (const el of document.body.querySelectorAll('*')) {
       const box = el.getBoundingClientRect();
-      if (box.width === 0 || box.height === 0) continue;
-      if (scrollsSideways(el) && !el.closest('.text-pre')) scrollers.push(name(el));
+      // Visually hidden text (`.sr-only`) is a 1px box by design.
+      if (box.width <= 1 || box.height <= 1) continue;
+      if (tooWide(el) && !el.closest('.text-pre')) tooWideBoxes.push(name(el));
       let clipped = false;
       for (let a = el.parentElement; a && !clipped; a = a.parentElement) {
         clipped = /auto|scroll|hidden|clip/.test(getComputedStyle(a).overflowX);
@@ -40,7 +42,7 @@ function sidewaysOverflow(page: Page) {
       pageWidth: document.documentElement.scrollWidth,
       viewport,
       outside: [...new Set(outside)],
-      scrollers: [...new Set(scrollers)],
+      tooWideBoxes: [...new Set(tooWideBoxes)],
     };
   });
 }
@@ -54,7 +56,7 @@ for (const path of PAGES) {
       const result = await sidewaysOverflow(page);
       expect(result.pageWidth, `page width at ${width}px`).toBeLessThanOrEqual(result.viewport);
       expect(result.outside, `elements past the screen edge at ${width}px`).toEqual([]);
-      expect(result.scrollers, `boxes that scroll sideways at ${width}px`).toEqual([]);
+      expect(result.tooWideBoxes, `boxes cut off or scrolling sideways at ${width}px`).toEqual([]);
     }
   });
 }

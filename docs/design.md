@@ -69,7 +69,7 @@ Every concept also has a fixed place, shape and label, because olive/red and och
 - At 1280px and wider: `[1fr] [prose 66ch] [48px] [sidenotes 240px] [1fr]`.
 - Visualizers break out to `min(1100px, 100vw - 32px)`. One-control widgets stay in the prose column.
 - Side gutter at least 16px at every width.
-- No page scrolls sideways at 360px or wider (`e2e/phone.spec.ts` checks 360, 390 and 430). Code wraps, and a wrapped line hangs its indent by 2ch. Only fenced text diagrams keep their columns and scroll inside their own box.
+- No page scrolls sideways at 320px or wider (`e2e/phone.spec.ts` checks 320, 360, 390 and 430), and no box cuts off or side-scrolls its content. Code wraps, and a wrapped line hangs its indent by 2ch. Long words and paths in prose break. Only fenced text diagrams keep their columns and scroll inside their own box.
 
 ## Visualizer panel
 

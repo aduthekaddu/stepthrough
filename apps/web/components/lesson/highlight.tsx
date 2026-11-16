@@ -26,10 +26,12 @@ export function highlightJs(code: string): ReactNode[] {
     },
     () => lines.push([]),
   );
+  // Each line keeps its newline so copied text and the accessible text match the source.
   return lines.map((tokens, i) => (
     // biome-ignore lint/suspicious/noArrayIndexKey: lines of a fixed string never reorder.
     <span key={i} className="code-line">
       {tokens}
+      {i < lines.length - 1 && '\n'}
     </span>
   ));
 }
