@@ -361,6 +361,15 @@
   background: var(--panel);
 }
 
+.phase[data-never] {
+  border-style: dashed;
+}
+
+.status {
+  margin: 6px 0 0;
+  font: 500 13px / 1.3 var(--sans);
+}
+
 .phaseNo {
   font-variant-numeric: tabular-nums;
   color: var(--muted);

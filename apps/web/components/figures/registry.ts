@@ -3,6 +3,7 @@ import { CompileVsInterpret } from './diagrams/compile-vs-interpret.tsx';
 import { EngineRuntime } from './diagrams/engine-runtime.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
+import { ParseThenRun } from './diagrams/parse-then-run.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
 
 /** What every diagram receives: the step to draw. Captions live in the lesson, not here. */
@@ -21,6 +22,7 @@ export const DIAGRAMS = {
   'memory-bytes': MemoryBytes,
   'compile-vs-interpret': CompileVsInterpret,
   'engine-runtime': EngineRuntime,
+  'parse-then-run': ParseThenRun,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
