@@ -1,0 +1,42 @@
+apps/web/components/figures/diagrams/threads.tsx
+  s_8f5c837e77b092::t_d11e4ff37d6a98 1-31,33-66
+  s_8f5c837e77b092::t_ec6dd9c3f1d78e 32
+apps/web/components/figures/diagrams/os.module.css
+  s_8f5c837e77b092::t_f73f3975a075be 124-200,203-205,208,216
+  s_a40494ff401cc2::t_86895972d7efcc 201-202,206-207,209-215
+  s_8f5c837e77b092::t_fc4f9071e4e147 1-123
+apps/web/components/figures/diagrams/process-memory.tsx
+  s_8f5c837e77b092::t_3e7f7f27bc802a 1-4,6-10,21-103
+  s_8f5c837e77b092::t_615cd030ebdd01 5,11-20
+apps/web/components/figures/diagrams/os-parts.tsx
+  s_8f5c837e77b092::t_e683666e7b662e 1-10
+apps/web/components/figures/registry.ts
+  s_8f5c837e77b092::t_43e3133d290be6 4
+  s_8f5c837e77b092::t_23f986f6f4d0ad 23
+  s_8f5c837e77b092::t_b6d52a446509de 6
+  s_8f5c837e77b092::t_d5dd34df2e54fa 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "90864367b5cb2a20d90651f96404d022252535f7",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    },
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
