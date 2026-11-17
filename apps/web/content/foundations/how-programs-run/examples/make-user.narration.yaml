@@ -12,12 +12,12 @@ steps:
       - { stackDepth: 2 }
       - { record: "makeUser() call", binding: user, value: "uninitialized" }
   - at: { mark: before-return, kind: statement }
-    say: "The object { name: \"Asha\" } is not inside the frame. It sits on its own, outside the stack, and user points to it."
+    say: "The object { name: \"Asha\" } is not inside the frame. It sits outside the stack, in the heap: memory whose data is not tied to one call. user points to it."
     expect:
       - { stackDepth: 2 }
       - { record: "makeUser() call", binding: user, value: "object" }
   - at: { mark: after-return, kind: statement }
-    say: "makeUser returned, so its frame and its name user are gone. The object is still there, because u now points to it."
+    say: "makeUser returned, so its frame and its name user are gone. The object stays, because u can still reach it. Once nothing can, the engine may free it later: garbage collection."
     expect:
       - { stackDepth: 1 }
       - { record: "makeUser() call", exists: false }

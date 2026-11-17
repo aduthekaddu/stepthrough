@@ -227,7 +227,7 @@
         }
       ],
       "console": [],
-      "narration": "The object { name: \"Asha\" } is not inside the frame. It sits on its own, outside the stack, and user points to it."
+      "narration": "The object { name: \"Asha\" } is not inside the frame. It sits outside the stack, in the heap: memory whose data is not tied to one call. user points to it."
     },
     {
       "step": 4,
@@ -385,7 +385,7 @@
         }
       ],
       "console": [],
-      "narration": "makeUser returned, so its frame and its name user are gone. The object is still there, because u now points to it."
+      "narration": "makeUser returned, so its frame and its name user are gone. The object stays, because u can still reach it. Once nothing can, the engine may free it later: garbage collection."
     },
     {
       "step": 6,

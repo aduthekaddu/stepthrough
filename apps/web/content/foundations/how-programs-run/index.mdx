@@ -64,7 +64,7 @@ console.log(add.toString());`} />
 
 <Figure diagram="machine-code" title="From C to machine code">
   <Step>Computers store everything as bits, each a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>. One byte has 256 patterns, read as the numbers 0 to 255. This byte is `8d`, or 141.</Step>
-  <Step>A <Term id="compiler">compiler</Term> translates code before it runs. gcc turned this C function into four bytes. Instructions stored as numbers like these are <Term id="machine-code">machine code</Term>, the only thing a CPU runs directly.</Step>
+  <Step>A <Term id="compiler">compiler</Term> translates code into other code. gcc does it ahead of time, turning this C function into four bytes. Instructions stored as numbers are <Term id="machine-code">machine code</Term>, the only thing a CPU runs directly.</Step>
   <Step>The first three bytes are one instruction, `lea`, used here to add `a` and `b`. The last byte, `c3`, is `ret`: go back to the code that called this one.</Step>
   <Step>Each CPU family numbers its instructions its own way. An ARM chip, the kind in most phones, cannot use these x86-64 bytes. A C program is compiled again for each family.</Step>
 </Figure>
@@ -173,16 +173,16 @@ Whether two tabs are also two OS processes is up to the browser. Chrome usually 
 <Segment id="s06-thread" goal="A thread is one path of execution, and JavaScript runs your code on one thread at a time">
 
 <Figure diagram="threads" title="Threads in a process">
-  <Step>Inside a process, the CPU follows one instruction after another. One such path through the code is a <Term id="thread">thread</Term>. Threads share the process's memory, but each has its own stack.</Step>
-  <Step>A process can run several threads at once, for example one on each CPU core. Here two cores run threads 1 and 2 at the same moment.</Step>
-  <Step>Your JavaScript gets one thread. The spec calls one running JavaScript world an agent, and gives each agent one thread. A worker you start is another agent, with its own thread and memory.</Step>
+  <Step>A <Term id="thread">thread</Term> is one path through a process's code, one instruction after another. Threads share the process's memory, but each has its own stack.</Step>
+  <Step>A process can run several threads at once. Here two cores run threads 1 and 2 at the same moment.</Step>
+  <Step>Your JavaScript gets one thread. A worker you start gets another, with its own memory.</Step>
 </Figure>
 
-<Figure diagram="busy-loop" title="A timer waits for a busy loop" gate="p-busy">
-  <Step>This is the program in the prediction below. `setTimeout(fn, 0)` asks for `fn` to run later, after at least 0 ms. The callback now waits, due at 0 ms.</Step>
-  <Step>The `while` loop holds the thread for about 100 ms. The callback is due, but no other JavaScript can start until the running code finishes.</Step>
-  <Step>The loop ends, `loop done` prints, and the script is finished. The callback is still waiting.</Step>
-  <Step>Now the thread is free. The callback runs about 100 ms late and prints `timer`. It was not skipped. A timer's delay is a minimum, not a deadline.</Step>
+<Figure diagram="busy-loop" title="A timer and a busy loop" gate="p-busy">
+  <Step>This is the program in the prediction below. `setTimeout(fn, 0)` asks for `fn` to run after at least 0 ms. The callback waits.</Step>
+  <Step>The `while` loop holds the thread for about 100 ms. The callback is due, but no JavaScript can start until the running code finishes.</Step>
+  <Step>The loop ends, `loop done` prints, and the script ends. The callback still waits.</Step>
+  <Step>The thread is free. The callback runs about 100 ms late and prints `timer`. A timer's delay is a minimum, not a deadline.</Step>
 </Figure>
 
 <Predict
@@ -205,7 +205,7 @@ console.log("loop done");`}
 
 The Linux manual page [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) says threads "share the same global memory ..., but each thread has its own stack". Segment 13 explains that stack.
 
-The JavaScript specification gives each agent one executing thread, and MDN says an agent "is analogous to a thread". So while one of your functions runs, no other JavaScript on that thread runs. The specification, section [Jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs): "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent." "Run to completion" is the usual teaching name for this rule.
+The specification calls one running JavaScript world an agent and gives each agent one executing thread, and MDN says an agent "is analogous to a thread". A worker you start is another agent, with its own thread and memory. A process's threads can run at the same moment, for example one on each CPU core. So while one of your functions runs, no other JavaScript on that thread runs. The specification, section [Jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs): "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent." "Run to completion" is the usual teaching name for this rule.
 
 Lesson 1.7 shows where a waiting callback waits. In a browser, a long loop means the page cannot react to clicks or scrolling (MDN). In Node, every other request waits.
 
@@ -215,7 +215,7 @@ Lesson 1.7 shows where a waiting callback waits. In a browser, a long loop means
 
 </Segment>
 
-<Segment id="s07-interpreter" goal="A compiler translates ahead of time; an interpreter carries out code itself; bytecode sits between">
+<Segment id="s07-interpreter" goal="A compiler translates code, gcc ahead of time; an interpreter carries out code itself; bytecode sits between">
 
 <Figure diagram="compile-vs-interpret" title="Compile, interpret, or both">
   <Step>One way to run source code is to compile it ahead of time. gcc turns `add.c` into machine code before the program starts. That takes time up front, but the result runs fast.</Step>
@@ -227,7 +227,7 @@ Lesson 1.7 shows where a waiting callback waits. In a browser, a long loop means
 <ExplainBack
   id="e-compile"
   prompt="In one sentence, what does a compiler produce, and what does an interpreter do instead?"
-  rubric={["A compiler produces new code (machine code or bytecode) before the code runs", "An interpreter produces no machine code for your program; it carries out each step itself while reading", "The interpreter is itself machine code that the CPU runs"]}
+  rubric={["A compiler produces new code (machine code or bytecode), ahead of time like gcc or while the program runs", "An interpreter produces no machine code for your program; it carries out each step itself while reading", "The interpreter is itself machine code that the CPU runs"]}
 />
 
 <Deeper title="Interpreter costs, and Java's docs">
@@ -244,7 +244,7 @@ A compiler produces new code. It can do that before the program runs or, as segm
 
 <Segment id="s08-engine-host" goal="The engine implements the language; the runtime (host) adds the outside world">
 
-<Figure diagram="engine-runtime" title="Engine and runtime">
+<Figure diagram="engine-runtime" title="Engine and runtime" gate="p-host">
   <Step>Running JavaScript takes two pieces of software. The <Term id="engine">engine</Term> knows the language and its built-ins, such as `Math` and `JSON`. It parses and runs your code. V8 is the engine in Chrome and in Node.</Step>
   <Step>The second is the program around the engine: the <Term id="runtime">runtime</Term>, which the spec calls the host. It lets JavaScript reach the outside world. A browser adds the page (`document`), timers, `fetch` and `console`.</Step>
   <Step>Node wraps the same V8 in a different runtime. It adds files, network sockets, its own process and its own timers. It has no page, so it has no `document`.</Step>
@@ -327,7 +327,7 @@ console.log("two"); // → two
 var total = 1;
 var total = 2;`} />
 
-V8 adds a detail of its own. It does not fully compile a function until the function is called. To save time, it preparses the function body instead, which is a quicker pass that still checks the syntax. This is how V8 works, not a rule of the language. V8 blog, [lazy parsing and the preparser](https://v8.dev/blog/preparser) (2019): "The preparser verifies that the functions it skips are syntactically valid."
+V8 adds a detail of its own. Many functions are not fully compiled until they are called. To save time, V8 preparses such a function's body instead, a quicker pass that still checks the syntax, and parses and compiles it fully on its first call. Some functions, such as one wrapped in parentheses, are compiled right away (segment 10). This is how V8 works, not a rule of the language. V8 blog, [lazy parsing and the preparser](https://v8.dev/blog/preparser) (2019): "The preparser verifies that the functions it skips are syntactically valid."
 
 Why check code that never runs? The specification requires it, and the result is one clear rule. A script either has no early errors and starts, or it does not start at all. You never get a half-run file because of an early error near the bottom.
 
@@ -400,7 +400,7 @@ Why not make all the bytecode at once? Many functions in a real web page never r
 
 <Segment id="s11-jit" goal="Hot functions get compiled to machine code while the program runs, based on what V8 has seen">
 
-<Figure diagram="jit-tiers" title="V8's four tiers">
+<Figure diagram="jit-tiers" title="V8's four tiers" gate="p-faster">
   <Step>V8 runs code in four tiers. Ignition, at the bottom, interprets bytecode. The three above it make machine code: quick, optimized, and peak. `add` starts in Ignition, like all code.</Step>
   <Step>An interpreter pays a cost on every instruction. So while `add` runs, V8 notes in its feedback slots what it sees. Here, `a + b` has had small integers every time.</Step>
   <Step>A function that runs often is hot. V8 may compile a hot function to machine code that the CPU runs directly, while the program runs. That is <Term id="jit">JIT</Term> (just-in-time) compilation.</Step>
@@ -528,9 +528,9 @@ A function that calls itself is recursive, and each call gets its own frame. Thr
 <Segment id="s15-overflow" goal="A stack overflow happens when calls keep pushing frames and none return, until the fixed-size stack is full">
 
 <Figure diagram="stack-overflow" title="Calls that never return" gate="p-overflow">
-  <Step>This is the program in the prediction below. A thread's stack is one fixed-size block, and V8 lets JavaScript use 984 KB of it by default. For now, only the script's frame is on it.</Step>
+  <Step>This is the program in the prediction below. Each thread has a stack for its frames. For now, only the script's frame is on it.</Step>
   <Step>`down(3)` calls `down(2)`, which calls `down(1)`. Each call pushes a frame, and none returns, because `down` has no base case. Only the top frame runs.</Step>
-  <Step>The frames pile up. After about ten thousand small frames, the 984 KB is nearly full. This happens long before RAM runs out.</Step>
+  <Step>The frames pile up. The stack is a fixed-size block: V8 lets JavaScript use 984 KB of it by default. About ten thousand small frames nearly fill it, long before RAM runs out.</Step>
   <Step>The stack is full, so V8 throws a `RangeError`. The error leaves every `down` frame, and the `catch` prints it. This is a stack overflow. The fix is a base case, or a loop.</Step>
 </Figure>
 
@@ -581,7 +581,7 @@ The specification does describe one way around this, called proper tail calls. I
 
 <Segment id="s16-heap" goal="Objects live in the heap, whose data outlives the call that made it, and garbage collection frees it later">
 
-<Viz example="make-user" view="both" gate="p-survive" pauseAt={[4]} title="An object outlives its frame" />
+<Viz example="make-user" view="both" gate="p-survive" pauseAt={[4]} title="makeUser returns an object" />
 
 <Predict
   id="p-survive"
@@ -601,9 +601,9 @@ console.log(u.name);`}
   explain="A frame disappears when its call returns, but objects live in the heap and stay as long as something can reach them."
 />
 
-Objects live outside frames, in a region of memory whose data is not tied to one call: the <Term id="heap">heap</Term>. An object stays while something can still reach it. Once nothing can, the engine may free its memory later. That is <Term id="garbage-collection">garbage collection</Term>.
+<Deeper title="The heap, and who frees memory">
 
-<Deeper title="Who frees memory, and stack versus heap">
+Objects live outside frames, in a region of memory whose data is not tied to one call: the <Term id="heap">heap</Term>. An object stays while something can still reach it. Once nothing can, the engine may free its memory later. That is <Term id="garbage-collection">garbage collection</Term>.
 
 A frame's local variables can no longer be reached through that call once it returns. (Lesson 1.3 shows the one way they can survive.) A variable holds a way to reach an object, not the object itself (lesson 1.1 shows this). MDN calls the heap "just a name to denote a large (mostly unstructured) region of memory".
 
@@ -646,7 +646,7 @@ In C you would call `free()`. JavaScript does it for you. MDN says JavaScript "a
   <Step>An Express server runs every request handler on one JavaScript thread, the main thread. Node also keeps a pool of helper threads. Requests A, B and C arrive close together.</Step>
   <Step>Sync version. A's handler derives an encryption key from a password with `crypto.pbkdf2Sync`. That heavy work runs on the main thread, so B and C wait.</Step>
   <Step>B and C, from other users, run only after A finishes. One slow synchronous handler delays every user of the server.</Step>
-  <Step>Callback version. `crypto.pbkdf2` runs the key derivation on Node's helper threads, which never run your JavaScript. B and C run at once, and A's callback answers when the key is ready.</Step>
+  <Step>Callback version. `crypto.pbkdf2` runs the key derivation on Node's helper threads, which never run your JavaScript. B and C run right away, one after the other on the main thread. A's callback answers when the key is ready.</Step>
 </Figure>
 
 <Code code={`// salt and encrypt stand for your own code.

@@ -51,8 +51,9 @@ function SlotView({ slot, thrown, top }: { slot: Slot; thrown: boolean; top: boo
 }
 
 /**
- * Steps: 0 the empty fixed-size stack with only the script's frame, 1 `down(3)` to `down(1)`
- * pushed and none returned, 2 nearly full after about ten thousand frames, 3 full: RangeError,
+ * Steps: 0 the stack with only the script's frame, its size not yet shown so the prediction
+ * stays open, 1 `down(3)` to `down(1)` pushed and none returned, 2 the fixed 984 KB size, nearly
+ * full after about ten thousand frames, 3 full: RangeError,
  * every `down` frame leaves, the catch prints it. Facts: the lesson's program run on Node, and
  * `node --v8-options` for `--stack-size=984`.
  */
@@ -62,7 +63,9 @@ function Draw({ step }: DiagramProps) {
   return (
     <div className={css.split}>
       <div className={css.lane}>
-        <p className={figures.rowLabel}>stack · fixed size, grows upward</p>
+        <p className={figures.rowLabel}>
+          {step >= 2 ? 'stack · fixed size, grows upward' : 'stack · grows upward'}
+        </p>
         <div className={css.stackWrap}>
           <div className={css.stackBox}>
             {SLOTS.map((slot, i) => {
@@ -75,12 +78,12 @@ function Draw({ step }: DiagramProps) {
               );
             })}
           </div>
-          <div className={css.measure}>
+          <Reveal show={step >= 2} className={css.measure}>
             <p className={css.measureText}>
               <strong>984 KB</strong>
               <span>V8's default</span>
             </p>
-          </div>
+          </Reveal>
         </div>
       </div>
       <div className={css.lane}>
