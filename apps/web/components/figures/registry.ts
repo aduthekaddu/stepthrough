@@ -1,11 +1,15 @@
 import type { ComponentType } from 'react';
 import { BlockedServer } from './diagrams/blocked-server.tsx';
 import { BusyLoop } from './diagrams/busy-loop.tsx';
+import { CompileVsInterpret } from './diagrams/compile-vs-interpret.tsx';
 import { Deopt } from './diagrams/deopt.tsx';
+import { EngineRuntime } from './diagrams/engine-runtime.tsx';
 import { FactSorter } from './diagrams/fact-sorter.tsx';
+import { IgnitionBytecode } from './diagrams/ignition-bytecode.tsx';
 import { JitTiers } from './diagrams/jit-tiers.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
+import { ParseThenRun } from './diagrams/parse-then-run.tsx';
 import { ProcessMemory } from './diagrams/process-memory.tsx';
 import { StackOverflow } from './diagrams/stack-overflow.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
@@ -28,6 +32,10 @@ export const DIAGRAMS = {
   'process-memory': ProcessMemory,
   threads: Threads,
   'busy-loop': BusyLoop,
+  'compile-vs-interpret': CompileVsInterpret,
+  'engine-runtime': EngineRuntime,
+  'parse-then-run': ParseThenRun,
+  'ignition-bytecode': IgnitionBytecode,
   'jit-tiers': JitTiers,
   deopt: Deopt,
   'stack-overflow': StackOverflow,
