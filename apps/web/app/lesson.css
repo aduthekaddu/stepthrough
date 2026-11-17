@@ -110,6 +110,9 @@
 
 .theme-now {
   font-weight: 400;
+  @media (width < 40rem) {
+    display: none;
+  }
 }
 
 /* Lesson header */
@@ -255,14 +258,14 @@
   }
 }
 
-/* Code */
-.code-pre {
+/* Code. JavaScript wraps so a phone never scrolls it sideways; a wrapped line hangs its
+   indent. Text diagrams keep their columns and scroll inside their own box instead. */
+.code-pre,
+.text-pre {
   margin: 0;
   padding: 12px 14px;
-  overflow-x: auto;
   font-size: 14px;
   line-height: 1.5;
-  white-space: pre;
   tab-size: 2;
   background: var(--paper);
   border: 1px solid var(--rule);
@@ -271,6 +274,24 @@
     font-size: 15px;
     line-height: 1.55;
   }
+}
+
+.code-pre {
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
+}
+
+.code-line {
+  display: block;
+  min-block-size: 1lh;
+  padding-inline-start: 2ch;
+  text-indent: -2ch;
+}
+
+.text-pre {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  white-space: pre;
 }
 
 .code-figure {
@@ -541,7 +562,11 @@
     caret-color: var(--ink);
   }
   .cm-line {
-    padding: 0 14px;
+    padding: 0 14px 0 calc(14px + 2ch);
+    text-indent: -2ch;
+  }
+  .cm-content.cm-lineWrapping {
+    white-space: break-spaces;
   }
   .cm-cursor {
     border-left-color: var(--ink);

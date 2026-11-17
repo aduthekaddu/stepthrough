@@ -36,6 +36,38 @@ export type PanelAction =
   | { type: 'tick'; at: number }
   | { type: 'answer'; answer: Answer; at: number };
 
+/** docs/design.md: autoplay advances every 1200ms. */
+export const AUTOPLAY_MS = 1200;
+
+/** Spec §4.4 step keys, shared by every stepped figure. */
+const STEP_KEYS: Record<string, 'next' | 'prev' | 'toggle-play' | 'reset'> = {
+  ArrowRight: 'next',
+  l: 'next',
+  ArrowLeft: 'prev',
+  h: 'prev',
+  ' ': 'toggle-play',
+  r: 'reset',
+};
+
+type KeyInput = {
+  key: string;
+  altKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  target: EventTarget | null;
+};
+
+/** The step action a key press asks for, or null when the key belongs to something else. */
+export function stepKeyAction(e: KeyInput): (typeof STEP_KEYS)[string] | null {
+  if (e.altKey || e.ctrlKey || e.metaKey) return null;
+  const type = STEP_KEYS[e.key];
+  if (!type) return null;
+  const onRange = e.target instanceof HTMLInputElement && e.target.type === 'range';
+  if (onRange && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return null;
+  if (e.target instanceof HTMLButtonElement && e.key === ' ') return null;
+  return type;
+}
+
 export const initialPanelState: PanelState = {
   step: 0,
   playing: false,
