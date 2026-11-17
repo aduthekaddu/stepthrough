@@ -38,21 +38,19 @@ let total = 2;`}
   explain="JavaScript parses the whole script before it runs any of it. A repeated let is an early error, so the script never starts."
 />
 
-Nothing printed, not even `one`. Many developers expect the two logs to appear before the error, because they picture the file running one line at a time.
-
-Keep your answer in mind. Segment 9 explains exactly what happened. To get there, the lesson first builds the machine from the bottom up: the chip, its instructions, its storage, and the software that runs JavaScript.
+Keep your answer in mind. Segment 9 shows what happened, once the lesson has built the machine from the chip up.
 
 </Segment>
 
 <Segment id="s02-program" goal="A program is instructions, and the CPU cannot read the text you write">
 
-A computer does nothing on its own. It follows a list of instructions, and that list is a <Term id="program">program</Term>.
+<Figure diagram="text-vs-chip" title="Your text and the chip">
+  <Step>A <Term id="program">program</Term> is a list of instructions. You write it as text that people can read and change, called <Term id="source-code">source code</Term>. The chip that carries out instructions is the <Term id="cpu">CPU</Term>.</Step>
+  <Step>The CPU cannot read the text `return a + b`. It runs only a small, fixed set of instructions, written as numbers.</Step>
+  <Step>So something must stand between your text and the chip. It either translates the text or carries it out. Most of this lesson is about that something.</Step>
+</Figure>
 
-You write instructions as text, in a language like JavaScript, Java or C. Text written for people to read and change is called <Term id="source-code">source code</Term>.
-
-One chip does the actual work. It carries out instructions one after another, very fast. That chip is the <Term id="cpu">CPU</Term>, the central processing unit, also called the processor.
-
-You may think, "My computer runs my JavaScript, so the chip must understand JavaScript." It does not. The CPU cannot read the text `return a + b`. It understands only a small, fixed set of instructions, written as numbers. Something has to stand between your text and the chip, either translating the text or carrying it out. Most of this lesson is about that something.
+Run it. The second line prints your function back, exactly as you typed it. The software running JavaScript still holds it as text.
 
 <Code runnable code={`function add(a, b) {
   return a + b;
@@ -60,26 +58,16 @@ You may think, "My computer runs my JavaScript, so the chip must understand Java
 console.log(add(2, 3));
 console.log(add.toString());`} />
 
-The first line prints `5`. The second prints your function back, exactly as you typed it. So the software running this code still holds your function as text. That text is the source code, and it is never handed to the chip as it is. The next segment shows what the chip runs instead.
-
 </Segment>
 
 <Segment id="s03-machine-code" goal="The CPU runs only machine code: numbered instructions stored as bytes">
 
-Computers store everything as bits. A bit is a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>, so one byte has 256 possible patterns. Read as a plain unsigned number, those patterns mean 0 to 255. (Java's `byte` type reads the same patterns as -128 to 127.)
-
-A CPU runs instructions that are themselves numbers, stored as bytes. Each CPU family has its own list of instructions and its own number for each one. Instructions in this numeric form are <Term id="machine-code">machine code</Term>. Machine code is the only thing a CPU can run directly.
-
-To get machine code from source code, you need a translator. A program that translates code into another form before the code runs is a <Term id="compiler">compiler</Term>. `gcc` is a compiler for C.
-
-<Code code={`// add.c                          gcc 13.3 -O1 -fcf-protection=none, x86-64 Linux
-int add(int a, int b) {           // 8d 04 37    lea eax,[rdi+rsi*1]
-  return a + b;                   // c3          ret
-}`} />
-
-This is real output. The function's instructions became four bytes, `8d 04 37 c3`. (Without `-fcf-protection=none`, Ubuntu's gcc adds a 4-byte security instruction in front.) The first three bytes are one instruction, `lea`. It was designed for a different job, but compilers use it to add two numbers in one step, and the sum lands where the caller looks for the answer. The inputs arrive in registers, which are tiny named storage slots inside the CPU, such as `rdi` and `rsi`. The last byte, `c3`, is the instruction `ret`, which means "go back to the code that called me".
-
-Why can't one set of bytes run on every computer? Each CPU family has its own instruction set. An ARM chip, the kind in most phones and in Apple M-series laptops, uses different numbers, so `8d 04 37 c3` means nothing useful to it. A C program has to be compiled again for each CPU family.
+<Figure diagram="machine-code" title="From C to machine code">
+  <Step>Computers store everything as bits, each a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>. One byte has 256 patterns, read as the numbers 0 to 255. This byte is `8d`, or 141.</Step>
+  <Step>A <Term id="compiler">compiler</Term> translates code before it runs. gcc turned this C function into four bytes. Instructions stored as numbers like these are <Term id="machine-code">machine code</Term>, the only thing a CPU runs directly.</Step>
+  <Step>The first three bytes are one instruction, `lea`, used here to add `a` and `b`. The last byte, `c3`, is `ret`: go back to the code that called this one.</Step>
+  <Step>Each CPU family numbers its instructions its own way. An ARM chip, the kind in most phones, cannot use these x86-64 bytes. A C program is compiled again for each family.</Step>
+</Figure>
 
 <ExplainBack
   id="e-cpu"
@@ -87,26 +75,31 @@ Why can't one set of bytes run on every computer? Each CPU family has its own in
   rubric={["The CPU only runs machine code", "Machine code is instructions as numbers in that CPU family's own format", "A .js file is text, so something must translate it or carry it out"]}
 />
 
-A JavaScript file is text, and it stays text when you ship it. The same `.js` file runs on an x86 laptop and on an ARM phone. So each machine needs something that turns that text into work for its own CPU. Segments 7 to 11 show what that something is.
+A `.js` file stays text when you ship it, yet the same file runs on an x86 laptop and on an ARM phone. Segments 7 to 11 show how.
+
+<Deeper title="The real compiler output">
+
+This is gcc 13.3 on x86-64 Linux, with `-O1 -fcf-protection=none`. Without that last flag, Ubuntu's gcc adds a 4-byte security instruction in front.
+
+<Code code={`// add.c                          gcc 13.3 -O1 -fcf-protection=none
+int add(int a, int b) {           // 8d 04 37    lea eax,[rdi+rsi*1]
+  return a + b;                   // c3          ret
+}`} />
+
+`lea` was designed for a different job, but compilers use it to add two numbers in one step, and the sum lands where the caller looks for the answer. The inputs arrive in registers, tiny named storage slots inside the CPU, such as `rdi` and `rsi`. Java's `byte` type reads the same 256 patterns as -128 to 127.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s04-memory" goal="Memory is one long row of bytes, each with a numbered address">
 
-While code runs, the CPU needs a place to keep the instructions it is running and the data they work on. That place is <Term id="memory">memory</Term>, also called RAM. Picture it as one very long row of bytes.
-
-Each byte in the row has a position number, starting at 0. That number is the byte's <Term id="address">address</Term>. To read or write a byte, the CPU gives its address. Addresses are usually written in hexadecimal (base 16), such as `7ffe3f1e4000`.
-
-Read as an unsigned number, one byte stops at 255. A bigger number uses several bytes side by side.
-
-JavaScript code never sees real addresses, so the Predict uses a model. A `Uint8Array` is a JavaScript object that behaves like a short row of bytes. Its indexes 0, 1, 2 and 3 play the role of addresses.
-
-```text
-address:   0      1      2      3      4      5   ...
-         +------+------+------+------+------+------+
- bytes:  |  12  | 200  |   0  | 255  |  44  |   7  |  ...
-         +------+------+------+------+------+------+
-```
+<Figure diagram="memory-bytes" title="Memory is a row of bytes">
+  <Step>While code runs, the CPU keeps its instructions and data in <Term id="memory">memory</Term>, also called RAM: one long row of bytes. Each byte's position number, from 0 up, is its <Term id="address">address</Term>.</Step>
+  <Step>To read or write a byte, the CPU gives its address. Real addresses are large numbers, usually written in hexadecimal (base 16), such as `7ffe3f1e4000`.</Step>
+  <Step>One byte stops at 255, so a bigger number takes several bytes side by side. 1000 is 3 × 256 + 232. This x86-64 machine stores it as 232, then 3.</Step>
+  <Step>JavaScript never shows you real addresses. A `Uint8Array` behaves like a short row of bytes, and its indexes 0 to 3 play the role of addresses.</Step>
+</Figure>
 
 <Predict
   id="p-byte"
@@ -124,11 +117,13 @@ console.log(cells[1], cells[2]);`}
   explain="One byte holds 0 to 255. A Uint8Array keeps the lowest 8 bits of what you store (the spec's ToUint8), so 300 is stored as 44."
 />
 
-It prints `200 44`. 200 fits in one byte. 300 does not, because a byte stops at 255. A `Uint8Array` keeps only the lowest 8 bits of the number, and for 300 that leaves 300 - 256 = 44.
+<Deeper title="The rule in the specification">
 
-<Sidenote>The specification calls this conversion [ToUint8](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8). It turns any number into one of the 256 values from 0 to 255.</Sidenote>
+The specification calls this conversion [ToUint8](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8). It turns any number into one of the 256 values from 0 to 255.
 
-Is a `Uint8Array` real memory? Its bytes sit in real memory, but its indexes are not real addresses. Software you meet in segments 5 and 8 picks the real ones and hides them.
+Is a `Uint8Array` real memory? Its bytes sit in real memory, but its indexes are not real addresses. Software you meet in segments 5 and 8 picks the real addresses and hides them.
+
+</Deeper>
 
 </Segment>
 
