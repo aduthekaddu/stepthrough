@@ -501,37 +501,27 @@ Does JavaScript use only one thread, then? Your JavaScript does. But `Concurrenc
 
 <Segment id="s13-call-stack" goal="Each call that has not finished is a frame on the call stack; calling pushes, returning pops">
 
-Back to the one thread that runs your code. When one function calls another, the caller pauses in the middle of a line. When the inner function returns, the caller has to continue from exactly that spot, with its own variables still in place. So the engine keeps a record for every call that has started but not finished. The record says which function it is, where it paused, and what its variables hold. That record is a <Term id="stack-frame">stack frame</Term>.
-
-The frames form a list. A new call goes on top, and only the top frame runs. When a call returns, its frame is removed from the top. Last in, first out, like a stack of plates. This list is the <Term id="call-stack">call stack</Term>.
-
-<Sidenote>The specification calls a frame an "execution context" and the list the "execution context stack" ([section 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)): "The running execution context is always the top element of this stack." This is an abstract model. Engines build real frames, and an optimizer may even merge a small function into its caller (inlining). Lesson 1.2 uses the spec's names.</Sidenote>
-
-Before you step, learn the two parts of the picture. The left column is the call stack, newest frame on top, with the script's own frame at the bottom. The right side shows each call's variables in a box of its own. Lesson 1.2 gives those boxes their proper name. The visualizer stops once and asks what changes next.
-
 <Viz example="nested-calls" view="scope" pauseAt={[4]} title="Call stack: nested calls" />
 
-`square` was called twice, and each call got its own frame, one after the other. The second frame started fresh with `n = 4`. Nothing was left over from the first call.
+Each call that has started but not finished keeps a record: which function it is, where it paused, and what its variables hold. That record is a <Term id="stack-frame">stack frame</Term>. A call pushes a new frame on top, only the top frame runs, and a return removes it. Last in, first out. That list, the left column above, is the <Term id="call-stack">call stack</Term>.
 
-Only the top frame was ever running. The frames below it were paused, each waiting for a value to come back.
+<Deeper title="Where a paused caller waits, and the spec's names">
 
-Where does `sumOfSquares` wait while `square` runs? In its own frame. The frame records the exact spot, the middle of `const x = square(a)`, and the values of `a` and `b`. That record is what lets one thread go down into calls and come back up. A frame also leaves when an error is thrown out of its call. Generators and async functions, in later lessons, can pause a frame and resume it, so this simple picture covers ordinary calls.
+A caller pauses in the middle of a line, and its frame keeps that spot and its variables. So `sumOfSquares` waits in its own frame while `square` runs, paused inside `const x = square(a)` with `a` and `b` still set. That is what lets one thread go down into calls and come back up. The right side of the picture shows each call's variables in a box of its own. Lesson 1.2 gives those boxes their proper name.
+
+A frame also leaves when an error is thrown out of its call. Generators and async functions, in later lessons, can pause a frame and resume it.
+
+The specification calls a frame an "execution context" and the list the "execution context stack" ([section 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)): "The running execution context is always the top element of this stack." This is an abstract model. Engines build real frames, and an optimizer may even merge a small function into its caller (inlining).
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s14-recursion" goal="A recursive function gets a separate frame for every call, each with its own variables">
 
-A function that calls itself is recursive. The call stack does not care that it is the same function. Every call gets a new frame.
-
-Before you step, decide. Will the three calls of `factorial` share one `n`, or will each call have its own? Watch the right side as you step.
-
 <Viz example="factorial" view="scope" pauseAt={[8]} title="Call stack: recursion" />
 
-Three `factorial` frames were on the stack at the same time, holding `n = 3`, `n = 2` and `n = 1`. Each frame had its own `n`.
-
-The deepest call finished first. Then each frame below it received an answer and finished in turn: 1, then 2 × 1 = 2, then 3 × 2 = 6. The condition that stops the recursion, here `n === 1`, is called the base case.
-
-Every frame takes up space until its call returns. That is the cost of recursion. The next segment shows what happens when the calls never stop.
+A function that calls itself is recursive, and every call still gets a new frame. Three `factorial` frames were on the stack at once, each with its own `n`: 3, 2 and 1. The deepest call finished first, then each frame below it: 1, then 2 × 1 = 2, then 3 × 2 = 6. The condition that stops the recursion, here `n === 1`, is the base case. Every frame takes up space until its call returns.
 
 </Segment>
 
@@ -591,9 +581,7 @@ The specification does describe one way around this, called proper tail calls. I
 
 <Segment id="s16-heap" goal="Objects live in the heap, whose data outlives the call that made it, and garbage collection frees it later">
 
-Frames have a short life. When a call returns, its frame leaves the call stack, and its local variables can no longer be reached through that call. (Lesson 1.3 shows the one way they can survive.) But code often needs data to live longer than the call that made it. A helper function creates an object and returns it, and later code reads it.
-
-In the Predict, `makeUser` creates an object and returns it. By the time the last line runs, the frame for `makeUser` is already gone.
+<Viz example="make-user" view="both" gate="p-survive" pauseAt={[4]} title="An object outlives its frame" />
 
 <Predict
   id="p-survive"
@@ -613,11 +601,17 @@ console.log(u.name);`}
   explain="A frame disappears when its call returns, but objects live in the heap and stay as long as something can reach them."
 />
 
-It prints `Asha`. The variable `user` belonged to `makeUser`'s frame, and that frame is gone. A variable holds a way to reach an object, not the object itself (lesson 1.1 shows this). The object stays usable because `u` still refers to it. In the usual engine model, objects live outside frames, in a region of memory for data whose lifetime is not tied to one call. This region is the <Term id="heap">heap</Term>. MDN calls it "just a name to denote a large (mostly unstructured) region of memory".
+Objects live outside frames, in a region of memory whose data is not tied to one call: the <Term id="heap">heap</Term>. An object stays while something can still reach it. Once nothing can, the engine may free its memory later. That is <Term id="garbage-collection">garbage collection</Term>.
 
-Who removes objects from the heap? In C you would call `free()`. In JavaScript, MDN says JavaScript the engine "automatically allocates memory when objects are created and frees it when they are not used anymore". An object that nothing can reach becomes eligible to be freed, and the engine may reuse its memory later. This is <Term id="garbage-collection">garbage collection</Term>. An object you forgot but can still reach, say in a cache that only grows, is never freed. Lesson 1.9 covers such leaks.
+<Deeper title="Who frees memory, and is it really stack versus heap?">
 
-You may ask, "So numbers live on the stack and objects on the heap?" It is a common rule of thumb, not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
+A frame's local variables can no longer be reached through that call once it returns. (Lesson 1.3 shows the one way they can survive.) A variable holds a way to reach an object, not the object itself (lesson 1.1 shows this). MDN calls the heap "just a name to denote a large (mostly unstructured) region of memory".
+
+In C you would call `free()`. JavaScript does it for you. MDN says JavaScript "automatically allocates memory when objects are created and frees it when they are not used anymore". An object that nothing can reach becomes eligible to be freed, and the engine may reuse its memory later. An object you forgot but can still reach, say in a cache that only grows, is never freed. Lesson 1.9 covers such leaks.
+
+"So numbers live on the stack and objects on the heap?" It is a common rule of thumb, not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
+
+</Deeper>
 
 </Segment>
 

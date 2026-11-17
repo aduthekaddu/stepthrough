@@ -1,0 +1,29 @@
+detail: teaching
+granularity: statement
+steps:
+  - at: { mark: start, kind: statement }
+    say: "Only the script's own frame is on the stack. makeUser exists, but it has not run yet."
+    expect:
+      - { stackDepth: 1 }
+      - { record: Global, binding: u, value: "uninitialized" }
+  - at: { mark: in-call, kind: enter }
+    say: "Calling makeUser pushes its frame. Its box has a name, user, with no value yet."
+    expect:
+      - { stackDepth: 2 }
+      - { record: "makeUser() call", binding: user, value: "uninitialized" }
+  - at: { mark: before-return, kind: statement }
+    say: "The object { name: \"Asha\" } is not inside the frame. It sits on its own, outside the stack, and user points to it."
+    expect:
+      - { stackDepth: 2 }
+      - { record: "makeUser() call", binding: user, value: "object" }
+  - at: { mark: after-return, kind: statement }
+    say: "makeUser returned, so its frame and its name user are gone. The object is still there, because u now points to it."
+    expect:
+      - { stackDepth: 1 }
+      - { record: "makeUser() call", exists: false }
+      - { record: Global, binding: u, value: "object" }
+      - { record: Global, binding: u, prop: name, value: "\"Asha\"" }
+  - at: { kind: end }
+    say: "u.name followed u to the object and printed Asha."
+    expect:
+      - { console: ["Asha"] }
