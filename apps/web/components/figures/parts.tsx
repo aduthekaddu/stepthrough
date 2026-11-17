@@ -36,7 +36,7 @@ export function Dim({ dim, children }: { dim: boolean; children: ReactNode }) {
   );
 }
 
-export type UnitKind = 'cpu' | 'file' | 'tool' | 'unknown' | 'plain';
+export type UnitKind = 'cpu' | 'file' | 'unknown' | 'plain';
 
 /** A labelled box. The CPU gets a dashed outer ring for its pins; an unknown box is dashed. */
 export function Unit({

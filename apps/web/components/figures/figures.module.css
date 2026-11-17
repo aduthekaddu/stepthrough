@@ -173,11 +173,6 @@
   text-align: center;
 }
 
-.unit[data-kind="tool"] {
-  border-radius: 999px;
-  text-align: center;
-}
-
 .unit[data-focus] {
   border-inline-start: 3px solid var(--error);
 }
