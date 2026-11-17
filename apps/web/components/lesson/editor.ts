@@ -24,6 +24,7 @@ export function mountEditor(parent: HTMLElement, doc: string, label: string, onR
       ]),
       javascript(),
       syntaxHighlighting(classHighlighter),
+      EditorView.lineWrapping,
       EditorView.contentAttributes.of({ 'aria-label': label }),
     ],
   });
