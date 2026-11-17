@@ -646,7 +646,7 @@ In C you would call `free()`. JavaScript does it for you. MDN says JavaScript "a
   <Step>An Express server runs every request handler on one JavaScript thread, the main thread. Node also keeps a pool of helper threads. Requests A, B and C arrive close together.</Step>
   <Step>Sync version. A's handler derives an encryption key from a password with `crypto.pbkdf2Sync`. That heavy work runs on the main thread, so B and C wait.</Step>
   <Step>B and C, from other users, run only after A finishes. One slow synchronous handler delays every user of the server.</Step>
-  <Step>Callback version. `crypto.pbkdf2` runs the key derivation on Node's helper threads, which never run your JavaScript. B and C run right away, one after the other on the main thread. A's callback answers when the key is ready.</Step>
+  <Step>Callback version. `crypto.pbkdf2` derives the key on Node's helper threads, which never run your JavaScript. B and C run right away, one after another on the main thread. A's callback answers once the key is ready.</Step>
 </Figure>
 
 <Code code={`// salt and encrypt stand for your own code.
