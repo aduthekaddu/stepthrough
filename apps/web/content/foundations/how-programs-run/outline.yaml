@@ -378,7 +378,11 @@ segments:
     terms_introduced: [thread]
     terms_used: [process, memory, cpu]
     words: 0-40
-    visual: [{ component: Figure, diagram: threads }, { component: Figure, diagram: busy-loop, gate: p-busy }]
+    visual:
+      [
+        { component: Figure, diagram: threads },
+        { component: Figure, diagram: busy-loop, gate: p-busy },
+      ]
     interaction: { kind: predict, id: p-busy }
     doubt: "If the computer has many cores, why does my loop block the timer?"
   - id: s07-interpreter
