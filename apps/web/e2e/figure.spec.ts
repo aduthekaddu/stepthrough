@@ -86,7 +86,7 @@ test('with reduced motion, play does not step on its own', async ({ page }) => {
   const play = figure.getByRole('button', { name: 'Play' });
 
   await expect(play).toHaveAttribute('aria-disabled', 'true');
-  await play.click();
+  await play.dispatchEvent('click');
   await picture.focus();
   await picture.press(' ');
   await page.waitForTimeout(3000);

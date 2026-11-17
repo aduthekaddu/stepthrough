@@ -1,7 +1,6 @@
 'use client';
 
 import type { Trace } from '@stepthrough/trace';
-import { useReducedMotion } from 'motion/react';
 import {
   type KeyboardEvent,
   type ReactNode,
@@ -43,6 +42,7 @@ import {
   recordNextFramePrediction,
   useGateOpen,
 } from './predictions.ts';
+import { usePrefersReducedMotion } from './reduced-motion.ts';
 import { type Phase, Stepper } from './Stepper.tsx';
 import styles from './viz.module.css';
 
@@ -126,7 +126,7 @@ export function VizPanel({
 }: VizPanelProps) {
   const gateOpen = useGateOpen(gate);
   const last = trace.frames.length - 1;
-  const reduced = useReducedMotion() ?? false;
+  const reduced = usePrefersReducedMotion();
   const ctx: PanelContext = useMemo(
     () => ({ last, pauseAt, gateOpen, autoplay: !reduced }),
     [last, pauseAt, gateOpen, reduced],

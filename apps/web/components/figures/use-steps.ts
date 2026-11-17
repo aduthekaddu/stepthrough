@@ -1,6 +1,5 @@
 'use client';
 
-import { useReducedMotion } from 'motion/react';
 import { type KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AUTOPLAY_MS,
@@ -12,6 +11,7 @@ import {
   stepKeyAction,
 } from '../viz/panel-state.ts';
 import { useGateOpen } from '../viz/predictions.ts';
+import { usePrefersReducedMotion } from '../viz/reduced-motion.ts';
 
 const NO_PAUSES: readonly number[] = [];
 const now = () => performance.now();
@@ -19,7 +19,7 @@ const now = () => performance.now();
 /** Step state for a figure with `steps` steps, shared with the trace visualizer's reducer. */
 export function useSteps(steps: number, gate: string | undefined) {
   const gateOpen = useGateOpen(gate);
-  const autoplay = !useReducedMotion();
+  const autoplay = !usePrefersReducedMotion();
   const ctx: PanelContext = useMemo(
     () => ({ last: steps - 1, pauseAt: NO_PAUSES, gateOpen, autoplay }),
     [steps, gateOpen, autoplay],
