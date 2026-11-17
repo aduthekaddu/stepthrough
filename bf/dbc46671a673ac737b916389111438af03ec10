@@ -1,0 +1,19 @@
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_a40494ff401cc2::t_8b6670198b70a5 41,47-51,53,65-70,78,80,82-87,89,91,93,95,97-102,120-122,124,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bfdbc46671a673ac737b916389111438af03ec10",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
