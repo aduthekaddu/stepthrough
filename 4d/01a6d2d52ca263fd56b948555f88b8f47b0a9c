@@ -1,0 +1,23 @@
+apps/web/components/figures/registry.ts
+  s_8f5c837e77b092::t_898d83d908497e 3,27
+apps/web/components/figures/diagrams/fact-sorter.tsx
+  s_8f5c837e77b092::t_bcc47be90c345f 1-48,50-52,54-64,66-72
+  s_8f5c837e77b092::t_898d83d908497e 53,65
+  s_8f5c837e77b092::t_b7d5fc11fc6403 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4d01a6d2d52ca263fd56b948555f88b8f47b0a9c",
+  "prompts": {},
+  "sessions": {
+    "s_8f5c837e77b092": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fe657547-3c23-4fdc-a98f-79e98fcb5526",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
