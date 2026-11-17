@@ -1,0 +1,27 @@
+apps/web/components/figures/diagrams/stack-overflow.tsx
+  s_a40494ff401cc2::t_f9775194c09836 54-56,66-68,81,86
+apps/web/content/foundations/how-programs-run/examples/make-user.narration.yaml
+  s_a40494ff401cc2::t_79d2d6609423a1 15,20
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_a40494ff401cc2::t_5418153b01cdef 67,176-178,181-185,208,218,230,247,330,403,531,533,584,604,606,649
+apps/web/content/glossary/fnd-how-programs-run.yaml
+  s_a40494ff401cc2::t_832c756c20e771 28
+apps/web/generated/traces/make-user.json
+  s_a40494ff401cc2::t_4c7747763becf5 230,388
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eed34dd44a2532f3bb5dee5cf899ceee94b6bd1f",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
