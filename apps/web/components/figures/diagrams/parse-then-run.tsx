@@ -125,7 +125,8 @@ function Draw({ step }: DiagramProps) {
           );
         })}
       </div>
-      <section className={css.console} aria-label="Console">
+      {/* biome-ignore lint/a11y/useSemanticElements: a labelled section would add a page landmark per figure; this groups part of a picture */}
+      <div role="group" className={css.console} aria-label="Console">
         <p className={css.label}>console</p>
         <div className={css.outputs}>
           <p className={css.output} data-kind="empty" data-show={output === 'empty' || undefined}>
@@ -139,7 +140,7 @@ function Draw({ step }: DiagramProps) {
             {'one\ntwo'}
           </p>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

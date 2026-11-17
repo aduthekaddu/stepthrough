@@ -84,7 +84,9 @@ function Draw({ step }: DiagramProps) {
       {RUNTIMES.map((r) => (
         <div key={r.name} data-replaced={step > r.step || undefined}>
           <Reveal show={r.step === 1 || step >= r.step}>
-            <section
+            {/* biome-ignore lint/a11y/useSemanticElements: a labelled section would add a page landmark per figure; this groups part of a picture */}
+            <div
+              role="group"
               className={css.runtime}
               data-show={step >= r.step || undefined}
               aria-label={step >= r.step ? `Runtime: ${r.name}` : 'Engine'}
@@ -98,7 +100,7 @@ function Draw({ step }: DiagramProps) {
                 <p className={css.label}>adds the outside world</p>
                 <Parts parts={r.adds} label={`What ${r.name} adds`} />
               </Reveal>
-            </section>
+            </div>
           </Reveal>
         </div>
       ))}

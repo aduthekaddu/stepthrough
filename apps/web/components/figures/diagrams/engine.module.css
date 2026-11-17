@@ -323,9 +323,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Ink, not --error: red text on the red-tinted line is 3.75:1 in dark mode. The bar carries the colour. */
 .errorTag {
   font: 500 12px / 1.3 var(--sans);
-  color: var(--error);
+  color: var(--ink);
   visibility: hidden;
 }
 

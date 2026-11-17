@@ -111,3 +111,14 @@ test('the playground has no axe violations', async ({ page }) => {
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`every figure step has no axe violations in ${scheme} mode`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('playground/figures/');
+    const { violations } = await new AxeBuilder({ page }).analyze();
+    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(' | ')}`)).toEqual(
+      [],
+    );
+  });
+}

@@ -90,12 +90,28 @@
   }
 }
 
+/* A faded part steps every colour down to --muted instead of losing opacity: text under
+   opacity falls below the 4.5:1 that --muted keeps on the panel. */
 .dimmable {
-  transition: opacity 120ms var(--ease);
+  transition: color 120ms var(--ease);
 }
 
 .dimmable[data-dim] {
-  opacity: 0.35;
+  --ink: var(--muted);
+  --accent: var(--muted);
+  --accent-ink: var(--muted);
+  --stack: var(--muted);
+  --heap: var(--muted);
+  --micro: var(--muted);
+  --macro: var(--muted);
+  --net: var(--muted);
+  --error: var(--muted);
+  color: var(--muted);
+}
+
+/* Muted text on a muted tint drops to 4.27:1, so a faded part keeps outlines but no fills. */
+.dimmable[data-dim] * {
+  background-color: transparent;
 }
 
 .stack {
@@ -352,7 +368,7 @@
   font-variant-numeric: tabular-nums;
   text-align: center;
   transition:
-    opacity 120ms var(--ease),
+    color 120ms var(--ease),
     background-color 120ms var(--ease);
 }
 
@@ -374,7 +390,7 @@
 }
 
 .byte[data-dim] .byteValue {
-  opacity: 0.45;
+  color: var(--muted);
 }
 
 .spans {
