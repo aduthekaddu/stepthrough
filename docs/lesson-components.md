@@ -75,6 +75,37 @@ The build checks every expectation against the generated trace and fails with th
 
 Record labels: `Global`, `<fn>() call`, `<fn>() call #2`, `head of the loop at line N`, `iteration K of the loop at line N`, `<name>'s own name`, otherwise `block`. Anchors: `at: { mark, kind, occurrence? }`. Kinds: `enter` (a call after declaration instantiation, including any default-parameter code), `statement`, `return` (on the last line the call ran), and `end` / `throw`, which need no mark. `occurrence: n` picks the n-th matching frame, for recursion and loops.
 
+## Figure
+
+```mdx
+<Figure diagram="busy-loop" title="A timer waits for a busy loop" gate="p-busy">
+  <Step>What step 0 shows, and why it matters.</Step>
+  <Step>What step 1 adds.</Step>
+</Figure>
+```
+
+A stepped picture for ideas a trace cannot show: bytes and addresses, processes and threads, compilers and tiers. `diagram` names an entry in `apps/web/components/figures/registry.ts`; each diagram in `components/figures/diagrams/` draws one step at a time from facts written in its doc comment. There is one `<Step>` caption per diagram step, in order, and the build fails when the counts differ. `gate` works as on `Viz`. `/playground/figures` draws every registered diagram at every step.
+
+Captions are the lesson's prose, so content-check reads them like any paragraph: a term is introduced with `<Term>` inside a caption, and banned phrases and term order apply. Keep each caption to about 35 words: what this step shows and why it matters. Step 0 names the parts before anything moves.
+
+## Deeper
+
+```mdx
+<Deeper title="The rule in the specification">
+...markdown...
+</Deeper>
+```
+
+Correct but optional depth, folded into a native `<details>`: source quotes, measured details, edge cases. Its text stays findable with find-in-page. Prose inside it still counts for term order, banned phrases and the 250-word prose run.
+
+## Visual-first segments
+
+Lesson 0.1 is the first lesson in this shape (DECISIONS.md, 2026-11-16 and 2026-11-17):
+
+- Every idea segment opens with a `Figure` or a `Viz`. The hook stays a bare `Predict`.
+- Prose is the captions plus at most a sentence or two around the interaction. Everything else moves into `Deeper`, with its citations.
+- A figure that explains a prediction's answer sits above that `Predict` with `gate`. Its step 0 must not give the answer away, and no prose after a `Predict` states its answer.
+
 ## Other components
 
 - `<Code runnable code={`...`} />` runs in the browser sandbox; `// → value` comments after a line are output annotations checked by content-check.

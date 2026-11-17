@@ -33,6 +33,8 @@ Drafts are visible to the learner with a "draft" label, because the learner revi
 
 Each lesson follows the recipe in `research/pedagogy.md` §4: an `outline.yaml` (segments with one idea each, word budgets, terms introduced and used, the interaction that ends each segment), 8 to 12 predictions with confidence, misconception-coded wrong options, and a closing set of cards.
 
+Lessons are visual-first (lesson 0.1 so far, see `docs/lesson-components.md`): each idea segment opens with a stepped `Figure` (`components/figures`) or a trace `Viz`, the prose is the captions for its steps, and optional depth folds into `Deeper`.
+
 ### Terms
 
 The prose explains each new idea in visible words before naming it. `<Term>` then marks the first use and gives a definition popover as a reminder; the popover never replaces the explanation. content-check fails a lesson when a glossary term (or alias) appears before the segment that introduces it or a prerequisite lesson that defines it. A novice-reader review (DeepSeek through opencode) lists jargon the glossary does not know.
