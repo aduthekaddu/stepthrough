@@ -1,0 +1,29 @@
+docs/design.md
+  s_a40494ff401cc2::t_fb1e5c74073297 84
+apps/web/components/figures/diagrams/engine-runtime.tsx
+  s_a40494ff401cc2::t_ea06b135169cbb 87-89,103
+apps/web/components/figures/diagrams/engine.module.css
+  s_a40494ff401cc2::t_0d9e8b0014b4e3 326,329
+apps/web/components/figures/diagrams/parse-then-run.tsx
+  s_a40494ff401cc2::t_bdc002370a7db2 128-129,143
+apps/web/components/figures/figures.module.css
+  s_a40494ff401cc2::t_4b9f3b633540a6 93-94,96,100-114,371,393
+apps/web/e2e/viz.spec.ts
+  s_a40494ff401cc2::t_b81f6a8d846cd5 114-124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e68d0119a4b4963f02b913a6a990f5768c013542",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
