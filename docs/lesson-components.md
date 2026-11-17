@@ -78,13 +78,15 @@ Record labels: `Global`, `<fn>() call`, `<fn>() call #2`, `head of the loop at l
 ## Figure
 
 ```mdx
-<Figure diagram="busy-loop" title="A timer waits for a busy loop" gate="p-busy">
-  <Step>What step 0 shows, and why it matters.</Step>
+<Figure diagram="busy-loop" title="A timer and a busy loop" gate="p-busy">
+  <Step>What step 0 shows, without the prediction's answer.</Step>
   <Step>What step 1 adds.</Step>
+  <Step>What step 2 adds.</Step>
+  <Step>What step 3 adds.</Step>
 </Figure>
 ```
 
-A stepped picture for ideas a trace cannot show: bytes and addresses, processes and threads, compilers and tiers. `diagram` names an entry in `apps/web/components/figures/registry.ts`; each diagram in `components/figures/diagrams/` draws one step at a time from facts written in its doc comment. There is one `<Step>` caption per diagram step, in order, and the build fails when the counts differ. `gate` works as on `Viz`. `/playground/figures` draws every registered diagram at every step.
+A stepped picture for ideas a trace cannot show: bytes and addresses, processes and threads, compilers and tiers. `diagram` names an entry in `apps/web/components/figures/registry.ts`; each diagram in `components/figures/diagrams/` draws one step at a time from facts written in its doc comment. There is one `<Step>` caption per diagram step, in order, and the build fails when the counts differ. `gate` works as on `Viz`: until the prediction is committed, only step 0 shows, and the ruler previews no later caption. `/playground/figures` draws every registered diagram at every step.
 
 Captions are the lesson's prose, so content-check reads them like any paragraph: a term is introduced with `<Term>` inside a caption, and banned phrases and term order apply. Keep each caption to about 35 words: what this step shows and why it matters. Step 0 names the parts before anything moves.
 
@@ -104,7 +106,7 @@ Lesson 0.1 is the first lesson in this shape (DECISIONS.md, 2026-11-16 and 2026-
 
 - Every idea segment opens with a `Figure` or a `Viz`. The hook stays a bare `Predict`.
 - Prose is the captions plus at most a sentence or two around the interaction. Everything else moves into `Deeper`, with its citations.
-- A figure that explains a prediction's answer sits above that `Predict` with `gate`. Its step 0 must not give the answer away, and no prose after a `Predict` states its answer.
+- A figure that explains a prediction's answer sits above that `Predict` with `gate`. Its title and step 0 must not give the answer away, and no prose after a `Predict` states its answer. A `Viz` title follows the same rule. Explanation that names the answer goes in later steps, the `Predict` feedback, or `Deeper`.
 
 ## Other components
 
