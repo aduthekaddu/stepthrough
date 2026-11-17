@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { JitTiers } from './diagrams/jit-tiers.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
@@ -17,6 +18,7 @@ export const DIAGRAMS = {
   'text-vs-chip': TextVsChip,
   'machine-code': MachineCode,
   'memory-bytes': MemoryBytes,
+  'jit-tiers': JitTiers,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
