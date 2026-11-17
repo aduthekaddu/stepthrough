@@ -129,28 +129,11 @@ Is a `Uint8Array` real memory? Its bytes sit in real memory, but its indexes are
 
 <Segment id="s05-process" goal="The operating system runs each program as a process with its own private memory">
 
-Many programs run on one computer at the same time: a browser, an editor, a Node server. One program is in charge of all of them. It starts them, gives each one a turn on the CPU, and keeps them apart. That program is the <Term id="operating-system">operating system</Term> (OS), such as Linux, Windows or macOS.
-
-A running program, as the operating system sees it, is a <Term id="process">process</Term>. Each process gets its own private range of memory addresses, called its address space. These addresses are virtual. The operating system maps each process's numbers to real RAM separately, so one process cannot touch another's memory by accident. Processes can share a region on purpose, but by default they are apart.
-
-On Linux, a process can read a map of its own memory from the file `/proc/self/maps`. Below, the same command ran twice, so two separate `node` processes printed part of their maps.
-
-<Code code={`// node -e 'const maps = require("fs").readFileSync("/proc/self/maps", "utf8");
-//   console.log(maps.split("\\n").filter((l) => /\\[(heap|stack)\\]/.test(l)).join("\\n"))'
-
-// run 1
-63fbdd2b8000-63fbdd520000 rw-p 00000000 00:00 0   [heap]
-7fffa371a000-7fffa373c000 rw-p 00000000 00:00 0   [stack]
-
-// run 2, the same command again
-62a12068b000-62a1208f3000 rw-p 00000000 00:00 0   [heap]
-7ffd5c40c000-7ffd5c42e000 rw-p 00000000 00:00 0   [stack]`} />
-
-The address ranges differ. And even if two processes used the same virtual address, it would normally name a different byte of RAM in each, because each process has its own map.
-
-<Sidenote>The Linux manual page for [fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html), the call that copies a process, says "The child process and the parent process run in separate memory spaces."</Sidenote>
-
-Are two browser tabs two processes? The Predict asks the part of that question that matters for your code.
+<Figure diagram="process-memory" title="Each process has its own memory">
+  <Step>The <Term id="operating-system">operating system</Term> (OS) starts programs, gives each a turn on the CPU, and keeps them apart. A running program, as the OS sees it, is a <Term id="process">process</Term>. Here `node` ran twice: two processes.</Step>
+  <Step>Each process gets its own private range of addresses, its address space. Both `node` runs printed their real `[heap]` and `[stack]` ranges. The ranges differ.</Step>
+  <Step>These addresses are virtual. The OS maps each process's addresses to its own part of RAM. Even the same address would normally name a different byte in each process.</Step>
+</Figure>
 
 <Predict
   id="p-tabs"
@@ -164,23 +147,43 @@ Are two browser tabs two processes? The Predict asks the part of that question t
   explain="Each page has its own global object and variables. Unrelated pages (no opener or parent-frame link) cannot share JavaScript memory; they can only exchange copies of data, for example with postMessage()."
 />
 
-Tab B throws `ReferenceError: score is not defined`. Each page has its own global object and its own variables, so code in tab B cannot name a value created in tab A.
+<Deeper title="The command, and are two tabs two processes?">
 
-<Sidenote>MDN's [execution model page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model) says two windows "with no opener or ancestor relationship" cannot share memory, even with the same origin. They can only exchange copies of data, for example with `postMessage()`.</Sidenote>
+On Linux, a process can read a map of its own memory from the file `/proc/self/maps`. The figure's ranges came from running this command twice. Processes can share a region on purpose, but by default they are apart. The Linux manual page for [fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html), the call that copies a process, says "The child process and the parent process run in separate memory spaces."
+
+<Code code={`// node -e 'const maps = require("fs").readFileSync("/proc/self/maps", "utf8");
+//   console.log(maps.split("\\n").filter((l) => /\\[(heap|stack)\\]/.test(l)).join("\\n"))'
+
+// run 1
+63fbdd2b8000-63fbdd520000 rw-p 00000000 00:00 0   [heap]
+7fffa371a000-7fffa373c000 rw-p 00000000 00:00 0   [stack]
+
+// run 2, the same command again
+62a12068b000-62a1208f3000 rw-p 00000000 00:00 0   [heap]
+7ffd5c40c000-7ffd5c42e000 rw-p 00000000 00:00 0   [stack]`} />
+
+Tab B throws because each page has its own global object and its own variables. MDN's [execution model page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model) says two windows "with no opener or ancestor relationship" cannot share memory, even with the same origin. They can only exchange copies of data, for example with `postMessage()`.
 
 Whether two tabs are also two OS processes is up to the browser. Chrome usually puts different sites in different processes ([site isolation](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md)), and it may share one process between tabs of the same site. Your code can rely only on the first rule. Tabs do not share variables.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s06-thread" goal="A thread is one path of execution, and JavaScript runs your code on one thread at a time">
 
-Inside a process, the CPU follows one instruction after another. One such path through the code is a <Term id="thread">thread</Term>. A process can run several threads at once, for example one on each CPU core.
+<Figure diagram="threads" title="Threads in a process">
+  <Step>Inside a process, the CPU follows one instruction after another. One such path through the code is a <Term id="thread">thread</Term>. Threads share the process's memory, but each has its own stack.</Step>
+  <Step>A process can run several threads at once, for example one on each CPU core. Here two cores run threads 1 and 2 at the same moment.</Step>
+  <Step>Your JavaScript gets one thread. The spec calls one running JavaScript world an agent, and gives each agent one thread. A worker you start is another agent, with its own thread and memory.</Step>
+</Figure>
 
-<Sidenote>The Linux manual page [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) says threads "share the same global memory ..., but each thread has its own stack". Segment 13 explains that stack.</Sidenote>
-
-Your JavaScript is different. The specification gives each agent, its word for one running JavaScript world, one executing thread. MDN says an agent "is analogous to a thread". So while one of your functions runs, no other JavaScript on that thread runs. Workers, which you start yourself, are separate agents with their own thread and memory.
-
-The Predict uses `setTimeout(fn, 0)`, which asks for `fn` to be called later, after at least 0 ms. Lesson 1.7 explains where `fn` waits.
+<Figure diagram="busy-loop" title="A timer waits for a busy loop" gate="p-busy">
+  <Step>This is the program in the prediction below. `setTimeout(fn, 0)` asks for `fn` to run later, after at least 0 ms. The callback now waits, due at 0 ms. Lesson 1.7 shows where it waits.</Step>
+  <Step>The `while` loop holds the thread for about 100 ms. The callback is due, but no other JavaScript can start until the running code finishes.</Step>
+  <Step>The loop ends, `loop done` prints, and the script is finished. The callback is still waiting.</Step>
+  <Step>Now the thread is free. The callback runs about 100 ms late and prints `timer`. It was not skipped. A timer's delay is a minimum, not a deadline.</Step>
+</Figure>
 
 <Predict
   id="p-busy"
@@ -198,34 +201,28 @@ console.log("loop done");`}
   explain="Your JavaScript runs on one thread, and each job runs to completion. A timer callback waits for its turn until the running code has finished. Callbacks you call directly, like the one you pass to forEach, run inside the current work."
 />
 
-`loop done` prints first, then `timer`. The timer was due after 0 ms, but its function could not start while the loop held the thread. It ran about 100 ms late. It was not skipped. A timer's delay is a minimum, not a deadline.
+<Deeper title="The rules behind the pictures, and why more cores do not help">
 
-<Sidenote>The specification, section [Jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs): "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent." "Run to completion" is the usual teaching name for this rule.</Sidenote>
+The Linux manual page [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) says threads "share the same global memory ..., but each thread has its own stack". Segment 13 explains that stack.
+
+The JavaScript specification gives each agent one executing thread, and MDN says an agent "is analogous to a thread". So while one of your functions runs, no other JavaScript on that thread runs. The specification, section [Jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs): "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent." "Run to completion" is the usual teaching name for this rule.
 
 In a browser, a long loop means the page cannot react to clicks or scrolling (MDN). In Node, every other request waits.
 
-You may ask, "My laptop has many cores, so why does one loop block the timer?" More cores help only when more than one thread has work to do, and your JavaScript has one. In Java, the OS can switch between threads at almost any instruction, so two Java threads really can interleave.
+"My laptop has many cores, so why does one loop block the timer?" More cores help only when more than one thread has work to do, and your JavaScript has one. In Java, the OS can switch between threads at almost any instruction, so two Java threads really can interleave.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s07-interpreter" goal="A compiler translates ahead of time; an interpreter carries out code itself; bytecode sits between">
 
-There are two ways to get source code running. The first is to compile it. A compiler translates code into another form. When it translates the whole program to machine code before the program starts, as gcc does in segment 3, that is called ahead-of-time compilation, and the CPU then runs the result. The second is to hand your code to a program that reads it and carries out each step itself. That program is an <Term id="interpreter">interpreter</Term>. The interpreter is itself machine code. The CPU runs the interpreter, and the interpreter runs your code.
-
-<Code code={`// compile ahead of time:  add.c ---gcc---> machine code ---> the CPU runs it
-// interpret:              add.sh -------------------------> bash, itself machine code, reads it and does each step
-// bytecode (Java):        Add.java --javac--> bytecode (.class) ---> the JVM interprets it,
-//                                                                     and compiles hot methods to machine code`} />
-
-Each way has a cost. Compiling takes time before the first run, but the result runs fast. Interpreting starts at once, but every step costs extra work, because the interpreter has to look at each instruction and decide what to do.
-
-There is a middle path. A compiler can translate source code into a compact list of simple instructions designed for an interpreter, not for a CPU. That form is <Term id="bytecode">bytecode</Term>. It is easier and faster to interpret than raw text.
-
-Java does exactly this. `javac` compiles `.java` files into `.class` files full of bytecode, and the JVM runs that bytecode.
-
-<Sidenote>The [java command docs](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), option `-Xmixed`: "Executes all bytecode by the interpreter except for hot methods, which are compiled to native code. On by default." Native code means machine code. Hot means run often.</Sidenote>
-
-So is Java compiled or interpreted? Both, at different moments. The next segments show that JavaScript is the same.
+<Figure diagram="compile-vs-interpret" title="Compile, interpret, or both">
+  <Step>One way to run source code is to compile it ahead of time. gcc turns `add.c` into machine code before the program starts. That takes time up front, but the result runs fast.</Step>
+  <Step>The other way: an <Term id="interpreter">interpreter</Term> reads your code and carries out each step itself. bash, itself machine code, runs `add.sh` this way. It starts at once, but every step costs extra work.</Step>
+  <Step>Between the two sits <Term id="bytecode">bytecode</Term>: a compact list of simple instructions made for an interpreter, not for a CPU. `javac` compiles `Add.java` to bytecode, and the JVM's interpreter runs it.</Step>
+  <Step>The JVM also compiles hot methods, the ones that run often, to machine code. So is Java compiled or interpreted? Both, at different moments. JavaScript is the same.</Step>
+</Figure>
 
 <ExplainBack
   id="e-compile"
@@ -233,19 +230,25 @@ So is Java compiled or interpreted? Both, at different moments. The next segment
   rubric={["A compiler produces new code (machine code or bytecode) before the code runs", "An interpreter produces no machine code for your program; it carries out each step itself while reading", "The interpreter is itself machine code that the CPU runs"]}
 />
 
-A compiler produces new code. It can do that before the program runs or, as segment 11 shows, while it runs. An interpreter produces no machine code for your program. It does the work itself while it reads. Java uses both. JavaScript does too, but there is no separate compile step that you run yourself.
+<Deeper title="Why an interpreter costs time, and Java's own words">
+
+An interpreter has to look at each instruction and decide what to do, every time it runs it. The interpreter is itself machine code. The CPU runs the interpreter, and the interpreter runs your code. Bytecode is easier and faster to interpret than raw text.
+
+The [java command docs](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), option `-Xmixed`: "Executes all bytecode by the interpreter except for hot methods, which are compiled to native code. On by default." Native code means machine code. Hot means run often.
+
+A compiler produces new code. It can do that before the program runs or, as segment 11 shows, while it runs. An interpreter produces no machine code for your program. It does the work itself while it reads. JavaScript uses both too, but there is no separate compile step that you run yourself.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s08-engine-host" goal="The engine implements the language; the runtime (host) adds the outside world">
 
-Running JavaScript takes two pieces of software working together. The first knows the language itself, with its numbers, strings, objects and functions, and built-ins such as `Math`, `Array` and `JSON`. It reads your source code, parses it and runs it. This is the <Term id="engine">engine</Term>, or JavaScript engine. V8 is the engine in Chrome and in Node. Firefox uses SpiderMonkey, and Safari uses JavaScriptCore.
-
-The second piece is the program around the engine. It gives JavaScript a way to reach the outside world. This is the <Term id="runtime">runtime</Term>, which the specification calls the host. A browser adds the page (`document`), timers and `fetch`. Node adds files, network sockets, information about its own process, and its own timers.
-
-<Sidenote>MDN, [Execution model](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model): "JavaScript execution requires the cooperation of two pieces of software: the JavaScript engine and the host environment." The specification, [section 4.1](https://tc39.es/ecma262/multipage/overview.html#sec-web-scripting): "A web browser provides an ECMAScript host environment ... A web server provides a different host environment."</Sidenote>
-
-Isn't `console.log` part of JavaScript? Commit to an answer before you read on.
+<Figure diagram="engine-runtime" title="Engine and runtime">
+  <Step>Running JavaScript takes two pieces of software. The <Term id="engine">engine</Term> knows the language and its built-ins, such as `Math` and `JSON`. It parses and runs your code. V8 is the engine in Chrome and in Node.</Step>
+  <Step>The second is the program around the engine: the <Term id="runtime">runtime</Term>, which the spec calls the host. It lets JavaScript reach the outside world. A browser adds the page (`document`), timers, `fetch` and `console`.</Step>
+  <Step>Node wraps the same V8 in a different runtime. It adds files, network sockets, its own process and its own timers. It has no page, so it has no `document`.</Step>
+</Figure>
 
 <Predict
   id="p-host"
@@ -260,30 +263,30 @@ Isn't `console.log` part of JavaScript? Commit to an answer before you read on.
   explain="Math comes from the engine, so it exists everywhere. document and setTimeout come from the runtime: browsers add both, Node adds only setTimeout."
 />
 
-It prints `object undefined function`. `Math` comes from the engine, so every JavaScript environment has it. `document` comes from the browser, so Node does not have it. `setTimeout` comes from the runtime too, and browsers and Node each supply their own version.
+When code works in the browser but fails in Node, first ask whether it uses the language or the runtime.
 
-`console` is not in ECMAScript, the official JavaScript standard, at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ.
+<Deeper title="Other engines, and where console comes from">
 
-<Sidenote>The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "a host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."</Sidenote>
+Firefox uses the SpiderMonkey engine, and Safari uses JavaScriptCore. MDN, [Execution model](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model): "JavaScript execution requires the cooperation of two pieces of software: the JavaScript engine and the host environment." The specification, [section 4.1](https://tc39.es/ecma262/multipage/overview.html#sec-web-scripting): "A web browser provides an ECMAScript host environment ... A web server provides a different host environment."
 
-So when code works in the browser but fails in Node, first ask whether it uses the language or the runtime.
+`Math` comes from the engine, so every JavaScript environment has it. `document` comes from the browser, so Node does not have it. `setTimeout` comes from the runtime too, and browsers and Node each supply their own version.
+
+`console` is not in ECMAScript, the official JavaScript standard, at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ. The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "a host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s09-parse-first" goal="The engine parses the whole script before running any of it, so early errors stop everything">
 
-Now you can explain the hook from segment 1. Before it runs anything, the engine parses the whole file. Parsing means reading all of the text and working out how the code fits together, for example which parts are functions and which statements sit inside which blocks. Engines usually build a tree from it. How much detail they build is their choice. Running the code is a separate step that starts only after parsing succeeds.
+<Figure diagram="parse-then-run" title="Parse first, then run">
+  <Step>Back to the program from segment 1. The engine handles a script in two phases. First it parses all of it, working out how the code fits together. Only then does it run any line.</Step>
+  <Step>While parsing, the engine looks for early errors, mistakes it can find without running anything. A second `let total` in one scope is one. So the run never starts, and nothing prints.</Step>
+  <Step>Change both `let`s to `var`. `var` allows a repeated declaration, so the parse finds no early error.</Step>
+  <Step>Now the run phase starts and executes lines 1 to 4 in order. The console shows `one`, then `two`.</Step>
+</Figure>
 
-While parsing, the engine also looks for early errors. These are mistakes it can find without running anything. Declaring the same `let` name twice in one scope is one of them. That is why the hook printed nothing, not even `one`. The older keyword `var` allows a repeated declaration, so the same file with `var` runs to the end.
-
-<Code runnable code={`console.log("one"); // → one
-console.log("two"); // → two
-var total = 1;
-var total = 2;`} />
-
-<Sidenote>The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "An early error is an error that can be detected and reported prior to the evaluation of any construct in the Script containing the error. ... An implementation must report early errors in a Script as part of parsing that Script in ParseScript." [ParseScript](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-parse-script) is the spec's name for the parse step. Running is a later step, ScriptEvaluation.</Sidenote>
-
-Now change one thing. Move the repeated `let` inside a function that is never called.
+Now move the repeated `let` into a function that is never called.
 
 <Predict
   id="p-parse-first"
@@ -303,15 +306,7 @@ console.log("two");`}
   explain="Parsing covers the whole script, function bodies included. An early error anywhere stops the script before its first line runs."
 />
 
-Nothing prints again. The bad lines never run, but they are still part of the script, and the whole script is parsed before any of it runs.
-
-V8 adds a detail of its own here. It does not fully compile a function until the function is called. To save time, it preparses the function body instead, which is a quicker pass that still checks the syntax. This is how V8 works, not a rule of the language.
-
-<Sidenote>V8 blog, [lazy parsing and the preparser](https://v8.dev/blog/preparser) (2019): "The preparser verifies that the functions it skips are syntactically valid."</Sidenote>
-
-Why check code that never runs? The specification requires it, and the result is one clear rule. A script either has no early errors and starts, or it does not start at all. You never get a half-run file because of an early error near the bottom.
-
-Not every mistake is an early error, though. The specification says an implementation "shall not treat other kinds of errors as early errors". Reading a variable that does not exist is only noticed when that line runs. The code below never calls the function, so it runs to the end.
+Not every mistake is an early error. Reading a name that does not exist is noticed only when that line runs. This function is never called, so the file runs to the end.
 
 <Code runnable code={`console.log("one"); // → one
 function neverCalled() {
@@ -319,31 +314,37 @@ function neverCalled() {
 }
 console.log("two"); // → two`} />
 
+<Deeper title="The rule in the specification, and V8's preparser">
+
+Parsing means reading all of the text and working out how the code fits together, for example which parts are functions and which statements sit inside which blocks. Engines usually build a tree from it. How much detail they build is their choice.
+
+The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "An early error is an error that can be detected and reported prior to the evaluation of any construct in the Script containing the error. ... An implementation must report early errors in a Script as part of parsing that Script in ParseScript." [ParseScript](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-parse-script) is the spec's name for the parse step. Running is a later step, ScriptEvaluation. The same section says an implementation "shall not treat other kinds of errors as early errors".
+
+With `var`, the file from segment 1 runs to the end:
+
+<Code runnable code={`console.log("one"); // → one
+console.log("two"); // → two
+var total = 1;
+var total = 2;`} />
+
+V8 adds a detail of its own. It does not fully compile a function until the function is called. To save time, it preparses the function body instead, which is a quicker pass that still checks the syntax. This is how V8 works, not a rule of the language. V8 blog, [lazy parsing and the preparser](https://v8.dev/blog/preparser) (2019): "The preparser verifies that the functions it skips are syntactically valid."
+
+Why check code that never runs? The specification requires it, and the result is one clear rule. A script either has no early errors and starts, or it does not start at all. You never get a half-run file because of an early error near the bottom.
+
+</Deeper>
+
 </Segment>
 
 <Segment id="s10-bytecode" goal="V8 turns each function into bytecode, usually the first time it is called">
 
-V8 does not run the parsed tree directly. It first turns each function into bytecode, and an interpreter called Ignition runs that bytecode. Ignition, and everything from here to segment 12, is how V8 works, not a rule of JavaScript.
+<Figure diagram="ignition-bytecode" title="Ignition runs add(2, 3)">
+  <Step>V8 turns each function into bytecode, and its interpreter, Ignition, runs it. These are the real 6 bytes for `add`: three instructions. Slots `a0` and `a1` hold the arguments, 2 and 3.</Step>
+  <Step>`Ldar a1` loads `b`, which is 3, into the accumulator. The accumulator is one special slot that most Ignition instructions read from and write to.</Step>
+  <Step>`Add a0, FBV[0]` adds `a` to it, so the accumulator now holds 5. `FBV[0]` is a feedback slot, where V8 notes what kinds of values it saw: here, small integers.</Step>
+  <Step>`Return` hands back the 5 in the accumulator. The CPU never runs `Ldar` or `Add`. It runs Ignition, which is machine code, and Ignition does the work.</Step>
+</Figure>
 
-<Sidenote>V8 blog, [Maglev](https://v8.dev/blog/maglev) (2023): "All JavaScript code is first compiled to ignition bytecode, and executed by interpreting it."</Sidenote>
-
-You can see this bytecode yourself. Node prints it with the flag `--print-bytecode`. Below is real output from Node v26 (V8 14.6) for `function add(a, b) { return a + b; }`. Its bytecode is 6 bytes long and has three instructions.
-
-- `Ldar a1` loads the second parameter, `b`, into the accumulator. The accumulator is one special slot that most Ignition instructions read from and write to. It is a V8 word, not a JavaScript term.
-- `Add a0, FBV[0]` computes `a + b`, taking `a` from its slot and `b` from the accumulator, and leaves the result in the accumulator. `FBV[0]` names a feedback slot, a small record where V8 notes what kinds of values it saw at this spot, such as "both were small integers". Segment 11 shows why that matters.
-- `Return` returns whatever is in the accumulator.
-
-Compare this with segment 3. The CPU cannot run `Ldar` or `Add`. Ignition is machine code, and it reads these bytes and does the work.
-
-```text
-$ node --print-bytecode --print-bytecode-filter=add add.js
-[generated bytecode for function: add (...)]
-Bytecode length: 6
-(three more header lines trimmed)
-   0 : 0b 04       Ldar a1
-   2 : 40 03 00    Add a0, FBV[0]
-   5 : b7          Return
-```
+Bytecode and Ignition are how V8 works, not rules of JavaScript.
 
 <Predict
   id="p-lazy"
@@ -357,7 +358,21 @@ Bytecode length: 6
   explain="V8 compiles a function to bytecode lazily, on its first call, and reuses the bytecode after that. This is a V8 choice, not a language rule."
 />
 
-Here is the evidence from Node v26. V8 printed the bytecode for `add` after the first log line, and only once, even though `add` was called twice. With the filter set to `neverCalled`, it printed no bytecode at all.
+<Deeper title="See the bytecode yourself, and the evidence for lazy compilation">
+
+V8 blog, [Maglev](https://v8.dev/blog/maglev) (2023): "All JavaScript code is first compiled to ignition bytecode, and executed by interpreting it." Node prints the bytecode with the flag `--print-bytecode`. This is real output from Node v26 (V8 14.6) for `function add(a, b) { return a + b; }`. `a0` is the first parameter, `a`, and `a1` the second, `b`. The accumulator is a V8 word, not a JavaScript term.
+
+```text
+$ node --print-bytecode --print-bytecode-filter=add add.js
+[generated bytecode for function: add (...)]
+Bytecode length: 6
+(three more header lines trimmed)
+   0 : 0b 04       Ldar a1
+   2 : 40 03 00    Add a0, FBV[0]
+   5 : b7          Return
+```
+
+Here is the evidence for lazy compilation, from Node v26. V8 printed the bytecode for `add` after the first log line, and only once, even though `add` was called twice. With the filter set to `neverCalled`, it printed no bytecode at all.
 
 <Code code={`function add(a, b) {
   return a + b;
@@ -378,6 +393,8 @@ console.log(add(3, 4));
 Making bytecode only when a function is first needed is called lazy compilation. It is a V8 choice, and V8 bends it with its own rules. For example, it compiles a function wrapped in parentheses right away, because such functions are usually called at once. The specification only requires the parse and the early-error check from segment 9. It says nothing about bytecode.
 
 Why not make all the bytecode at once? Many functions in a real web page never run. Making their bytecode would waste startup time and memory.
+
+</Deeper>
 
 </Segment>
 
