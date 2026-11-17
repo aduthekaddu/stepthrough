@@ -400,16 +400,12 @@ Why not make all the bytecode at once? Many functions in a real web page never r
 
 <Segment id="s11-jit" goal="Hot functions get compiled to machine code while the program runs, based on what V8 has seen">
 
-An interpreter is flexible, but it pays a cost on every instruction. The V8 team wrote that "interpreters have inherent overheads that we can't get rid of" ([Sparkplug](https://v8.dev/blog/sparkplug), 2021).
-
-So V8 watches your code while it runs. A function that runs often is called hot, and V8 compiles hot functions to machine code that the CPU runs directly. Compiling to machine code while the program is already running is called <Term id="jit">JIT</Term> compilation, short for just-in-time.
-
-V8 has four tiers today.
-
-- Ignition interprets bytecode.
-- Sparkplug (2021) turns bytecode into machine code "almost instantaneously", without optimizing it.
-- Maglev (2023) is a fast optimizing compiler that "sits between our existing Sparkplug and TurboFan compilers".
-- TurboFan is the top tier, "focused on peak performance". In 2025 the V8 team described moving TurboFan's back end to a new internal design called Turboshaft. TurboFan is still the name of the top tier.
+<Figure diagram="jit-tiers" title="V8's four tiers">
+  <Step>V8 runs code in four tiers. Ignition, at the bottom, interprets bytecode. The three above it make machine code: quick, optimized, and peak. `add` starts in Ignition, like all code.</Step>
+  <Step>An interpreter pays a cost on every instruction. So while `add` runs, V8 notes in its feedback slots what it sees. Here, `a + b` has had small integers every time.</Step>
+  <Step>A function that runs often is hot. V8 may compile a hot function to machine code that the CPU runs directly, while the program runs. That is <Term id="jit">JIT</Term> (just-in-time) compilation.</Step>
+  <Step>Maglev and TurboFan use the feedback to guess, so their code is often speculative. Which tier, and when, is V8's choice. The language promises nothing about speed.</Step>
+</Figure>
 
 <Predict
   id="p-faster"
@@ -424,21 +420,34 @@ V8 has four tiers today.
   explain="JIT compilation is something engines do, not something the language promises. A JIT changes how fast code runs, never what it computes."
 />
 
-The JavaScript specification says nothing about speed or compilation. Tiers, thresholds and timing are V8 choices, and they change between versions. The V8 posts cited here give no fixed "after N calls" number.
+<Deeper title="The four tiers in V8's own words, and what a JIT does not do">
+
+The V8 team wrote that "interpreters have inherent overheads that we can't get rid of" ([Sparkplug](https://v8.dev/blog/sparkplug), 2021).
+
+- Ignition interprets bytecode.
+- Sparkplug (2021) turns bytecode into machine code "almost instantaneously", without optimizing it.
+- Maglev (2023) is a fast optimizing compiler that "sits between our existing Sparkplug and TurboFan compilers" ([Maglev](https://v8.dev/blog/maglev)).
+- TurboFan is the top tier, "focused on peak performance". In 2025 the V8 team described moving TurboFan's back end to a new internal design called Turboshaft. TurboFan is still the name of the top tier.
+
+A function does not have to climb every rung. In the run in segment 12, `add` went from Ignition straight to Maglev. Tiers, thresholds and timing change between V8 versions, and the V8 posts cited here give no fixed "after N calls" number.
 
 A JIT compiles code. It does not keep a table of past results. The optimizer may skip work whose result it can already prove, but everything your code does that you can observe, such as logging or changing a variable, still happens on every call. Saving results by arguments is a different technique, memoization, which you write yourself.
 
-You may ask, "If machine code is faster, why not compile everything at the start?" Compiling costs time, and the optimizing compilers need feedback that only exists after the code has run for a while. Most code never runs often enough to repay that cost.
+"If machine code is faster, why not compile everything at the start?" Compiling costs time, and the optimizing compilers need feedback that only exists after the code has run for a while. Most code never runs often enough to repay that cost. So when you time code, expect the first runs to be slower (warm-up).
 
-So when you time code, expect the first runs to be slower (warm-up).
+</Deeper>
 
 </Segment>
 
 <Segment id="s12-deopt" goal="Optimized code rests on guesses, and when a guess fails V8 throws the code away, never the meaning">
 
-How can optimized code be faster than the interpreter? "During execution V8 tracks how the program behaves, including tracking object shapes and types" ([Maglev](https://v8.dev/blog/maglev)). The feedback slots from segment 10 hold this record. The optimizing compilers use it to make "often speculative" machine code, which is code that assumes the future will look like the past.
-
-Speculative code rests on guesses, such as "`a` and `b` are always small integers". What happens when a guess turns out wrong? In the Predict, the loop makes `add` hot by calling it only with numbers. The last line then calls it with strings.
+<Figure diagram="deopt" title="A guess fails: deoptimization" gate="p-deopt">
+  <Step>This is the program in the prediction below. In the loop, `add` runs as bytecode in Ignition. Its feedback says both values are small integers, which V8 calls Smi.</Step>
+  <Step>V8 marks `add` hot and stable and compiles it with Maglev. The compiling happens on a helper thread, off the thread that runs your code.</Step>
+  <Step>Maglev's machine code assumes `a` and `b` are Smi, and checks that before relying on it. Every loop call passes the check, and the console shows `100000`.</Step>
+  <Step>Then `add("ab", "cd")` runs. The check fails, because a string is not a Smi. V8 deoptimizes: it goes back to Ignition at the exact point of the failed check.</Step>
+  <Step>The optimized code is dropped. Ignition finishes the call by the language rules, so `"ab" + "cd"` gives `"abcd"`. No work is done twice. A deopt changes speed, never the result.</Step>
+</Figure>
 
 <Predict
   id="p-deopt"
@@ -461,7 +470,17 @@ console.log(add("ab", "cd"));`}
   explain="Optimized code checks its guesses. When one fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter, so the result is always what the language says."
 />
 
-It prints `100000`, then `abcd`. Here is what V8 reported when the same code ran with the flags `--trace-opt --trace-deopt`. The lines are trimmed to the ones about `add`, and the exact text changes between V8 versions.
+<ExplainBack
+  id="e-deopt"
+  prompt="In one sentence, how can V8 run machine code that only handles small integers without ever breaking JavaScript's rules?"
+  rubric={["The optimized code checks its guess (for example, both values are small integers) before relying on it", "When a check fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter", "The interpreter follows the language rules, so only speed changes, never the result"]}
+/>
+
+<Deeper title="What V8 reported, and V8's other threads">
+
+"During execution V8 tracks how the program behaves, including tracking object shapes and types" ([Maglev](https://v8.dev/blog/maglev)). The feedback slots from segment 10 hold this record. The optimizing compilers use it to make "often speculative" machine code, which is code that assumes the future will look like the past.
+
+This is what V8 reported when the program ran with the flags `--trace-opt --trace-deopt`. The lines are trimmed to the ones about `add`, and the exact text changes between V8 versions.
 
 ```text
 [marking ... <JSFunction add ...> for optimization to MAGLEV, ConcurrencyMode::kConcurrent, reason: hot and stable]
@@ -472,15 +491,11 @@ It prints `100000`, then `abcd`. Here is what V8 reported when the same code ran
 abcd
 ```
 
-Smi is V8's name for a small integer. The optimized code checked its guess, the check failed, and V8 deoptimized. It dropped the optimized code and finished the call in the interpreter, or in V8's words, it "tiers-down and continues the function's execution in the interpreter" ([Sparkplug](https://v8.dev/blog/sparkplug)). V8 rebuilds the interpreter's state at the exact point of the failed check, so work the function already did is not done twice. The interpreter follows the language rules, so `"ab" + "cd"` gave `"abcd"`. A deoptimization can change speed. It never changes the result.
+In V8's words, a deoptimization "tiers-down and continues the function's execution in the interpreter" ([Sparkplug](https://v8.dev/blog/sparkplug)). V8 rebuilds the interpreter's state at the exact point of the failed check, so work the function already did is not done twice.
 
-Does JavaScript use only one thread, then? Your JavaScript does. But `ConcurrencyMode::kConcurrent` in the trace means V8 compiled `add` on a helper thread, off the thread that runs your code. V8 also uses helper threads to clean up unused memory (segment 16), and Node runs some slow work, such as file reads and `crypto.pbkdf2`, on a pool of helper threads. These helper threads never run your JavaScript functions. Only workers, which you start yourself, run JavaScript on other threads.
+Does JavaScript use only one thread, then? Your JavaScript does. But `ConcurrencyMode::kConcurrent` in the trace means V8 compiled `add` on a helper thread. V8 also uses helper threads to clean up unused memory (segment 16), and Node runs some slow work, such as file reads and `crypto.pbkdf2`, on a pool of helper threads. These helper threads never run your JavaScript functions. Only workers, which you start yourself, run JavaScript on other threads.
 
-<ExplainBack
-  id="e-deopt"
-  prompt="In one sentence, how can V8 run machine code that only handles small integers without ever breaking JavaScript's rules?"
-  rubric={["The optimized code checks its guess (for example, both values are small integers) before relying on it", "When a check fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter", "The interpreter follows the language rules, so only speed changes, never the result"]}
-/>
+</Deeper>
 
 </Segment>
 
@@ -522,7 +537,12 @@ Every frame takes up space until its call returns. That is the cost of recursion
 
 <Segment id="s15-overflow" goal="A stack overflow happens when calls keep pushing frames and none return, until the fixed-size stack is full">
 
-`factorial` had a base case, so its calls stopped and every frame could return. The function below has no base case. Every call to `down` starts another call to `down` before it can finish.
+<Figure diagram="stack-overflow" title="Calls that never return" gate="p-overflow">
+  <Step>This is the program in the prediction below. A thread's stack is one fixed-size block, and V8 lets JavaScript use 984 KB of it by default. For now, only the script's frame is on it.</Step>
+  <Step>`down(3)` calls `down(2)`, which calls `down(1)`. Each call pushes a frame, and none returns, because `down` has no base case. Only the top frame runs.</Step>
+  <Step>The frames pile up. After about ten thousand small frames, the 984 KB is nearly full. This happens long before RAM runs out.</Step>
+  <Step>The stack is full, so V8 throws a `RangeError`. The error leaves every `down` frame, and the `catch` prints it. This is a stack overflow. The fix is a base case, or a loop.</Step>
+</Figure>
 
 <Predict
   id="p-overflow"
@@ -544,11 +564,11 @@ try {
   explain="Every call pushes a frame and only a return removes it. With no base case, frames pile up until the fixed-size stack is full, and V8 throws RangeError."
 />
 
-It prints `RangeError: Maximum call stack size exceeded`. Every call pushed a frame and none returned, so the stack reached its limit. V8 then threw a `RangeError`, and the `catch` block printed it. This is a stack overflow. A `while (true) {}` loop is different. It pushes no frames, so it can run forever without overflowing.
+<Deeper title="Count the frames yourself, and what other engines do">
 
-You may ask, "Why is the limit so small when my laptop has gigabytes of memory?" A thread's stack is one fixed-size block that the OS sets up, and frames sit side by side inside it. V8 also sets its own, smaller limit on how much of that stack JavaScript may use: 984 KB by default (`node --v8-options` describes `--stack-size=984` as the "default size of stack region v8 is allowed to use"). Run the code below to count how many frames fit. On Node v26, it counted 12,517 frames on the machine used for this lesson. Bigger frames mean fewer calls. Java works the same way. `-Xss` sets the stack size per thread (1024 KB by default on Linux x64), and running out throws `StackOverflowError`.
+A `while (true) {}` loop pushes no frames, so it can run forever without overflowing.
 
-The specification sets no limit and names no error for this, so the overflow itself is engine behaviour. MDN lists `RangeError` in Chrome and Safari, but `InternalError: too much recursion` in Firefox ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)). Those are engine choices. The fix is in your code. Give the recursion a base case, or turn very deep recursion into a loop.
+"Why is the limit so small when my laptop has gigabytes of memory?" A thread's stack is one fixed-size block that the OS sets up, and frames sit side by side inside it. V8 also sets its own, smaller limit on how much of that stack JavaScript may use: 984 KB by default (`node --v8-options` describes `--stack-size=984` as the "default size of stack region v8 is allowed to use"). Run the code below to count how many frames fit. On Node v26, it counted 12,517 frames on the machine used for this lesson. Bigger frames mean fewer calls. Java works the same way. `-Xss` sets the stack size per thread (1024 KB by default on Linux x64), and running out throws `StackOverflowError`.
 
 <Code runnable code={`let depth = 0;
 function dive() {
@@ -561,7 +581,11 @@ try {
   console.log("frames before the overflow:", depth);
 }`} />
 
-<Sidenote>The specification does describe one way around this, called proper tail calls. In strict mode, when a function's last act is to return another call, the spec discards the current frame before that call ([PrepareForTailCall](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-preparefortailcall)). V8 does not do this. In Node v26, a strict-mode function that ends with `return count(n - 1)` still overflows at a depth of 100,000.</Sidenote>
+The specification sets no limit and names no error for this, so the overflow itself is engine behaviour. MDN lists `RangeError` in Chrome and Safari, but `InternalError: too much recursion` in Firefox ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)). Those are engine choices. The fix is in your code. Give the recursion a base case, or turn very deep recursion into a loop.
+
+The specification does describe one way around this, called proper tail calls. In strict mode, when a function's last act is to return another call, the spec discards the current frame before that call ([PrepareForTailCall](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-preparefortailcall)). V8 does not do this. In Node v26, a strict-mode function that ends with `return count(n - 1)` still overflows at a depth of 100,000.
+
+</Deeper>
 
 </Segment>
 
@@ -599,7 +623,13 @@ You may ask, "So numbers live on the stack and objects on the heap?" It is a com
 
 <Segment id="s17-map" goal="Sort every fact in this lesson into general computing, JavaScript spec, or V8 choice">
 
-Interview answers often mix four kinds of facts: general computing, the JavaScript spec, the runtime, and V8. Pick the one item the language itself promises.
+<Figure diagram="fact-sorter" title="Four kinds of fact" gate="p-which-rule">
+  <Step>Interview answers often mix four kinds of facts. To sort a fact, ask one question: would it still hold in Firefox, and in next year's V8?</Step>
+  <Step>General computing: true of every computer, whatever language runs on it.</Step>
+  <Step>The JavaScript spec: rules every engine must follow, in every browser and in Node.</Step>
+  <Step>The runtime: what the browser or Node adds around the engine. Code that uses these can work in one runtime and fail in another.</Step>
+  <Step>V8: choices one engine makes today. Firefox may do them differently, and so may next year's V8.</Step>
+</Figure>
 
 <Predict
   id="p-which-rule"
@@ -613,21 +643,6 @@ Interview answers often mix four kinds of facts: general computing, the JavaScri
   ]}
   explain="The specification promises behaviour: results, errors and their order. Speed, compilation, stack size and memory layout belong to the engine."
 />
-
-For a new fact, ask whether it would still hold in Firefox and in next year's V8. If not, it is an engine detail.
-
-| Fact | Kind |
-|---|---|
-| CPUs run only their own machine code | General computing |
-| Memory is bytes with numbered addresses | General computing |
-| Processes have separate memory; a process's threads share it | General computing |
-| Early errors stop the whole script | JavaScript spec |
-| One job runs at a time, to completion | JavaScript spec |
-| Calls push contexts, the top one runs | JavaScript spec (a model) |
-| `document`, `setTimeout`, `console` | Runtime |
-| Bytecode, the four tiers, deopt | V8 |
-| 984 KB stack limit, its error message | V8 |
-| Where values are stored | V8 |
 
 </Segment>
 
