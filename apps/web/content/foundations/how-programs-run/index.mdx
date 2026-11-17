@@ -170,7 +170,7 @@ Whether two tabs are also two OS processes is up to the browser. Chrome usually 
 
 </Segment>
 
-<Segment id="s06-thread" goal="A thread is one path of execution, and JavaScript runs your code on one thread at a time">
+<Segment id="s06-thread" goal="What a thread is, and what happens to a timer while a loop runs">
 
 <Figure diagram="threads" title="Threads in a process">
   <Step>A <Term id="thread">thread</Term> is one path through a process's code, one instruction after another. Threads share the process's memory; each has its own stack.</Step>
@@ -242,7 +242,7 @@ A compiler produces new code. It can do that before the program runs or, as segm
 
 </Segment>
 
-<Segment id="s08-engine-host" goal="The engine implements the language; the runtime (host) adds the outside world">
+<Segment id="s08-engine-host" goal="Which parts of JavaScript come from the engine and which from the runtime (host)">
 
 <Figure diagram="engine-runtime" title="Engine and runtime" gate="p-host">
   <Step>Running JavaScript takes two pieces of software. The <Term id="engine">engine</Term> knows the language and its built-ins, such as `Math` and `JSON`. It parses and runs your code. V8 is the engine in Chrome and in Node.</Step>
@@ -277,7 +277,7 @@ Firefox uses the SpiderMonkey engine, and Safari uses JavaScriptCore. MDN, [Exec
 
 </Segment>
 
-<Segment id="s09-parse-first" goal="The engine parses the whole script before running any of it, so early errors stop everything">
+<Segment id="s09-parse-first" goal="The parse and run phases of a script, and what an early error is">
 
 <Figure diagram="parse-then-run" title="Parse first, then run">
   <Step>Back to the program from segment 1. The engine handles a script in two phases. First it parses all of it, working out how the code fits together. Only then does it run any line.</Step>
@@ -335,7 +335,7 @@ Why check code that never runs? The specification requires it, and the result is
 
 </Segment>
 
-<Segment id="s10-bytecode" goal="V8 turns each function into bytecode, usually the first time it is called">
+<Segment id="s10-bytecode" goal="What bytecode is, how Ignition runs it, and when V8 makes it">
 
 <Figure diagram="ignition-bytecode" title="Ignition runs add(2, 3)">
   <Step>V8 turns each function into bytecode, and its interpreter, Ignition, runs it. These are the real 6 bytes for `add`: three instructions. Slots `a0` and `a1` hold the arguments, 2 and 3.</Step>
@@ -355,7 +355,7 @@ Bytecode and Ignition are how V8 works, not rules of JavaScript.
     { id: "b", text: "The first time the function is called (for most functions)", feedback: "Right. V8 compiles lazily: parse everything first, make bytecode for a function when it is first needed, then reuse that bytecode on later calls." },
     { id: "c", text: "Never. V8 reads the function's source text and runs it one line at a time", misconception: "FND-LINE-BY-LINE", feedback: "You pictured the engine working straight from your text, line by line. V8 turns the whole function into bytecode first and usually reuses that bytecode on later calls. (It may throw old bytecode away to save memory and make it again.) Hot functions may later get machine code too." }
   ]}
-  explain="V8 compiles a function to bytecode lazily, on its first call, and reuses the bytecode after that. This is a V8 choice, not a language rule."
+  explain="V8 compiles most functions to bytecode lazily, on their first call, and reuses the bytecode after that. This is a V8 choice, not a language rule."
 />
 
 <Deeper title="The printout, and lazy compilation">
@@ -398,7 +398,7 @@ Why not make all the bytecode at once? Many functions in a real web page never r
 
 </Segment>
 
-<Segment id="s11-jit" goal="Hot functions get compiled to machine code while the program runs, based on what V8 has seen">
+<Segment id="s11-jit" goal="What V8's JIT compiler does while a program runs">
 
 <Figure diagram="jit-tiers" title="V8's four tiers" gate="p-faster">
   <Step>V8 runs code in four tiers. Ignition, at the bottom, interprets bytecode. The three above it make machine code: quick, optimized, and peak. `add` starts in Ignition, like all code.</Step>
@@ -439,7 +439,7 @@ A JIT compiles code. It does not keep a table of past results. The optimizer may
 
 </Segment>
 
-<Segment id="s12-deopt" goal="Optimized code rests on guesses, and when a guess fails V8 throws the code away, never the meaning">
+<Segment id="s12-deopt" goal="What V8 does when a guess behind its optimized code turns out wrong">
 
 <Figure diagram="deopt" title="A guess fails: deoptimization" gate="p-deopt">
   <Step>This is the program in the prediction below. In the loop, `add` runs as bytecode in Ignition. Its feedback says both values are small integers, which V8 calls Smi.</Step>
@@ -525,7 +525,7 @@ A function that calls itself is recursive, and each call gets its own frame. Thr
 
 </Segment>
 
-<Segment id="s15-overflow" goal="A stack overflow happens when calls keep pushing frames and none return, until the fixed-size stack is full">
+<Segment id="s15-overflow" goal="What happens to the call stack when a function keeps calling itself">
 
 <Figure diagram="stack-overflow" title="Calls that never return" gate="p-overflow">
   <Step>This is the program in the prediction below. Each thread has a stack for its frames. For now, only the script's frame is on it.</Step>
@@ -579,7 +579,7 @@ The specification does describe one way around this, called proper tail calls. I
 
 </Segment>
 
-<Segment id="s16-heap" goal="Objects live in the heap, whose data outlives the call that made it, and garbage collection frees it later">
+<Segment id="s16-heap" goal="Where objects live, and what happens to one when the call that made it returns">
 
 <Viz example="make-user" view="both" gate="p-survive" pauseAt={[4]} title="makeUser returns an object" />
 
@@ -699,7 +699,7 @@ wss.on("connection", (socket) => {
 | Files run line by line | The whole script is parsed first. |
 | A second `let` replaces the first | It is an early error. |
 | Uncalled code is never checked | Its early errors still stop the script. |
-| JavaScript is compiled before it runs | V8 compiles on first call, then hot code. |
+| JavaScript is compiled before it runs | V8 compiles most functions on first call, then hot code. |
 | A byte holds any number | A byte holds 0 to 255. |
 | Tabs share variables | Each page has its own. |
 | A timer can interrupt running code | Each job runs to completion. |

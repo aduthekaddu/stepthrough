@@ -10,7 +10,7 @@ Lessons live in `apps/web/content/<track>/<lesson>/index.mdx`. This file is the 
 </Segment>
 ```
 
-Every interaction sits inside a segment. `goal` is one sentence. The expertise fast path collapses a segment to its goal and keeps its interaction.
+Every interaction sits inside a segment. `goal` is one sentence. The expertise fast path collapses a segment to its goal and keeps its interaction. So the goal sits right above an unanswered Predict. It names what the segment teaches, never the answer.
 
 ## Predict
 
