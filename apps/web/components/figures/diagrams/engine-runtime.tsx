@@ -44,12 +44,14 @@ const RUNTIMES: readonly Runtime[] = [
   },
 ];
 
+const name = (p: Part) => (p.code ? <code>{p.name}</code> : p.name);
+
 function Parts({ parts, label }: { parts: readonly Part[]; label: string }) {
   return (
     <ul className={css.chips} aria-label={label}>
       {parts.map((p) => (
         <li key={p.name} className={css.chip} data-absent={p.absent || undefined}>
-          {p.code ? <code>{p.name}</code> : p.name}
+          {p.absent ? <s>{name(p)}</s> : name(p)}
           {p.note && <span>{p.note}</span>}
         </li>
       ))}

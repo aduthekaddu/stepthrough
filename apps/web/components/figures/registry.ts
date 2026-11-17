@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { CompileVsInterpret } from './diagrams/compile-vs-interpret.tsx';
 import { EngineRuntime } from './diagrams/engine-runtime.tsx';
+import { IgnitionBytecode } from './diagrams/ignition-bytecode.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
 import { ParseThenRun } from './diagrams/parse-then-run.tsx';
@@ -23,6 +24,7 @@ export const DIAGRAMS = {
   'compile-vs-interpret': CompileVsInterpret,
   'engine-runtime': EngineRuntime,
   'parse-then-run': ParseThenRun,
+  'ignition-bytecode': IgnitionBytecode,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
