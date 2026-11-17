@@ -3,6 +3,7 @@ import { Deopt } from './diagrams/deopt.tsx';
 import { JitTiers } from './diagrams/jit-tiers.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
+import { StackOverflow } from './diagrams/stack-overflow.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
 
 /** What every diagram receives: the step to draw. Captions live in the lesson, not here. */
@@ -21,6 +22,7 @@ export const DIAGRAMS = {
   'memory-bytes': MemoryBytes,
   'jit-tiers': JitTiers,
   deopt: Deopt,
+  'stack-overflow': StackOverflow,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
