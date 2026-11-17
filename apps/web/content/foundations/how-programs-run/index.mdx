@@ -173,14 +173,14 @@ Whether two tabs are also two OS processes is up to the browser. Chrome usually 
 <Segment id="s06-thread" goal="A thread is one path of execution, and JavaScript runs your code on one thread at a time">
 
 <Figure diagram="threads" title="Threads in a process">
-  <Step>A <Term id="thread">thread</Term> is one path through a process's code, one instruction after another. Threads share the process's memory, but each has its own stack.</Step>
-  <Step>A process can run several threads at once. Here two cores run threads 1 and 2 at the same moment.</Step>
+  <Step>A <Term id="thread">thread</Term> is one path through a process's code, one instruction after another. Threads share the process's memory; each has its own stack.</Step>
+  <Step>Two cores can run two threads at the same moment, here threads 1 and 2.</Step>
   <Step>Your JavaScript gets one thread. A worker you start gets another, with its own memory.</Step>
 </Figure>
 
 <Figure diagram="busy-loop" title="A timer and a busy loop" gate="p-busy">
   <Step>This is the program in the prediction below. `setTimeout(fn, 0)` asks for `fn` to run after at least 0 ms. The callback waits.</Step>
-  <Step>The `while` loop holds the thread for about 100 ms. The callback is due, but no JavaScript can start until the running code finishes.</Step>
+  <Step>The loop holds the thread for about 100 ms. The callback is due, but cannot start until the running code finishes.</Step>
   <Step>The loop ends, `loop done` prints, and the script ends. The callback still waits.</Step>
   <Step>The thread is free. The callback runs about 100 ms late and prints `timer`. A timer's delay is a minimum, not a deadline.</Step>
 </Figure>
