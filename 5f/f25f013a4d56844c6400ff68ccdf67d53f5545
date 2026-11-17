@@ -1,0 +1,26 @@
+apps/web/components/figures/diagrams/ignition-bytecode.tsx
+  s_a40494ff401cc2::t_5a2c5b0d888cd6 1-130
+  s_a40494ff401cc2::t_071847e4555100 131-137
+apps/web/components/figures/diagrams/engine-runtime.tsx
+  s_a40494ff401cc2::t_b2aba432f0b5db 47-48,54
+apps/web/components/figures/diagrams/engine.module.css
+  s_a40494ff401cc2::t_9b7e3eba340139 499-502,563-566
+apps/web/components/figures/registry.ts
+  s_a40494ff401cc2::t_7a7abc478b8024 4,27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5ff25f013a4d56844c6400ff68ccdf67d53f5545",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
