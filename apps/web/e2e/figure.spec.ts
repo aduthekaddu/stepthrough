@@ -39,22 +39,36 @@ test('summaries keep every figure with its controls and caption', async ({ page 
   ).toBeVisible();
 });
 
-test('a gate note never points away from its prediction', async ({ page }) => {
+/** Segments of lesson 0.1 whose figure stays locked until the segment's prediction is answered. */
+const LOCKED = [
+  's06-thread',
+  's08-engine-host',
+  's11-jit',
+  's12-deopt',
+  's15-overflow',
+  's16-heap',
+  's17-map',
+];
+
+test('every locked figure has a gate note that points toward its prediction', async ({ page }) => {
   await open(page);
-  const wrongWay = await page.evaluate(() =>
+  const notes = await page.evaluate(() =>
     [...document.querySelectorAll('figure')].flatMap((figure) => {
       const note = [...figure.querySelectorAll('p')].find((p) =>
         p.textContent?.includes('to start stepping'),
       );
-      const prediction = figure.closest('.segment')?.querySelector('[data-predict-id]');
-      if (!note || !prediction) return [];
+      if (!note) return [];
+      const segment = figure.closest('.segment');
+      const prediction = segment?.querySelector('[data-predict-id]');
       const below = Boolean(
-        figure.compareDocumentPosition(prediction) & Node.DOCUMENT_POSITION_FOLLOWING,
+        prediction && figure.compareDocumentPosition(prediction) & Node.DOCUMENT_POSITION_FOLLOWING,
       );
-      const says = note.textContent ?? '';
-      const wrong = (below && says.includes('above')) || (!below && says.includes('below'));
-      return wrong ? [`${figure.closest('.segment')?.id}: ${says}`] : [];
+      return [{ segment: segment?.id, says: note.textContent ?? '', below }];
     }),
+  );
+  expect(notes.map((n) => n.segment)).toEqual(LOCKED);
+  const wrongWay = notes.filter(
+    ({ says, below }) => (below && says.includes('above')) || (!below && says.includes('below')),
   );
   expect(wrongWay).toEqual([]);
 });
@@ -85,12 +99,23 @@ test('with reduced motion, play does not step on its own', async ({ page }) => {
   const picture = figure.getByRole('group', { name: /^Picture, step/ });
   const play = figure.getByRole('button', { name: 'Play' });
 
+  // Records whether the button ever reads Pause, even between two checks.
+  await figure.evaluate((el) => {
+    new MutationObserver(() => {
+      if (el.querySelector('[aria-label="Pause"]')) el.dataset.sawPause = '';
+    }).observe(el, { subtree: true, childList: true, attributeFilter: ['aria-label'] });
+  });
+  const staysOnStepOne = async () => {
+    await page.waitForTimeout(2500); // two autoplay ticks of 1200 ms
+    await expect(picture).toHaveAccessibleName('Picture, step 1 of 3');
+    await expect(figure).not.toHaveAttribute('data-saw-pause');
+  };
+
   await expect(play).toHaveAttribute('aria-disabled', 'true');
   await play.dispatchEvent('click');
-  await picture.focus();
+  await staysOnStepOne();
   await picture.press(' ');
-  await page.waitForTimeout(3000);
-  await expect(picture).toHaveAccessibleName('Picture, step 1 of 3');
+  await staysOnStepOne();
   await picture.press('ArrowRight');
   await expect(picture).toHaveAccessibleName('Picture, step 2 of 3');
 });
