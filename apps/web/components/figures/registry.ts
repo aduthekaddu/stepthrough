@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { BusyLoop } from './diagrams/busy-loop.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
 import { ProcessMemory } from './diagrams/process-memory.tsx';
@@ -21,6 +22,7 @@ export const DIAGRAMS = {
   'memory-bytes': MemoryBytes,
   'process-memory': ProcessMemory,
   threads: Threads,
+  'busy-loop': BusyLoop,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
