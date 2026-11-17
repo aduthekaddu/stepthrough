@@ -85,7 +85,7 @@ test('the gate locks stepping until the prediction is committed, then asks what 
   await page.goto(PATH);
   const { root, diagram, narration, next } = figure(page, 'closure-scope');
   await expect(next).toHaveAttribute('aria-disabled', 'true');
-  await expect(root).toContainText('Answer the prediction above to start stepping.');
+  await expect(root).toContainText('Answer the prediction next to this figure to start stepping.');
   await diagram.focus();
   await diagram.press('ArrowRight');
   await expect(narration).toContainText('Step 0 of 13.');

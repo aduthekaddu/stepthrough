@@ -25,6 +25,8 @@ export type PanelContext = {
   last: number;
   pauseAt: readonly number[];
   gateOpen: boolean;
+  /** docs/design.md: autoplay is off when the learner asked for reduced motion. */
+  autoplay: boolean;
 };
 
 export type PanelAction =
@@ -83,6 +85,12 @@ function firstPause(state: PanelState, ctx: PanelContext, from: number, to: numb
     .reduce<number | null>((min, p) => (min === null || p < min ? p : min), null);
 }
 
+/** The furthest step whose caption the learner may see before answering what stands between. */
+export function lastPreviewable(state: PanelState, ctx: PanelContext): number {
+  if (!ctx.gateOpen) return state.step;
+  return firstPause(state, ctx, state.step, ctx.last) ?? ctx.last;
+}
+
 export function isPrompting(state: PanelState, ctx: PanelContext): boolean {
   return ctx.gateOpen && ctx.pauseAt.includes(state.step) && !state.answers.has(state.step);
 }
@@ -102,8 +110,10 @@ export function reducePanel(state: PanelState, action: PanelAction, ctx: PanelCo
     return { ...state, step: 0, playing: false, movedAt: action.at, prevMovedAt: state.movedAt };
   if (!ctx.gateOpen) return state;
   switch (action.type) {
-    case 'next':
     case 'tick':
+      if (!ctx.autoplay) return { ...state, playing: false };
+      return moveTo(state, ctx, state.step + 1, action.at);
+    case 'next':
       return moveTo(state, ctx, state.step + 1, action.at);
     case 'prev':
       return moveTo({ ...state, playing: false }, ctx, state.step - 1, action.at);
@@ -111,7 +121,7 @@ export function reducePanel(state: PanelState, action: PanelAction, ctx: PanelCo
       return moveTo({ ...state, playing: false }, ctx, action.step, action.at);
     case 'toggle-play': {
       if (state.playing) return { ...state, playing: false };
-      if (isPrompting(state, ctx)) return state;
+      if (!ctx.autoplay || isPrompting(state, ctx)) return state;
       if (state.step === ctx.last)
         return { ...state, step: 0, playing: true, movedAt: action.at, prevMovedAt: state.movedAt };
       return { ...state, playing: true };

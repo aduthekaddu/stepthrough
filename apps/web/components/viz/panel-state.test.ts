@@ -5,6 +5,7 @@ import {
   initialPanelState,
   isCorrect,
   isPrompting,
+  lastPreviewable,
   type PanelAction,
   type PanelContext,
   type PanelState,
@@ -13,7 +14,7 @@ import {
 } from './panel-state.ts';
 import { fixture } from './test-traces.ts';
 
-const ctx: PanelContext = { last: 10, pauseAt: [4], gateOpen: true };
+const ctx: PanelContext = { last: 10, pauseAt: [4], gateOpen: true, autoplay: true };
 
 function run(actions: PanelAction[], context = ctx, from: PanelState = initialPanelState) {
   return actions.reduce((state, action) => reducePanel(state, action, context), from);
@@ -71,6 +72,28 @@ describe('reducePanel', () => {
     );
     for (let t = 9; t <= 20; t++) state = reducePanel(state, { type: 'tick', at: t }, ctx);
     expect(state).toMatchObject({ step: 10, playing: false });
+  });
+
+  it('never plays on its own when autoplay is off, but still steps by hand', () => {
+    const still = { ...ctx, autoplay: false };
+    expect(run([{ type: 'toggle-play', at: 1 }], still).playing).toBe(false);
+    const playing = { ...initialPanelState, playing: true };
+    expect(run([{ type: 'tick', at: 1 }], still, playing)).toMatchObject({
+      step: 0,
+      playing: false,
+    });
+    expect(run([{ type: 'next', at: 1 }], still).step).toBe(1);
+  });
+
+  it('previews no step past a closed gate or an unanswered pause', () => {
+    const moved = { ...initialPanelState, step: 2 };
+    expect(lastPreviewable(moved, { ...ctx, gateOpen: false })).toBe(2);
+    expect(lastPreviewable(moved, ctx)).toBe(4);
+    const answered = run([
+      { type: 'seek', step: 4, at: 1 },
+      { type: 'answer', answer, at: 2 },
+    ]);
+    expect(lastPreviewable(answered, ctx)).toBe(10);
   });
 
   it('keeps the time of the previous move so fast input can skip animation', () => {

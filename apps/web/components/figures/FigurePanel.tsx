@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { GATE_NOTE } from '../viz/predictions.ts';
 import { Stepper } from '../viz/Stepper.tsx';
 import viz from '../viz/viz.module.css';
 import styles from './figures.module.css';
@@ -22,7 +23,10 @@ type FigurePanelProps = {
 export function FigurePanel({ diagram, title, gate, captions }: FigurePanelProps) {
   const { Component: Diagram } = DIAGRAMS[diagram];
   const last = captions.length - 1;
-  const { step, playing, gateOpen, onKeyDown, controls } = useSteps(captions.length, gate);
+  const { step, playing, gateOpen, autoplay, lastPreviewable, onKeyDown, controls } = useSteps(
+    captions.length,
+    gate,
+  );
   const captionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [announcement, setAnnouncement] = useState('');
   const moved = useRef(false);
@@ -39,7 +43,7 @@ export function FigurePanel({ diagram, title, gate, captions }: FigurePanelProps
   return (
     <figure
       className={`${viz.figure} ${styles.card} breakout`}
-      data-visual=""
+      data-interaction=""
       onKeyDown={onKeyDown}
     >
       <figcaption className={viz.header}>
@@ -77,13 +81,15 @@ export function FigurePanel({ diagram, title, gate, captions }: FigurePanelProps
       <p className={viz.srOnly} aria-live="polite" aria-atomic="true">
         {announcement}
       </p>
-      {!gateOpen && <p className={viz.gateNote}>Answer the prediction below to start stepping.</p>}
+      {!gateOpen && <p className={viz.gateNote}>{GATE_NOTE}</p>}
       <Stepper
         step={step}
         last={last}
         playing={playing}
         locked={!gateOpen}
         gateOpen={gateOpen}
+        autoplay={autoplay}
+        lastPreviewable={lastPreviewable}
         concepts={captions.map(() => null)}
         narrations={captions}
         phases={[]}

@@ -1,9 +1,11 @@
 'use client';
 
+import { useReducedMotion } from 'motion/react';
 import { type KeyboardEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AUTOPLAY_MS,
   initialPanelState,
+  lastPreviewable,
   type PanelAction,
   type PanelContext,
   reducePanel,
@@ -17,9 +19,10 @@ const now = () => performance.now();
 /** Step state for a figure with `steps` steps, shared with the trace visualizer's reducer. */
 export function useSteps(steps: number, gate: string | undefined) {
   const gateOpen = useGateOpen(gate);
+  const autoplay = !useReducedMotion();
   const ctx: PanelContext = useMemo(
-    () => ({ last: steps - 1, pauseAt: NO_PAUSES, gateOpen }),
-    [steps, gateOpen],
+    () => ({ last: steps - 1, pauseAt: NO_PAUSES, gateOpen, autoplay }),
+    [steps, gateOpen, autoplay],
   );
   const [state, setState] = useState(initialPanelState);
   const dispatch = useCallback(
@@ -52,6 +55,8 @@ export function useSteps(steps: number, gate: string | undefined) {
     step: Math.min(state.step, steps - 1),
     playing: state.playing,
     gateOpen,
+    autoplay,
+    lastPreviewable: lastPreviewable(state, ctx),
     onKeyDown,
     controls,
   };
