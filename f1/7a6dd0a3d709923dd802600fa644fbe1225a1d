@@ -1,0 +1,21 @@
+research/market.md
+  s_ea968c18142d8b::t_33db7c76717557 1-221
+GROUNDWORK_BUILD_SPEC.md
+  s_ea968c18142d8b::t_33db7c76717557 1-491
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f17a6dd0a3d709923dd802600fa644fbe1225a1d",
+  "prompts": {},
+  "sessions": {
+    "s_ea968c18142d8b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1e9b3-8915-70d3-af59-da3b70b54d93",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
