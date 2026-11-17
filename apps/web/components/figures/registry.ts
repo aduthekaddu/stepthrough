@@ -1,6 +1,10 @@
 import type { ComponentType } from 'react';
+import { Deopt } from './diagrams/deopt.tsx';
+import { FactSorter } from './diagrams/fact-sorter.tsx';
+import { JitTiers } from './diagrams/jit-tiers.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
+import { StackOverflow } from './diagrams/stack-overflow.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
 
 /** What every diagram receives: the step to draw. Captions live in the lesson, not here. */
@@ -17,6 +21,10 @@ export const DIAGRAMS = {
   'text-vs-chip': TextVsChip,
   'machine-code': MachineCode,
   'memory-bytes': MemoryBytes,
+  'jit-tiers': JitTiers,
+  deopt: Deopt,
+  'stack-overflow': StackOverflow,
+  'fact-sorter': FactSorter,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;

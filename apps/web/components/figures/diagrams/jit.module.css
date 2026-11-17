@@ -1,0 +1,375 @@
+/* Lesson 0.1 figures on V8's tiers, deoptimization, stack overflow and the fact sorter.
+   Concept colours, shapes and labels follow docs/design.md. Phone first: every part stacks,
+   and the stage container query puts parts side by side once there is room. */
+
+/* Shared parts (jit-parts.tsx) */
+
+.tier {
+  display: grid;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+  transition: outline-color 120ms var(--ease);
+}
+
+.tier[data-running] {
+  outline-color: var(--accent);
+}
+
+.tierHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tierName {
+  margin: 0;
+  font: 600 14px / 1.3 var(--sans);
+}
+
+.tierMakes {
+  margin: 0;
+  font: 13px / 1.3 var(--sans);
+  color: var(--muted);
+}
+
+/* Versions of one part share a grid cell, so the tallest sets the height. */
+.swap {
+  display: grid;
+}
+
+.swap > * {
+  grid-area: 1 / 1;
+}
+
+.varrow {
+  inline-size: 20px;
+  block-size: 28px;
+  flex: none;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.varrow[data-failed] {
+  stroke: var(--error);
+}
+
+.tag {
+  font: 500 11px / 1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent-ink);
+}
+
+.fnWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  background: var(--panel);
+  font: 500 13px / 1.3 var(--mono);
+  white-space: nowrap;
+}
+
+.box {
+  padding: 8px 10px;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.line {
+  margin: 0;
+  font: 13px / 1.45 var(--sans);
+}
+
+.mono {
+  margin: 0;
+  font: 13px / 1.5 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.quiet {
+  color: var(--muted);
+}
+
+/* Error concept: a 3px left bar, a label, on the panel so the red label keeps its contrast. */
+.error {
+  display: grid;
+  gap: 2px;
+  padding: 4px 8px;
+  border-inline-start: 3px solid var(--error);
+  border-radius: 0 4px 4px 0;
+  background: var(--panel);
+}
+
+.errorLabel {
+  margin: 0;
+  font: 500 11px / 1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--error);
+}
+
+.console {
+  display: grid;
+  gap: 2px;
+  min-block-size: 2.5em;
+}
+
+.lane {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-inline-size: 0;
+}
+
+.split {
+  display: grid;
+  gap: 16px;
+}
+
+.column {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+@container (width >= 520px) {
+  .split {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+
+/* jit-tiers */
+
+.ladder {
+  display: grid;
+  gap: 6px;
+}
+
+.group {
+  display: grid;
+  gap: 6px;
+  padding: 4px 6px 6px;
+  border: 1.5px solid transparent;
+  border-radius: 6px;
+  transition: border-color 120ms var(--ease);
+}
+
+.group[data-on] {
+  border-color: var(--muted);
+}
+
+.groupLabel {
+  margin: 0;
+  font: 500 12px / 1.3 var(--sans);
+}
+
+.climb {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-inline-end: 16px;
+  font: 500 12px / 1.3 var(--sans);
+  text-align: end;
+}
+
+.tiersSide {
+  display: grid;
+  gap: 12px;
+  align-content: end;
+}
+
+.caveat {
+  margin: 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid var(--rule);
+  font: 13px / 1.4 var(--sans);
+}
+
+.caveat code {
+  white-space: nowrap;
+}
+
+/* deopt */
+
+.check {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 8px;
+  margin: 0;
+  font: 13px / 1.4 var(--mono);
+}
+
+.move {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-block-size: 32px;
+  padding-inline-start: 16px;
+  font: 500 12px / 1.3 var(--sans);
+}
+
+.move[data-failed] {
+  color: var(--error);
+}
+
+/* stack-overflow: the stack grows upward inside one fixed-size box. */
+
+.stackWrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px;
+}
+
+.stackBox {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+  padding: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+}
+
+.bar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-block-size: 28px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--stack);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--stack) var(--tint), var(--paper));
+  font: 13px / 1.3 var(--mono);
+  transition:
+    border-color 120ms var(--ease),
+    background-color 120ms var(--ease),
+    color 120ms var(--ease);
+}
+
+.bar[data-running] {
+  border-width: 2.5px;
+  padding-inline: 7px;
+  font-weight: 500;
+}
+
+.bar[data-fold] {
+  justify-content: center;
+  font: 12px / 1.3 var(--sans);
+}
+
+/* A frame that has left: a dashed outline where it was, for one step (docs/design.md, Ghost). */
+.bar[data-ghost] {
+  border-style: dashed;
+  border-color: var(--muted);
+  background: transparent;
+  color: var(--muted);
+}
+
+.measure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.measure::before {
+  content: "";
+  align-self: stretch;
+  inline-size: 6px;
+  margin-block: 1px;
+  border: 1.5px solid var(--ink);
+  border-inline-start: 0;
+}
+
+.measureText {
+  display: grid;
+  margin: 0;
+  font: 11px / 1.3 var(--sans);
+  color: var(--muted);
+}
+
+.measureText strong {
+  font: 500 13px / 1.3 var(--mono);
+  color: var(--ink);
+}
+
+/* fact-sorter: lanes are rows on a phone and columns once there is room. */
+
+.lanes {
+  display: grid;
+  gap: 10px;
+}
+
+.sortLane {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-inline-size: 0;
+  padding-block-start: 8px;
+  border-block-start: 1px solid var(--rule);
+}
+
+@container (width >= 520px) {
+  .lanes {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .sortLane {
+    padding: 0 8px;
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--rule);
+  }
+
+  .sortLane:first-child {
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+
+  .sortLane:last-child {
+    padding-inline-end: 0;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fact {
+  display: block;
+  padding: 4px 8px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  background: var(--panel);
+  font: 13px / 1.35 var(--sans);
+  transition: border-color 120ms var(--ease);
+}
+
+.fact[data-new] {
+  border-color: var(--accent);
+}
+
+.fact code {
+  font: 12px / 1.35 var(--mono);
+}
