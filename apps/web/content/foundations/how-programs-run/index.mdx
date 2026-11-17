@@ -642,6 +642,13 @@ In C you would call `free()`. JavaScript does it for you. MDN says JavaScript "a
 
 <Segment id="s18-wild" goal="One thread, one stack and a JIT show up in Express servers, React apps and the JVM">
 
+<Figure diagram="blocked-server" title="One slow handler, every user waits">
+  <Step>An Express server runs every request handler on one JavaScript thread, the main thread. Node also keeps a pool of helper threads. Requests A, B and C arrive close together.</Step>
+  <Step>Sync version. A's handler derives an encryption key from a password with `crypto.pbkdf2Sync`. That heavy work runs on the main thread, so B and C wait.</Step>
+  <Step>B and C, from other users, run only after A finishes. One slow synchronous handler delays every user of the server.</Step>
+  <Step>Callback version. `crypto.pbkdf2` runs the key derivation on Node's helper threads, which never run your JavaScript. B and C run at once, and A's callback answers when the key is ready.</Step>
+</Figure>
+
 <Code code={`// salt and encrypt stand for your own code.
 // Before: this slow handler blocks every request on the server.
 app.post("/secrets", (req, res) => {
@@ -658,7 +665,9 @@ app.post("/secrets", (req, res, next) => {
   });
 });`} />
 
-**Express.** An Express server runs every request handler on one JavaScript thread. A handler that does heavy CPU work synchronously blocks every other request until it finishes. The Node docs warn that "if the Event Loop spends too long at any point, all current and new clients will not get a turn" ([Don't block the event loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)). The event loop is the loop on that thread that picks the next waiting callback and runs it. Lesson 1.7 covers it. Suppose a secrets service derives an encryption key from a password, as in the code above. `crypto.pbkdf2Sync` does that work on the main thread and blocks it. The callback version, `crypto.pbkdf2`, runs the work on Node's pool of helper threads, which the same page lists among its Worker Pool APIs.
+<Deeper title="The Node docs, a chess server, React and Java">
+
+The Node docs warn that "if the Event Loop spends too long at any point, all current and new clients will not get a turn" ([Don't block the event loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)). The event loop is the loop on that thread that picks the next waiting callback and runs it. Lesson 1.7 covers it. The same page lists `crypto.pbkdf2` among its Worker Pool APIs.
 
 <Code code={`// A chess server using the ws package.
 wss.on("connection", (socket) => {
@@ -678,6 +687,8 @@ wss.on("connection", (socket) => {
 // java -Xss1m -Xmx2g ...                node --stack-size=984 --max-old-space-size=2048 app.js
 // StackOverflowError                    RangeError: Maximum call stack size exceeded
 // OutOfMemoryError: Java heap space     FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`} />
+
+</Deeper>
 
 </Segment>
 
