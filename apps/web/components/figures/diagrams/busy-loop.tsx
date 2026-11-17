@@ -60,7 +60,7 @@ function Draw({ step }: DiagramProps) {
             <Reveal show={step === 2} className={os.endNote}>
               script ends
             </Reveal>
-            <Reveal show={step === 3} className={os.late}>
+            <Reveal show={step === 3} className={os.bracket} style={{ inlineSize: '71%' }}>
               ran about 100 ms late
             </Reveal>
           </div>

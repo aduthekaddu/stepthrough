@@ -324,17 +324,16 @@
   text-align: end;
 }
 
-/* A bracket from 0 ms to where the callback starts, like `.span` under byte cells. */
-.late {
+/* A bracket under a lane from its start, like `.span` under byte cells; the width comes inline. */
+.bracket {
   position: relative;
-  inline-size: 71%;
   box-sizing: border-box;
   padding-block-start: 12px;
   font: 500 12px / 1.3 var(--sans);
   text-align: center;
 }
 
-.late::before {
+.bracket::before {
   content: "";
   position: absolute;
   inset: 2px 0 auto;
@@ -372,4 +371,62 @@
   min-block-size: calc(2 * 1.45em);
   font: 13px / 1.45 var(--mono);
   font-variant-ligatures: none;
+}
+
+/* blocked-server */
+
+.requests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.request {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  background: var(--panel);
+  font: 500 12px / 1.4 var(--sans);
+  white-space: nowrap;
+}
+
+/* Beats the lesson column's `li + li` margin. */
+.requests > .request {
+  margin: 0;
+}
+
+.request code {
+  font: 500 12px / 1.4 var(--mono);
+  font-variant-ligatures: none;
+}
+
+/* Which version the lanes show; the three labels share one cell and cross-fade. */
+.mode {
+  justify-self: start;
+  padding: 3px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font: 600 13px / 1.3 var(--sans);
+}
+
+.mode code {
+  font: 500 12px / 1.3 var(--mono);
+  font-variant-ligatures: none;
+}
+
+.lanes {
+  display: grid;
+  gap: 4px;
+}
+
+.waiting {
+  display: flex;
+  gap: 6px;
+  align-items: start;
 }
