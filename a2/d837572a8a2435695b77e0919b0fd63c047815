@@ -1,0 +1,21 @@
+docs/lesson-components.md
+  s_a40494ff401cc2::t_3217f23d4b9ddb 13
+apps/web/content/foundations/how-programs-run/index.mdx
+  s_a40494ff401cc2::t_094dffbdb74f67 173,245,280,338,358,401,442,528,582,702
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a2d837572a8a2435695b77e0919b0fd63c047815",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
