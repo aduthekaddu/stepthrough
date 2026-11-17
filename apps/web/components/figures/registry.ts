@@ -1,7 +1,9 @@
 import type { ComponentType } from 'react';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
+import { ProcessMemory } from './diagrams/process-memory.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
+import { Threads } from './diagrams/threads.tsx';
 
 /** What every diagram receives: the step to draw. Captions live in the lesson, not here. */
 export type DiagramProps = { step: number };
@@ -17,6 +19,8 @@ export const DIAGRAMS = {
   'text-vs-chip': TextVsChip,
   'machine-code': MachineCode,
   'memory-bytes': MemoryBytes,
+  'process-memory': ProcessMemory,
+  threads: Threads,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
