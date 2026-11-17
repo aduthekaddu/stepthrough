@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, useState } from 'react';
+import { type CSSProperties, type ReactNode, useState } from 'react';
 import type { Concept } from './model.ts';
 import styles from './viz.module.css';
 
@@ -14,7 +14,7 @@ type StepperProps = {
   locked: boolean;
   gateOpen: boolean;
   concepts: readonly (Concept | null)[];
-  narrations: readonly string[];
+  narrations: readonly ReactNode[];
   phases: readonly Phase[];
   onReset: () => void;
   onPrev: () => void;

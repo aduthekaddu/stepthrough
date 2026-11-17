@@ -26,6 +26,7 @@ import {
   recordOwners,
 } from './model.ts';
 import {
+  AUTOPLAY_MS,
   initialPanelState,
   isCorrect,
   isPrompting,
@@ -33,6 +34,7 @@ import {
   type PanelContext,
   predictTargets,
   reducePanel,
+  stepKeyAction,
 } from './panel-state.ts';
 import { type NextFramePrediction, recordNextFramePrediction, useGateOpen } from './predictions.ts';
 import { type Phase, Stepper } from './Stepper.tsx';
@@ -50,7 +52,6 @@ export type VizPanelProps = {
   onPredictNext?: ((prediction: NextFramePrediction) => void) | undefined;
 };
 
-const AUTOPLAY_MS = 1200;
 /** A step that arrives sooner than this after the last one skips the animation. */
 const INSTANT_MS = 400;
 const DEFAULT_WIDTH = 640;
@@ -107,15 +108,6 @@ const LEGEND: { concept: Exclude<Concept, 'error'>; label: string; shape: ReactN
 ];
 
 const now = () => performance.now();
-
-const SHORTCUTS: Record<string, PanelAction['type']> = {
-  ArrowRight: 'next',
-  l: 'next',
-  ArrowLeft: 'prev',
-  h: 'prev',
-  ' ': 'toggle-play',
-  r: 'reset',
-};
 
 export function VizPanel({
   trace,
@@ -196,15 +188,10 @@ export function VizPanel({
   const [focus, setFocus] = useState<Concept | null>(null);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
-    const type = SHORTCUTS[e.key];
+    const type = stepKeyAction(e);
     if (!type) return;
-    const target = e.target as HTMLElement;
-    const onRange = target instanceof HTMLInputElement && target.type === 'range';
-    if (onRange && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return;
-    if (target instanceof HTMLButtonElement && e.key === ' ') return;
     e.preventDefault();
-    dispatch({ type, at: now() } as PanelAction);
+    dispatch({ type, at: now() });
   };
 
   const answer = (index: number) => {

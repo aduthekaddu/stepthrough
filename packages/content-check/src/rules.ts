@@ -64,7 +64,15 @@ const BANNED = [
   'in conclusion',
 ];
 const EMOJI = /\p{Extended_Pictographic}/u;
-const INTERACTIONS = new Set(['Predict', 'Viz', 'Code', 'ExplainBack', 'InterviewQ', 'Card']);
+const INTERACTIONS = new Set([
+  'Predict',
+  'Viz',
+  'Figure',
+  'Code',
+  'ExplainBack',
+  'InterviewQ',
+  'Card',
+]);
 const OUTPUT_PROMPT = /\b(print|prints|log|logs|output|outputs|show|shows)\b/i;
 const PRIMARY_SOURCES = [
   'tc39.es',
@@ -106,7 +114,11 @@ function predictProps(el: JsxElement) {
 
 const firstElement: Rule = (lesson) => {
   const first = lesson.parsed.firstElement;
-  return first === 'Predict' || first === 'Code' || first === 'Viz' || first === 'code'
+  return first === 'Predict' ||
+    first === 'Code' ||
+    first === 'Viz' ||
+    first === 'Figure' ||
+    first === 'code'
     ? []
     : [
         f(

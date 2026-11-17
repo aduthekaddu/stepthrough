@@ -124,8 +124,15 @@
   grid-template-columns: 14px 3ch minmax(0, 1fr);
   padding-inline-end: 12px;
   border-inline-start: 3px solid transparent;
-  white-space: pre;
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
   transition: background-color 180ms var(--ease);
+}
+
+/* A source line that wraps on a narrow panel hangs its indent, like lesson code. */
+.lineText {
+  padding-inline-start: 2ch;
+  text-indent: -2ch;
 }
 
 .line[data-current] {
@@ -134,7 +141,8 @@
 }
 
 .ranDot {
-  align-self: center;
+  align-self: start;
+  margin-block-start: calc(0.5lh - 2.5px);
   justify-self: center;
   inline-size: 5px;
   block-size: 5px;

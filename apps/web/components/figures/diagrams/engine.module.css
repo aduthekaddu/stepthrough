@@ -1,0 +1,570 @@
+/* Lesson 0.1 figures about engines: compile-vs-interpret, engine-runtime, parse-then-run and
+   ignition-bytecode. Values follow docs/design.md; --ease and the fonts come from the panel. */
+
+/* Shared text roles */
+
+.label {
+  margin: 0;
+  font: 500 11px / 1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.title {
+  margin: 0;
+  font: 600 14px / 1.25 var(--sans);
+}
+
+.title code {
+  font: 500 13px / 1.25 var(--mono);
+}
+
+.note {
+  margin: 2px 0 0;
+  font: 12px / 1.35 var(--sans);
+}
+
+.note code {
+  font: 500 12px / 1.35 var(--mono);
+}
+
+@container (width >= 520px) {
+  .title {
+    font-size: 15px;
+  }
+
+  .note {
+    font-size: 13px;
+  }
+}
+
+/* compile-vs-interpret: one grid holds all three lanes, so a role (source, made before the run,
+   interpreter, CPU) lines up across lanes. On a phone each lane is a column that flows down; on a
+   wide stage the same cells swap axes and each lane is a row that flows right. Line 6 holds the
+   JVM's hot-methods box on a phone; row 7 keeps room for the arrow heads below it. */
+
+.lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(6, auto) minmax(30px, auto) auto;
+  column-gap: 6px;
+}
+
+.cell {
+  display: grid;
+  grid-column: var(--lane);
+  grid-row: var(--from) / var(--to);
+}
+
+/* The Dim wrapper inside a cell must stretch too, so boxes in a row share one height. */
+.cell > * {
+  display: grid;
+}
+
+@container (width >= 520px) {
+  .lanes {
+    grid-template-columns:
+      minmax(0, 1fr) 44px minmax(0, 1fr) 44px minmax(0, 1fr) 44px 0
+      minmax(0, 0.8fr);
+    grid-template-rows: repeat(4, auto);
+    row-gap: 10px;
+    column-gap: 0;
+  }
+
+  .cell {
+    grid-row: var(--lane);
+    grid-column: var(--from) / var(--to);
+  }
+}
+
+.box {
+  min-inline-size: 0;
+  padding: 6px 6px 8px;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+  overflow-wrap: anywhere;
+}
+
+/* Everything the CPU can run directly gets the ink edge. */
+.box[data-machine] {
+  border-color: var(--ink);
+}
+
+.box[data-cpu] {
+  display: grid;
+  align-content: center;
+  margin: 4px;
+  border-color: var(--ink);
+  outline: 1.5px dashed var(--muted);
+  outline-offset: 3px;
+  text-align: center;
+}
+
+@container (width >= 520px) {
+  .box {
+    padding: 8px 10px;
+  }
+}
+
+/* The hot-methods box sits under the JVM: over the top of the JVM's arrow on a phone, in a
+   fourth row with its own arrow to the CPU on a wide stage. */
+.hotCell {
+  z-index: 1;
+  grid-column: 3;
+  grid-row: 6;
+  align-self: start;
+  margin-block-start: 8px;
+}
+
+.hotArrow {
+  display: none;
+}
+
+@container (width >= 520px) {
+  .hotCell {
+    grid-column: 5;
+    grid-row: 4;
+    margin-block-start: 0;
+  }
+
+  .hotArrow {
+    display: grid;
+    grid-column: 6 / 8;
+    grid-row: 4;
+  }
+}
+
+/* An arrow that stretches over its cells: down on a phone, right on a wide stage. */
+.arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-block-size: 30px;
+  padding-block: 2px;
+}
+
+.arrowLabel {
+  font: 500 12px / 1.2 var(--sans);
+  text-align: center;
+}
+
+.shaft {
+  flex: 1 0 6px;
+  border-inline-start: 1.5px solid var(--ink);
+}
+
+.head {
+  flex: none;
+  inline-size: 12px;
+  block-size: 12px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+@container (width >= 520px) {
+  .arrow {
+    flex-flow: row wrap;
+    align-content: center;
+    min-block-size: 0;
+    padding: 0 4px;
+  }
+
+  .arrowLabel {
+    flex: 1 0 100%;
+    margin-block-end: 2px;
+  }
+
+  .shaft {
+    flex: 1 0 6px;
+    border-inline-start: 0;
+    border-block-start: 1.5px solid var(--ink);
+  }
+
+  .head {
+    rotate: -90deg;
+  }
+}
+
+/* engine-runtime: on a phone both runtimes share one cell and Node takes the browser's place,
+   so the figure stays one screen tall; on a wide stage they sit side by side. */
+
+.runtimes {
+  display: grid;
+  gap: 12px;
+}
+
+.runtimes > * {
+  grid-area: 1 / 1;
+}
+
+.runtimes > [data-replaced] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 120ms var(--ease),
+    visibility 0s linear 120ms;
+}
+
+@container (width >= 520px) {
+  .runtimes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .runtimes > * {
+    grid-area: auto;
+  }
+
+  .runtimes > [data-replaced] {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.runtime {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 8px 10px 10px;
+  border: 1.5px solid transparent;
+  border-radius: 6px;
+  transition: border-color 180ms var(--ease);
+}
+
+.runtime[data-show] {
+  border-color: var(--muted);
+}
+
+.engine {
+  padding: 8px 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* `.chips > .chip` beats the prose rule `li + li { margin-top }` from the lesson column. */
+.chips > .chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  padding: 2px 6px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  font: 12px / 1.3 var(--sans);
+}
+
+.chip code {
+  font: 500 13px / 1.3 var(--mono);
+}
+
+.chips > .chip[data-absent] {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+/* parse-then-run */
+
+.parseRun {
+  display: grid;
+  grid-template-areas: "code" "phases" "console";
+  gap: 12px;
+}
+
+@container (width >= 520px) {
+  .parseRun {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "code console" "phases phases";
+  }
+}
+
+.code {
+  grid-area: code;
+  margin: 0;
+  padding: 6px 0;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+  list-style: none;
+}
+
+.code > .line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin: 0;
+  padding: 2px 8px 2px 5px;
+  border-inline-start: 3px solid transparent;
+  font: 13px / 1.5 var(--mono);
+  transition: background-color 120ms var(--ease);
+}
+
+.code > .line[data-error] {
+  border-inline-start-color: var(--error);
+  background: color-mix(in srgb, var(--error) var(--tint), var(--panel));
+}
+
+.lineNo {
+  min-inline-size: 1ch;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.errorTag {
+  font: 500 12px / 1.3 var(--sans);
+  color: var(--error);
+  visibility: hidden;
+}
+
+.errorTag[data-show] {
+  visibility: visible;
+}
+
+.code del {
+  color: var(--muted);
+  text-decoration-thickness: 1.5px;
+}
+
+.code ins {
+  padding-inline: 2px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--panel));
+  text-decoration: none;
+}
+
+.phases {
+  grid-area: phases;
+}
+
+.phase {
+  padding: 8px 10px;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.phase[data-never] {
+  border-style: dashed;
+}
+
+.status {
+  margin: 6px 0 0;
+  font: 500 13px / 1.3 var(--sans);
+}
+
+.phaseNo {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.ticks {
+  display: flex;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* One square per line of the script, filled once the phase has handled that line. */
+.ticks > .tick {
+  display: grid;
+  place-items: center;
+  inline-size: 26px;
+  block-size: 26px;
+  margin: 0;
+  border: 1.5px dashed var(--muted);
+  border-radius: 4px;
+  color: var(--muted);
+  font: 500 12px / 1 var(--mono);
+  transition:
+    background-color 120ms var(--ease),
+    border-color 120ms var(--ease);
+}
+
+.ticks > .tick[data-state="done"] {
+  border-style: solid;
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 10%, var(--panel));
+  color: var(--ink);
+}
+
+.ticks > .tick[data-state="error"] {
+  border-style: solid;
+  border-color: var(--error);
+  border-inline-start-width: 3px;
+  background: color-mix(in srgb, var(--error) var(--tint), var(--panel));
+  color: var(--ink);
+}
+
+.console {
+  grid-area: console;
+  padding: 8px 10px;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+/* Every possible output sits in one cell, so the box keeps the height of the longest. */
+.outputs {
+  display: grid;
+  margin-block-start: 4px;
+}
+
+.output {
+  grid-area: 1 / 1;
+  margin: 0;
+  font: 13px / 1.45 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  visibility: hidden;
+}
+
+.output[data-show] {
+  visibility: visible;
+}
+
+.output[data-kind="empty"] {
+  color: var(--muted);
+  font: italic 12px / 1.45 var(--sans);
+}
+
+.output[data-kind="error"] {
+  align-self: start;
+  padding-inline-start: 8px;
+  border-inline-start: 3px solid var(--error);
+}
+
+.errorName {
+  color: var(--error);
+  font-weight: 500;
+}
+
+/* ignition-bytecode */
+
+.ignition {
+  --cell: clamp(3rem, 15cqi, 3.75rem);
+  display: grid;
+  grid-template-areas: "source" "bytecode" "slots";
+  gap: 14px;
+}
+
+@container (width >= 560px) {
+  .ignition {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 14rem);
+    grid-template-areas: "source slots" "bytecode slots";
+  }
+}
+
+.source {
+  grid-area: source;
+}
+
+.bytecode {
+  grid-area: bytecode;
+}
+
+.slotsArea {
+  grid-area: slots;
+}
+
+.call {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0;
+  font: 13px / 1.45 var(--mono);
+}
+
+.returned {
+  padding: 1px 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  font: 500 12px / 1.3 var(--sans);
+}
+
+.returned:not([data-show]) {
+  visibility: hidden;
+}
+
+.returned code {
+  font: 500 13px / 1.3 var(--mono);
+}
+
+.instr {
+  font: 12px / 1.3 var(--mono);
+  color: var(--ink);
+  transition: color 120ms var(--ease);
+}
+
+.instr[data-state="other"] {
+  color: var(--muted);
+}
+
+.instr[data-state="current"] {
+  color: var(--accent-ink);
+  font-weight: 500;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+@container (width >= 560px) {
+  .slots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.slot {
+  padding: 4px 8px 6px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  transition: background-color 120ms var(--ease);
+}
+
+.slot[data-changed] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+.slot dt {
+  font: 500 12px / 1.3 var(--sans);
+  color: var(--muted);
+}
+
+.slot dt code {
+  font: 500 12px / 1.3 var(--mono);
+  color: var(--ink);
+}
+
+.slot dd {
+  margin: 2px 0 0;
+  font: 500 13px / 1.3 var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.slot dd[data-words] {
+  font: 500 13px / 1.3 var(--sans);
+}
+
+.slot dd[data-unset] {
+  color: var(--muted);
+  font: italic 12px / 1.3 var(--sans);
+}
