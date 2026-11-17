@@ -18,6 +18,9 @@ function subscribeGates(listener: () => void) {
   return () => gateListeners.delete(listener);
 }
 
+/** Shown on a gated figure. A gated Figure sits above its prediction and a Viz may sit either side. */
+export const GATE_NOTE = 'Answer the prediction next to this figure to start stepping.';
+
 /** True when no gate is set, or once its prediction is committed. */
 export function useGateOpen(id: string | undefined): boolean {
   return useSyncExternalStore(

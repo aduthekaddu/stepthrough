@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, useState } from 'react';
+import { type CSSProperties, type ReactNode, useState } from 'react';
 import type { Concept } from './model.ts';
 import styles from './viz.module.css';
 
@@ -13,8 +13,12 @@ type StepperProps = {
   /** Forward moves are locked (gate closed or a prediction pending); back and reset still work. */
   locked: boolean;
   gateOpen: boolean;
+  /** Off under reduced motion: play does nothing and says why. */
+  autoplay: boolean;
+  /** Hovering the ruler previews captions up to this step and no further, so none gives an answer away. */
+  lastPreviewable: number;
   concepts: readonly (Concept | null)[];
-  narrations: readonly string[];
+  narrations: readonly ReactNode[];
   phases: readonly Phase[];
   onReset: () => void;
   onPrev: () => void;
@@ -43,7 +47,7 @@ const ICONS = {
 
 /** Reset, previous, play/pause and next, then the tick ruler with its needle and readout. */
 export function Stepper(props: StepperProps) {
-  const { step, last, playing, locked, gateOpen, concepts, narrations, phases } = props;
+  const { step, last, playing, locked, gateOpen, autoplay, concepts, narrations, phases } = props;
   const [hover, setHover] = useState<number | null>(null);
   const width = Math.max(2, String(last).length);
   const at = (n: number) => ({ '--at': last === 0 ? 0 : n / last }) as CSSProperties;
@@ -79,10 +83,16 @@ export function Stepper(props: StepperProps) {
           type="button"
           className={styles.button}
           aria-label={playing ? 'Pause' : 'Play'}
-          title={playing ? 'Pause (space)' : 'Play (space)'}
+          title={
+            playing
+              ? 'Pause (space)'
+              : autoplay
+                ? 'Play (space)'
+                : 'Autoplay is off with reduced motion'
+          }
           aria-keyshortcuts="Space"
-          aria-disabled={!playing && locked}
-          onClick={ignoreWhen(!playing && locked, props.onTogglePlay)}
+          aria-disabled={!playing && (locked || !autoplay)}
+          onClick={ignoreWhen(!playing && (locked || !autoplay), props.onTogglePlay)}
         >
           <Icon d={playing ? ICONS.pause : ICONS.play} />
         </button>
@@ -112,7 +122,7 @@ export function Stepper(props: StepperProps) {
             {phase.label}
           </button>
         ))}
-        {hover !== null && (
+        {hover !== null && hover <= props.lastPreviewable && (
           <p className={styles.preview} aria-hidden="true">
             <strong>{pad(hover, width)}</strong> {narrations[hover]}
           </p>

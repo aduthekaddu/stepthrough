@@ -10,7 +10,7 @@ Lessons live in `apps/web/content/<track>/<lesson>/index.mdx`. This file is the 
 </Segment>
 ```
 
-Every interaction sits inside a segment. `goal` is one sentence. The expertise fast path collapses a segment to its goal and keeps its interaction.
+Every interaction sits inside a segment. `goal` is one sentence. The expertise fast path collapses a segment to its goal and keeps its interaction. So the goal sits right above an unanswered Predict. It names what the segment teaches, never the answer.
 
 ## Predict
 
@@ -74,6 +74,39 @@ The build checks every expectation against the generated trace and fails with th
 - `{ console: [...] }`: console output so far.
 
 Record labels: `Global`, `<fn>() call`, `<fn>() call #2`, `head of the loop at line N`, `iteration K of the loop at line N`, `<name>'s own name`, otherwise `block`. Anchors: `at: { mark, kind, occurrence? }`. Kinds: `enter` (a call after declaration instantiation, including any default-parameter code), `statement`, `return` (on the last line the call ran), and `end` / `throw`, which need no mark. `occurrence: n` picks the n-th matching frame, for recursion and loops.
+
+## Figure
+
+```mdx
+<Figure diagram="busy-loop" title="A timer and a busy loop" gate="p-busy">
+  <Step>What step 0 shows, without the prediction's answer.</Step>
+  <Step>What step 1 adds.</Step>
+  <Step>What step 2 adds.</Step>
+  <Step>What step 3 adds.</Step>
+</Figure>
+```
+
+A stepped picture for ideas a trace cannot show: bytes and addresses, processes and threads, compilers and tiers. `diagram` names an entry in `apps/web/components/figures/registry.ts`; each diagram in `components/figures/diagrams/` draws one step at a time from facts written in its doc comment. There is one `<Step>` caption per diagram step, in order, and the build fails when the counts differ. `gate` works as on `Viz`: until the prediction is committed, only step 0 shows, and the ruler previews no later caption. `/playground/figures` draws every registered diagram at every step.
+
+Captions are the lesson's prose, so content-check reads them like any paragraph: a term is introduced with `<Term>` inside a caption, and banned phrases and term order apply. Keep each caption to about 35 words: what this step shows and why it matters. Step 0 names the parts before anything moves.
+
+## Deeper
+
+```mdx
+<Deeper title="The rule in the specification">
+...markdown...
+</Deeper>
+```
+
+Correct but optional depth, folded into a native `<details>`: source quotes, measured details, edge cases. Its text stays findable with find-in-page. Prose inside it still counts for term order, banned phrases and the 250-word prose run.
+
+## Visual-first segments
+
+Lesson 0.1 is the first lesson in this shape (DECISIONS.md, 2026-11-16 and 2026-11-17):
+
+- Every idea segment opens with a `Figure` or a `Viz`. The hook stays a bare `Predict`.
+- Prose is the captions plus at most a sentence or two around the interaction. Everything else moves into `Deeper`, with its citations.
+- A figure that explains a prediction's answer sits above that `Predict` with `gate`. Its title and step 0 must not give the answer away, and no prose after a `Predict` states its answer. A `Viz` title follows the same rule. Explanation that names the answer goes in later steps, the `Predict` feedback, or `Deeper`.
 
 ## Other components
 

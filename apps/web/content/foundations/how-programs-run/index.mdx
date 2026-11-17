@@ -38,21 +38,19 @@ let total = 2;`}
   explain="JavaScript parses the whole script before it runs any of it. A repeated let is an early error, so the script never starts."
 />
 
-Nothing printed, not even `one`. Many developers expect the two logs to appear before the error, because they picture the file running one line at a time.
-
-Keep your answer in mind. Segment 9 explains exactly what happened. To get there, the lesson first builds the machine from the bottom up: the chip, its instructions, its storage, and the software that runs JavaScript.
+Keep your answer. Segment 9 explains it, after the lesson builds the machine from the chip up.
 
 </Segment>
 
 <Segment id="s02-program" goal="A program is instructions, and the CPU cannot read the text you write">
 
-A computer does nothing on its own. It follows a list of instructions, and that list is a <Term id="program">program</Term>.
+<Figure diagram="text-vs-chip" title="Your text and the chip">
+  <Step>A <Term id="program">program</Term> is a list of instructions. You write it as text that people can read and change, called <Term id="source-code">source code</Term>. The chip that carries out instructions is the <Term id="cpu">CPU</Term>.</Step>
+  <Step>The CPU cannot read the text `return a + b`. It runs only a small, fixed set of instructions, written as numbers.</Step>
+  <Step>So something must stand between your text and the chip. It either translates the text or carries it out. Most of this lesson is about that something.</Step>
+</Figure>
 
-You write instructions as text, in a language like JavaScript, Java or C. Text written for people to read and change is called <Term id="source-code">source code</Term>.
-
-One chip does the actual work. It carries out instructions one after another, very fast. That chip is the <Term id="cpu">CPU</Term>, the central processing unit, also called the processor.
-
-You may think, "My computer runs my JavaScript, so the chip must understand JavaScript." It does not. The CPU cannot read the text `return a + b`. It understands only a small, fixed set of instructions, written as numbers. Something has to stand between your text and the chip, either translating the text or carrying it out. Most of this lesson is about that something.
+Run it. The second line prints your function back, exactly as you typed it. The software running JavaScript still holds it as text.
 
 <Code runnable code={`function add(a, b) {
   return a + b;
@@ -60,26 +58,16 @@ You may think, "My computer runs my JavaScript, so the chip must understand Java
 console.log(add(2, 3));
 console.log(add.toString());`} />
 
-The first line prints `5`. The second prints your function back, exactly as you typed it. So the software running this code still holds your function as text. That text is the source code, and it is never handed to the chip as it is. The next segment shows what the chip runs instead.
-
 </Segment>
 
 <Segment id="s03-machine-code" goal="The CPU runs only machine code: numbered instructions stored as bytes">
 
-Computers store everything as bits. A bit is a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>, so one byte has 256 possible patterns. Read as a plain unsigned number, those patterns mean 0 to 255. (Java's `byte` type reads the same patterns as -128 to 127.)
-
-A CPU runs instructions that are themselves numbers, stored as bytes. Each CPU family has its own list of instructions and its own number for each one. Instructions in this numeric form are <Term id="machine-code">machine code</Term>. Machine code is the only thing a CPU can run directly.
-
-To get machine code from source code, you need a translator. A program that translates code into another form before the code runs is a <Term id="compiler">compiler</Term>. `gcc` is a compiler for C.
-
-<Code code={`// add.c                          gcc 13.3 -O1 -fcf-protection=none, x86-64 Linux
-int add(int a, int b) {           // 8d 04 37    lea eax,[rdi+rsi*1]
-  return a + b;                   // c3          ret
-}`} />
-
-This is real output. The function's instructions became four bytes, `8d 04 37 c3`. (Without `-fcf-protection=none`, Ubuntu's gcc adds a 4-byte security instruction in front.) The first three bytes are one instruction, `lea`. It was designed for a different job, but compilers use it to add two numbers in one step, and the sum lands where the caller looks for the answer. The inputs arrive in registers, which are tiny named storage slots inside the CPU, such as `rdi` and `rsi`. The last byte, `c3`, is the instruction `ret`, which means "go back to the code that called me".
-
-Why can't one set of bytes run on every computer? Each CPU family has its own instruction set. An ARM chip, the kind in most phones and in Apple M-series laptops, uses different numbers, so `8d 04 37 c3` means nothing useful to it. A C program has to be compiled again for each CPU family.
+<Figure diagram="machine-code" title="From C to machine code">
+  <Step>Computers store everything as bits, each a 0 or a 1. Eight bits make a <Term id="byte">byte</Term>. One byte has 256 patterns, read as the numbers 0 to 255. This byte is `8d`, or 141.</Step>
+  <Step>A <Term id="compiler">compiler</Term> translates code into other code. gcc does it ahead of time, turning this C function into four bytes. Instructions stored as numbers are <Term id="machine-code">machine code</Term>, the only thing a CPU runs directly.</Step>
+  <Step>The first three bytes are one instruction, `lea`, used here to add `a` and `b`. The last byte, `c3`, is `ret`: go back to the code that called this one.</Step>
+  <Step>Each CPU family numbers its instructions its own way. An ARM chip, the kind in most phones, cannot use these x86-64 bytes. A C program is compiled again for each family.</Step>
+</Figure>
 
 <ExplainBack
   id="e-cpu"
@@ -87,26 +75,31 @@ Why can't one set of bytes run on every computer? Each CPU family has its own in
   rubric={["The CPU only runs machine code", "Machine code is instructions as numbers in that CPU family's own format", "A .js file is text, so something must translate it or carry it out"]}
 />
 
-A JavaScript file is text, and it stays text when you ship it. The same `.js` file runs on an x86 laptop and on an ARM phone. So each machine needs something that turns that text into work for its own CPU. Segments 7 to 11 show what that something is.
+Yet one `.js` file, which stays text, runs on both kinds of chip. Segments 7 to 11 show how.
+
+<Deeper title="The real compiler output">
+
+This is gcc 13.3 on x86-64 Linux, with `-O1 -fcf-protection=none`. Without that last flag, Ubuntu's gcc adds a 4-byte security instruction in front.
+
+<Code code={`// add.c                          gcc 13.3 -O1 -fcf-protection=none
+int add(int a, int b) {           // 8d 04 37    lea eax,[rdi+rsi*1]
+  return a + b;                   // c3          ret
+}`} />
+
+`lea` was designed for a different job, but compilers use it to add two numbers in one step, and the sum lands where the caller looks for the answer. The inputs arrive in registers, tiny named storage slots inside the CPU, such as `rdi` and `rsi`. Java's `byte` type reads the same 256 patterns as -128 to 127.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s04-memory" goal="Memory is one long row of bytes, each with a numbered address">
 
-While code runs, the CPU needs a place to keep the instructions it is running and the data they work on. That place is <Term id="memory">memory</Term>, also called RAM. Picture it as one very long row of bytes.
-
-Each byte in the row has a position number, starting at 0. That number is the byte's <Term id="address">address</Term>. To read or write a byte, the CPU gives its address. Addresses are usually written in hexadecimal (base 16), such as `7ffe3f1e4000`.
-
-Read as an unsigned number, one byte stops at 255. A bigger number uses several bytes side by side.
-
-JavaScript code never sees real addresses, so the Predict uses a model. A `Uint8Array` is a JavaScript object that behaves like a short row of bytes. Its indexes 0, 1, 2 and 3 play the role of addresses.
-
-```text
-address:   0      1      2      3      4      5   ...
-         +------+------+------+------+------+------+
- bytes:  |  12  | 200  |   0  | 255  |  44  |   7  |  ...
-         +------+------+------+------+------+------+
-```
+<Figure diagram="memory-bytes" title="Memory is a row of bytes">
+  <Step>While code runs, the CPU keeps its instructions and data in <Term id="memory">memory</Term>, also called RAM: one long row of bytes. Each byte's position number, from 0 up, is its <Term id="address">address</Term>.</Step>
+  <Step>To read or write a byte, the CPU gives its address. Real addresses are large numbers, usually written in hexadecimal (base 16), such as `7ffe3f1e4000`.</Step>
+  <Step>One byte stops at 255, so a bigger number takes several bytes side by side. 1000 is 3 × 256 + 232. This x86-64 machine stores it as 232, then 3.</Step>
+  <Step>JavaScript never shows you real addresses. A `Uint8Array` behaves like a short row of bytes, and its indexes 0 to 3 play the role of addresses.</Step>
+</Figure>
 
 <Predict
   id="p-byte"
@@ -124,38 +117,23 @@ console.log(cells[1], cells[2]);`}
   explain="One byte holds 0 to 255. A Uint8Array keeps the lowest 8 bits of what you store (the spec's ToUint8), so 300 is stored as 44."
 />
 
-It prints `200 44`. 200 fits in one byte. 300 does not, because a byte stops at 255. A `Uint8Array` keeps only the lowest 8 bits of the number, and for 300 that leaves 300 - 256 = 44.
+<Deeper title="The rule in the specification">
 
-<Sidenote>The specification calls this conversion [ToUint8](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8). It turns any number into one of the 256 values from 0 to 255.</Sidenote>
+The specification calls this conversion [ToUint8](https://tc39.es/ecma262/multipage/abstract-operations.html#sec-touint8). It turns any number into one of the 256 values from 0 to 255.
 
-Is a `Uint8Array` real memory? Its bytes sit in real memory, but its indexes are not real addresses. Software you meet in segments 5 and 8 picks the real ones and hides them.
+Is a `Uint8Array` real memory? Its bytes sit in real memory, but its indexes are not real addresses. Software you meet in segments 5 and 8 picks the real addresses and hides them.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s05-process" goal="The operating system runs each program as a process with its own private memory">
 
-Many programs run on one computer at the same time: a browser, an editor, a Node server. One program is in charge of all of them. It starts them, gives each one a turn on the CPU, and keeps them apart. That program is the <Term id="operating-system">operating system</Term> (OS), such as Linux, Windows or macOS.
-
-A running program, as the operating system sees it, is a <Term id="process">process</Term>. Each process gets its own private range of memory addresses, called its address space. These addresses are virtual. The operating system maps each process's numbers to real RAM separately, so one process cannot touch another's memory by accident. Processes can share a region on purpose, but by default they are apart.
-
-On Linux, a process can read a map of its own memory from the file `/proc/self/maps`. Below, the same command ran twice, so two separate `node` processes printed part of their maps.
-
-<Code code={`// node -e 'const maps = require("fs").readFileSync("/proc/self/maps", "utf8");
-//   console.log(maps.split("\\n").filter((l) => /\\[(heap|stack)\\]/.test(l)).join("\\n"))'
-
-// run 1
-63fbdd2b8000-63fbdd520000 rw-p 00000000 00:00 0   [heap]
-7fffa371a000-7fffa373c000 rw-p 00000000 00:00 0   [stack]
-
-// run 2, the same command again
-62a12068b000-62a1208f3000 rw-p 00000000 00:00 0   [heap]
-7ffd5c40c000-7ffd5c42e000 rw-p 00000000 00:00 0   [stack]`} />
-
-The address ranges differ. And even if two processes used the same virtual address, it would normally name a different byte of RAM in each, because each process has its own map.
-
-<Sidenote>The Linux manual page for [fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html), the call that copies a process, says "The child process and the parent process run in separate memory spaces."</Sidenote>
-
-Are two browser tabs two processes? The Predict asks the part of that question that matters for your code.
+<Figure diagram="process-memory" title="Each process has its own memory">
+  <Step>The <Term id="operating-system">operating system</Term> (OS) starts programs, gives each a turn on the CPU, and keeps them apart. A running program, as the OS sees it, is a <Term id="process">process</Term>. Here `node` ran twice: two processes.</Step>
+  <Step>Each process gets its own private range of addresses, its address space. Both `node` runs printed their real `[heap]` and `[stack]` ranges. The ranges differ.</Step>
+  <Step>These addresses are virtual. The OS maps each process's addresses to its own part of RAM. Even the same address would normally name a different byte in each process.</Step>
+</Figure>
 
 <Predict
   id="p-tabs"
@@ -169,23 +147,43 @@ Are two browser tabs two processes? The Predict asks the part of that question t
   explain="Each page has its own global object and variables. Unrelated pages (no opener or parent-frame link) cannot share JavaScript memory; they can only exchange copies of data, for example with postMessage()."
 />
 
-Tab B throws `ReferenceError: score is not defined`. Each page has its own global object and its own variables, so code in tab B cannot name a value created in tab A.
+<Deeper title="The maps command, and browser tabs">
 
-<Sidenote>MDN's [execution model page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model) says two windows "with no opener or ancestor relationship" cannot share memory, even with the same origin. They can only exchange copies of data, for example with `postMessage()`.</Sidenote>
+On Linux, a process can read a map of its own memory from the file `/proc/self/maps`. The figure's ranges came from running this command twice. Processes can share a region on purpose, but by default they are apart. The Linux manual page for [fork(2)](https://man7.org/linux/man-pages/man2/fork.2.html), the call that copies a process, says "The child process and the parent process run in separate memory spaces."
+
+<Code code={`// node -e 'const maps = require("fs").readFileSync("/proc/self/maps", "utf8");
+//   console.log(maps.split("\\n").filter((l) => /\\[(heap|stack)\\]/.test(l)).join("\\n"))'
+
+// run 1
+63fbdd2b8000-63fbdd520000 rw-p 00000000 00:00 0   [heap]
+7fffa371a000-7fffa373c000 rw-p 00000000 00:00 0   [stack]
+
+// run 2, the same command again
+62a12068b000-62a1208f3000 rw-p 00000000 00:00 0   [heap]
+7ffd5c40c000-7ffd5c42e000 rw-p 00000000 00:00 0   [stack]`} />
+
+Tab B throws because each page has its own global object and its own variables. MDN's [execution model page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model) says two windows "with no opener or ancestor relationship" cannot share memory, even with the same origin. They can only exchange copies of data, for example with `postMessage()`.
 
 Whether two tabs are also two OS processes is up to the browser. Chrome usually puts different sites in different processes ([site isolation](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md)), and it may share one process between tabs of the same site. Your code can rely only on the first rule. Tabs do not share variables.
 
+</Deeper>
+
 </Segment>
 
-<Segment id="s06-thread" goal="A thread is one path of execution, and JavaScript runs your code on one thread at a time">
+<Segment id="s06-thread" goal="What a thread is, and what happens to a timer while a loop runs">
 
-Inside a process, the CPU follows one instruction after another. One such path through the code is a <Term id="thread">thread</Term>. A process can run several threads at once, for example one on each CPU core.
+<Figure diagram="threads" title="Threads in a process">
+  <Step>A <Term id="thread">thread</Term> is one path through a process's code, one instruction after another. Threads share the process's memory; each has its own stack.</Step>
+  <Step>Two cores can run two threads at the same moment, here threads 1 and 2.</Step>
+  <Step>Your JavaScript gets one thread. A worker you start gets another, with its own memory.</Step>
+</Figure>
 
-<Sidenote>The Linux manual page [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) says threads "share the same global memory ..., but each thread has its own stack". Segment 13 explains that stack.</Sidenote>
-
-Your JavaScript is different. The specification gives each agent, its word for one running JavaScript world, one executing thread. MDN says an agent "is analogous to a thread". So while one of your functions runs, no other JavaScript on that thread runs. Workers, which you start yourself, are separate agents with their own thread and memory.
-
-The Predict uses `setTimeout(fn, 0)`, which asks for `fn` to be called later, after at least 0 ms. Lesson 1.7 explains where `fn` waits.
+<Figure diagram="busy-loop" title="A timer and a busy loop" gate="p-busy">
+  <Step>This is the program in the prediction below. `setTimeout(fn, 0)` asks for `fn` to run after at least 0 ms. The callback waits.</Step>
+  <Step>The loop holds the thread for about 100 ms. The callback is due, but cannot start until the running code finishes.</Step>
+  <Step>The loop ends, `loop done` prints, and the script ends. The callback still waits.</Step>
+  <Step>The thread is free. The callback runs about 100 ms late and prints `timer`. A timer's delay is a minimum, not a deadline.</Step>
+</Figure>
 
 <Predict
   id="p-busy"
@@ -203,54 +201,54 @@ console.log("loop done");`}
   explain="Your JavaScript runs on one thread, and each job runs to completion. A timer callback waits for its turn until the running code has finished. Callbacks you call directly, like the one you pass to forEach, run inside the current work."
 />
 
-`loop done` prints first, then `timer`. The timer was due after 0 ms, but its function could not start while the loop held the thread. It ran about 100 ms late. It was not skipped. A timer's delay is a minimum, not a deadline.
+<Deeper title="Run to completion, and many cores">
 
-<Sidenote>The specification, section [Jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs): "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent." "Run to completion" is the usual teaching name for this rule.</Sidenote>
+The Linux manual page [pthreads(7)](https://man7.org/linux/man-pages/man7/pthreads.7.html) says threads "share the same global memory ..., but each thread has its own stack". Segment 13 explains that stack.
 
-In a browser, a long loop means the page cannot react to clicks or scrolling (MDN). In Node, every other request waits.
+The specification calls one running JavaScript world an agent and gives each agent one executing thread, and MDN says an agent "is analogous to a thread". A worker you start is another agent, with its own thread and memory. A process's threads can run at the same moment, for example one on each CPU core. So while one of your functions runs, no other JavaScript on that thread runs. The specification, section [Jobs](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-jobs): "Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts in an agent." "Run to completion" is the usual teaching name for this rule.
 
-You may ask, "My laptop has many cores, so why does one loop block the timer?" More cores help only when more than one thread has work to do, and your JavaScript has one. In Java, the OS can switch between threads at almost any instruction, so two Java threads really can interleave.
+Lesson 1.7 shows where a waiting callback waits. In a browser, a long loop means the page cannot react to clicks or scrolling (MDN). In Node, every other request waits.
+
+"My laptop has many cores, so why does one loop block the timer?" More cores help only when more than one thread has work to do, and your JavaScript has one. In Java, the OS can switch between threads at almost any instruction, so two Java threads really can interleave.
+
+</Deeper>
 
 </Segment>
 
-<Segment id="s07-interpreter" goal="A compiler translates ahead of time; an interpreter carries out code itself; bytecode sits between">
+<Segment id="s07-interpreter" goal="A compiler translates code, gcc ahead of time; an interpreter carries out code itself; bytecode sits between">
 
-There are two ways to get source code running. The first is to compile it. A compiler translates code into another form. When it translates the whole program to machine code before the program starts, as gcc does in segment 3, that is called ahead-of-time compilation, and the CPU then runs the result. The second is to hand your code to a program that reads it and carries out each step itself. That program is an <Term id="interpreter">interpreter</Term>. The interpreter is itself machine code. The CPU runs the interpreter, and the interpreter runs your code.
-
-<Code code={`// compile ahead of time:  add.c ---gcc---> machine code ---> the CPU runs it
-// interpret:              add.sh -------------------------> bash, itself machine code, reads it and does each step
-// bytecode (Java):        Add.java --javac--> bytecode (.class) ---> the JVM interprets it,
-//                                                                     and compiles hot methods to machine code`} />
-
-Each way has a cost. Compiling takes time before the first run, but the result runs fast. Interpreting starts at once, but every step costs extra work, because the interpreter has to look at each instruction and decide what to do.
-
-There is a middle path. A compiler can translate source code into a compact list of simple instructions designed for an interpreter, not for a CPU. That form is <Term id="bytecode">bytecode</Term>. It is easier and faster to interpret than raw text.
-
-Java does exactly this. `javac` compiles `.java` files into `.class` files full of bytecode, and the JVM runs that bytecode.
-
-<Sidenote>The [java command docs](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), option `-Xmixed`: "Executes all bytecode by the interpreter except for hot methods, which are compiled to native code. On by default." Native code means machine code. Hot means run often.</Sidenote>
-
-So is Java compiled or interpreted? Both, at different moments. The next segments show that JavaScript is the same.
+<Figure diagram="compile-vs-interpret" title="Compile, interpret, or both">
+  <Step>One way to run source code is to compile it ahead of time. gcc turns `add.c` into machine code before the program starts. That takes time up front, but the result runs fast.</Step>
+  <Step>The other way: an <Term id="interpreter">interpreter</Term> reads your code and carries out each step itself. bash, itself machine code, runs `add.sh` this way. It starts at once, but every step costs extra work.</Step>
+  <Step>Between the two sits <Term id="bytecode">bytecode</Term>: a compact list of simple instructions made for an interpreter, not for a CPU. `javac` compiles `Add.java` to bytecode, and the JVM's interpreter runs it.</Step>
+  <Step>The JVM also compiles hot methods, the ones that run often, to machine code. So is Java compiled or interpreted? Both, at different moments. JavaScript is the same.</Step>
+</Figure>
 
 <ExplainBack
   id="e-compile"
   prompt="In one sentence, what does a compiler produce, and what does an interpreter do instead?"
-  rubric={["A compiler produces new code (machine code or bytecode) before the code runs", "An interpreter produces no machine code for your program; it carries out each step itself while reading", "The interpreter is itself machine code that the CPU runs"]}
+  rubric={["A compiler produces new code (machine code or bytecode), ahead of time like gcc or while the program runs", "An interpreter produces no machine code for your program; it carries out each step itself while reading", "The interpreter is itself machine code that the CPU runs"]}
 />
 
-A compiler produces new code. It can do that before the program runs or, as segment 11 shows, while it runs. An interpreter produces no machine code for your program. It does the work itself while it reads. Java uses both. JavaScript does too, but there is no separate compile step that you run yourself.
+<Deeper title="Interpreter costs, and Java's docs">
+
+An interpreter has to look at each instruction and decide what to do, every time it runs it. The interpreter is itself machine code. The CPU runs the interpreter, and the interpreter runs your code. Bytecode is easier and faster to interpret than raw text.
+
+The [java command docs](https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html), option `-Xmixed`: "Executes all bytecode by the interpreter except for hot methods, which are compiled to native code. On by default." Native code means machine code. Hot means run often.
+
+A compiler produces new code. It can do that before the program runs or, as segment 11 shows, while it runs. An interpreter produces no machine code for your program. It does the work itself while it reads. JavaScript uses both too, but there is no separate compile step that you run yourself.
+
+</Deeper>
 
 </Segment>
 
-<Segment id="s08-engine-host" goal="The engine implements the language; the runtime (host) adds the outside world">
+<Segment id="s08-engine-host" goal="Which parts of JavaScript come from the engine and which from the runtime (host)">
 
-Running JavaScript takes two pieces of software working together. The first knows the language itself, with its numbers, strings, objects and functions, and built-ins such as `Math`, `Array` and `JSON`. It reads your source code, parses it and runs it. This is the <Term id="engine">engine</Term>, or JavaScript engine. V8 is the engine in Chrome and in Node. Firefox uses SpiderMonkey, and Safari uses JavaScriptCore.
-
-The second piece is the program around the engine. It gives JavaScript a way to reach the outside world. This is the <Term id="runtime">runtime</Term>, which the specification calls the host. A browser adds the page (`document`), timers and `fetch`. Node adds files, network sockets, information about its own process, and its own timers.
-
-<Sidenote>MDN, [Execution model](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model): "JavaScript execution requires the cooperation of two pieces of software: the JavaScript engine and the host environment." The specification, [section 4.1](https://tc39.es/ecma262/multipage/overview.html#sec-web-scripting): "A web browser provides an ECMAScript host environment ... A web server provides a different host environment."</Sidenote>
-
-Isn't `console.log` part of JavaScript? Commit to an answer before you read on.
+<Figure diagram="engine-runtime" title="Engine and runtime" gate="p-host">
+  <Step>Running JavaScript takes two pieces of software. The <Term id="engine">engine</Term> knows the language and its built-ins, such as `Math` and `JSON`. It parses and runs your code. V8 is the engine in Chrome and in Node.</Step>
+  <Step>The second is the program around the engine: the <Term id="runtime">runtime</Term>, which the spec calls the host. It lets JavaScript reach the outside world. A browser adds the page (`document`), timers, `fetch` and `console`.</Step>
+  <Step>Node wraps the same V8 in a different runtime. It adds files, network sockets, its own process and its own timers. It has no page, so it has no `document`.</Step>
+</Figure>
 
 <Predict
   id="p-host"
@@ -265,30 +263,30 @@ Isn't `console.log` part of JavaScript? Commit to an answer before you read on.
   explain="Math comes from the engine, so it exists everywhere. document and setTimeout come from the runtime: browsers add both, Node adds only setTimeout."
 />
 
-It prints `object undefined function`. `Math` comes from the engine, so every JavaScript environment has it. `document` comes from the browser, so Node does not have it. `setTimeout` comes from the runtime too, and browsers and Node each supply their own version.
+When code works in the browser but fails in Node, first ask whether it uses the language or the runtime.
 
-`console` is not in ECMAScript, the official JavaScript standard, at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ.
+<Deeper title="Other engines, and console">
 
-<Sidenote>The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "a host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."</Sidenote>
+Firefox uses the SpiderMonkey engine, and Safari uses JavaScriptCore. MDN, [Execution model](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Execution_model): "JavaScript execution requires the cooperation of two pieces of software: the JavaScript engine and the host environment." The specification, [section 4.1](https://tc39.es/ecma262/multipage/overview.html#sec-web-scripting): "A web browser provides an ECMAScript host environment ... A web server provides a different host environment."
 
-So when code works in the browser but fails in Node, first ask whether it uses the language or the runtime.
+`Math` comes from the engine, so every JavaScript environment has it. `document` comes from the browser, so Node does not have it. `setTimeout` comes from the runtime too, and browsers and Node each supply their own version.
+
+`console` is not in ECMAScript, the official JavaScript standard, at all. A separate document, the [WHATWG Console Standard](https://console.spec.whatwg.org/), defines it. Browsers and Node both provide one, and other runtimes may differ. The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "a host or implementation may provide additional types, values, objects, properties, and functions beyond those described in this specification."
+
+</Deeper>
 
 </Segment>
 
-<Segment id="s09-parse-first" goal="The engine parses the whole script before running any of it, so early errors stop everything">
+<Segment id="s09-parse-first" goal="The parse and run phases of a script, and what an early error is">
 
-Now you can explain the hook from segment 1. Before it runs anything, the engine parses the whole file. Parsing means reading all of the text and working out how the code fits together, for example which parts are functions and which statements sit inside which blocks. Engines usually build a tree from it. How much detail they build is their choice. Running the code is a separate step that starts only after parsing succeeds.
+<Figure diagram="parse-then-run" title="Parse first, then run">
+  <Step>Back to the program from segment 1. The engine handles a script in two phases. First it parses all of it, working out how the code fits together. Only then does it run any line.</Step>
+  <Step>While parsing, the engine looks for early errors, mistakes it can find without running anything. A second `let total` in one scope is one. So the run never starts, and nothing prints.</Step>
+  <Step>Change both `let`s to `var`. `var` allows a repeated declaration, so the parse finds no early error.</Step>
+  <Step>Now the run phase starts and executes lines 1 to 4 in order. The console shows `one`, then `two`.</Step>
+</Figure>
 
-While parsing, the engine also looks for early errors. These are mistakes it can find without running anything. Declaring the same `let` name twice in one scope is one of them. That is why the hook printed nothing, not even `one`. The older keyword `var` allows a repeated declaration, so the same file with `var` runs to the end.
-
-<Code runnable code={`console.log("one"); // → one
-console.log("two"); // → two
-var total = 1;
-var total = 2;`} />
-
-<Sidenote>The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "An early error is an error that can be detected and reported prior to the evaluation of any construct in the Script containing the error. ... An implementation must report early errors in a Script as part of parsing that Script in ParseScript." [ParseScript](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-parse-script) is the spec's name for the parse step. Running is a later step, ScriptEvaluation.</Sidenote>
-
-Now change one thing. Move the repeated `let` inside a function that is never called.
+Now move the repeated `let` into a function that is never called.
 
 <Predict
   id="p-parse-first"
@@ -308,15 +306,7 @@ console.log("two");`}
   explain="Parsing covers the whole script, function bodies included. An early error anywhere stops the script before its first line runs."
 />
 
-Nothing prints again. The bad lines never run, but they are still part of the script, and the whole script is parsed before any of it runs.
-
-V8 adds a detail of its own here. It does not fully compile a function until the function is called. To save time, it preparses the function body instead, which is a quicker pass that still checks the syntax. This is how V8 works, not a rule of the language.
-
-<Sidenote>V8 blog, [lazy parsing and the preparser](https://v8.dev/blog/preparser) (2019): "The preparser verifies that the functions it skips are syntactically valid."</Sidenote>
-
-Why check code that never runs? The specification requires it, and the result is one clear rule. A script either has no early errors and starts, or it does not start at all. You never get a half-run file because of an early error near the bottom.
-
-Not every mistake is an early error, though. The specification says an implementation "shall not treat other kinds of errors as early errors". Reading a variable that does not exist is only noticed when that line runs. The code below never calls the function, so it runs to the end.
+Not every mistake is an early error. A missing name is found only when its line runs, so this file runs to the end.
 
 <Code runnable code={`console.log("one"); // → one
 function neverCalled() {
@@ -324,21 +314,53 @@ function neverCalled() {
 }
 console.log("two"); // → two`} />
 
+<Deeper title="The spec's rule, and V8's preparser">
+
+Parsing means reading all of the text and working out how the code fits together, for example which parts are functions and which statements sit inside which blocks. Engines usually build a tree from it. How much detail they build is their choice.
+
+The specification, [section 17](https://tc39.es/ecma262/multipage/error-handling-and-language-extensions.html#sec-error-handling-and-language-extensions): "An early error is an error that can be detected and reported prior to the evaluation of any construct in the Script containing the error. ... An implementation must report early errors in a Script as part of parsing that Script in ParseScript." [ParseScript](https://tc39.es/ecma262/multipage/ecmascript-language-scripts-and-modules.html#sec-parse-script) is the spec's name for the parse step. Running is a later step, ScriptEvaluation. The same section says an implementation "shall not treat other kinds of errors as early errors".
+
+With `var`, the file from segment 1 runs to the end:
+
+<Code runnable code={`console.log("one"); // → one
+console.log("two"); // → two
+var total = 1;
+var total = 2;`} />
+
+V8 adds a detail of its own. Many functions are not fully compiled until they are called. To save time, V8 preparses such a function's body instead, a quicker pass that still checks the syntax, and parses and compiles it fully on its first call. Some functions, such as one wrapped in parentheses, are compiled right away (segment 10). This is how V8 works, not a rule of the language. V8 blog, [lazy parsing and the preparser](https://v8.dev/blog/preparser) (2019): "The preparser verifies that the functions it skips are syntactically valid."
+
+Why check code that never runs? The specification requires it, and the result is one clear rule. A script either has no early errors and starts, or it does not start at all. You never get a half-run file because of an early error near the bottom.
+
+</Deeper>
+
 </Segment>
 
-<Segment id="s10-bytecode" goal="V8 turns each function into bytecode, usually the first time it is called">
+<Segment id="s10-bytecode" goal="What bytecode is, how Ignition runs it, and when V8 makes it">
 
-V8 does not run the parsed tree directly. It first turns each function into bytecode, and an interpreter called Ignition runs that bytecode. Ignition, and everything from here to segment 12, is how V8 works, not a rule of JavaScript.
+<Figure diagram="ignition-bytecode" title="Ignition runs add(2, 3)">
+  <Step>V8 turns each function into bytecode, and its interpreter, Ignition, runs it. These are the real 6 bytes for `add`: three instructions. Slots `a0` and `a1` hold the arguments, 2 and 3.</Step>
+  <Step>`Ldar a1` loads `b`, which is 3, into the accumulator. The accumulator is one special slot that most Ignition instructions read from and write to.</Step>
+  <Step>`Add a0, FBV[0]` adds `a` to it, so the accumulator now holds 5. `FBV[0]` is a feedback slot, where V8 notes what kinds of values it saw: here, small integers.</Step>
+  <Step>`Return` hands back the 5 in the accumulator. The CPU never runs `Ldar` or `Add`. It runs Ignition, which is machine code, and Ignition does the work.</Step>
+</Figure>
 
-<Sidenote>V8 blog, [Maglev](https://v8.dev/blog/maglev) (2023): "All JavaScript code is first compiled to ignition bytecode, and executed by interpreting it."</Sidenote>
+Bytecode and Ignition are how V8 works, not rules of JavaScript.
 
-You can see this bytecode yourself. Node prints it with the flag `--print-bytecode`. Below is real output from Node v26 (V8 14.6) for `function add(a, b) { return a + b; }`. Its bytecode is 6 bytes long and has three instructions.
+<Predict
+  id="p-lazy"
+  prompt="In V8, when is a function's bytecode made?"
+  answer="b"
+  options={[
+    { id: "a", text: "When the file loads, for every function in it", misconception: "FND-JS-COMPILED-AHEAD", feedback: "You pictured JavaScript being translated in full before it runs, like gcc with a C file. V8 only parses most function bodies at load time. For most functions it makes the bytecode when the function is first called, and a function that is never called usually gets none." },
+    { id: "b", text: "The first time the function is called (for most functions)", feedback: "Right. V8 compiles lazily: parse everything first, make bytecode for a function when it is first needed, then reuse that bytecode on later calls." },
+    { id: "c", text: "Never. V8 reads the function's source text and runs it one line at a time", misconception: "FND-LINE-BY-LINE", feedback: "You pictured the engine working straight from your text, line by line. V8 turns the whole function into bytecode first and usually reuses that bytecode on later calls. (It may throw old bytecode away to save memory and make it again.) Hot functions may later get machine code too." }
+  ]}
+  explain="V8 compiles most functions to bytecode lazily, on their first call, and reuses the bytecode after that. This is a V8 choice, not a language rule."
+/>
 
-- `Ldar a1` loads the second parameter, `b`, into the accumulator. The accumulator is one special slot that most Ignition instructions read from and write to. It is a V8 word, not a JavaScript term.
-- `Add a0, FBV[0]` computes `a + b`, taking `a` from its slot and `b` from the accumulator, and leaves the result in the accumulator. `FBV[0]` names a feedback slot, a small record where V8 notes what kinds of values it saw at this spot, such as "both were small integers". Segment 11 shows why that matters.
-- `Return` returns whatever is in the accumulator.
+<Deeper title="The printout, and lazy compilation">
 
-Compare this with segment 3. The CPU cannot run `Ldar` or `Add`. Ignition is machine code, and it reads these bytes and does the work.
+V8 blog, [Maglev](https://v8.dev/blog/maglev) (2023): "All JavaScript code is first compiled to ignition bytecode, and executed by interpreting it." Node prints the bytecode with the flag `--print-bytecode`. This is real output from Node v26 (V8 14.6) for `function add(a, b) { return a + b; }`. `a0` is the first parameter, `a`, and `a1` the second, `b`. The accumulator is a V8 word, not a JavaScript term.
 
 ```text
 $ node --print-bytecode --print-bytecode-filter=add add.js
@@ -350,19 +372,7 @@ Bytecode length: 6
    5 : b7          Return
 ```
 
-<Predict
-  id="p-lazy"
-  prompt="In V8, when is a function's bytecode made?"
-  answer="b"
-  options={[
-    { id: "a", text: "When the file loads, for every function in it", misconception: "FND-JS-COMPILED-AHEAD", feedback: "You pictured JavaScript being translated in full before it runs, like gcc with a C file. V8 only parses most function bodies at load time. For most functions it makes the bytecode when the function is first called, and a function that is never called usually gets none." },
-    { id: "b", text: "The first time the function is called (for most functions)", feedback: "Right. V8 compiles lazily: parse everything first, make bytecode for a function when it is first needed, then reuse that bytecode on later calls." },
-    { id: "c", text: "Never. V8 reads the function's source text and runs it one line at a time", misconception: "FND-LINE-BY-LINE", feedback: "You pictured the engine working straight from your text, line by line. V8 turns the whole function into bytecode first and usually reuses that bytecode on later calls. (It may throw old bytecode away to save memory and make it again.) Hot functions may later get machine code too." }
-  ]}
-  explain="V8 compiles a function to bytecode lazily, on its first call, and reuses the bytecode after that. This is a V8 choice, not a language rule."
-/>
-
-Here is the evidence from Node v26. V8 printed the bytecode for `add` after the first log line, and only once, even though `add` was called twice. With the filter set to `neverCalled`, it printed no bytecode at all.
+Here is the evidence for lazy compilation, from Node v26. V8 printed the bytecode for `add` after the first log line, and only once, even though `add` was called twice. With the filter set to `neverCalled`, it printed no bytecode at all.
 
 <Code code={`function add(a, b) {
   return a + b;
@@ -384,20 +394,18 @@ Making bytecode only when a function is first needed is called lazy compilation.
 
 Why not make all the bytecode at once? Many functions in a real web page never run. Making their bytecode would waste startup time and memory.
 
+</Deeper>
+
 </Segment>
 
-<Segment id="s11-jit" goal="Hot functions get compiled to machine code while the program runs, based on what V8 has seen">
+<Segment id="s11-jit" goal="What V8's JIT compiler does while a program runs">
 
-An interpreter is flexible, but it pays a cost on every instruction. The V8 team wrote that "interpreters have inherent overheads that we can't get rid of" ([Sparkplug](https://v8.dev/blog/sparkplug), 2021).
-
-So V8 watches your code while it runs. A function that runs often is called hot, and V8 compiles hot functions to machine code that the CPU runs directly. Compiling to machine code while the program is already running is called <Term id="jit">JIT</Term> compilation, short for just-in-time.
-
-V8 has four tiers today.
-
-- Ignition interprets bytecode.
-- Sparkplug (2021) turns bytecode into machine code "almost instantaneously", without optimizing it.
-- Maglev (2023) is a fast optimizing compiler that "sits between our existing Sparkplug and TurboFan compilers".
-- TurboFan is the top tier, "focused on peak performance". In 2025 the V8 team described moving TurboFan's back end to a new internal design called Turboshaft. TurboFan is still the name of the top tier.
+<Figure diagram="jit-tiers" title="V8's four tiers" gate="p-faster">
+  <Step>V8 runs code in four tiers. Ignition, at the bottom, interprets bytecode. The three above it make machine code: quick, optimized, and peak. `add` starts in Ignition, like all code.</Step>
+  <Step>An interpreter pays a cost on every instruction. So while `add` runs, V8 notes in its feedback slots what it sees. Here, `a + b` has had small integers every time.</Step>
+  <Step>A function that runs often is hot. V8 may compile a hot function to machine code that the CPU runs directly, while the program runs. That is <Term id="jit">JIT</Term> (just-in-time) compilation.</Step>
+  <Step>Maglev and TurboFan use the feedback to guess, so their code is often speculative. Which tier, and when, is V8's choice. The language promises nothing about speed.</Step>
+</Figure>
 
 <Predict
   id="p-faster"
@@ -412,21 +420,34 @@ V8 has four tiers today.
   explain="JIT compilation is something engines do, not something the language promises. A JIT changes how fast code runs, never what it computes."
 />
 
-The JavaScript specification says nothing about speed or compilation. Tiers, thresholds and timing are V8 choices, and they change between versions. The V8 posts cited here give no fixed "after N calls" number.
+<Deeper title="The tiers in V8's words">
+
+The V8 team wrote that "interpreters have inherent overheads that we can't get rid of" ([Sparkplug](https://v8.dev/blog/sparkplug), 2021).
+
+- Ignition interprets bytecode.
+- Sparkplug (2021) turns bytecode into machine code "almost instantaneously", without optimizing it.
+- Maglev (2023) is a fast optimizing compiler that "sits between our existing Sparkplug and TurboFan compilers" ([Maglev](https://v8.dev/blog/maglev)).
+- TurboFan is the top tier, "focused on peak performance". In 2025 the V8 team described moving TurboFan's back end to a new internal design called Turboshaft. TurboFan is still the name of the top tier.
+
+A function does not have to climb every rung. In the run in segment 12, `add` went from Ignition straight to Maglev. Tiers, thresholds and timing change between V8 versions, and the V8 posts cited here give no fixed "after N calls" number.
 
 A JIT compiles code. It does not keep a table of past results. The optimizer may skip work whose result it can already prove, but everything your code does that you can observe, such as logging or changing a variable, still happens on every call. Saving results by arguments is a different technique, memoization, which you write yourself.
 
-You may ask, "If machine code is faster, why not compile everything at the start?" Compiling costs time, and the optimizing compilers need feedback that only exists after the code has run for a while. Most code never runs often enough to repay that cost.
+"If machine code is faster, why not compile everything at the start?" Compiling costs time, and the optimizing compilers need feedback that only exists after the code has run for a while. Most code never runs often enough to repay that cost. So when you time code, expect the first runs to be slower (warm-up).
 
-So when you time code, expect the first runs to be slower (warm-up).
+</Deeper>
 
 </Segment>
 
-<Segment id="s12-deopt" goal="Optimized code rests on guesses, and when a guess fails V8 throws the code away, never the meaning">
+<Segment id="s12-deopt" goal="What V8 does when a guess behind its optimized code turns out wrong">
 
-How can optimized code be faster than the interpreter? "During execution V8 tracks how the program behaves, including tracking object shapes and types" ([Maglev](https://v8.dev/blog/maglev)). The feedback slots from segment 10 hold this record. The optimizing compilers use it to make "often speculative" machine code, which is code that assumes the future will look like the past.
-
-Speculative code rests on guesses, such as "`a` and `b` are always small integers". What happens when a guess turns out wrong? In the Predict, the loop makes `add` hot by calling it only with numbers. The last line then calls it with strings.
+<Figure diagram="deopt" title="A guess fails: deoptimization" gate="p-deopt">
+  <Step>This is the program in the prediction below. In the loop, `add` runs as bytecode in Ignition. Its feedback says both values are small integers, which V8 calls Smi.</Step>
+  <Step>V8 marks `add` hot and stable and compiles it with Maglev. The compiling happens on a helper thread, off the thread that runs your code.</Step>
+  <Step>Maglev's machine code assumes `a` and `b` are Smi, and checks that before relying on it. Every loop call passes the check, and the console shows `100000`.</Step>
+  <Step>Then `add("ab", "cd")` runs. The check fails, because a string is not a Smi. V8 deoptimizes: it goes back to Ignition at the exact point of the failed check.</Step>
+  <Step>The optimized code is dropped. Ignition finishes the call by the language rules, so `"ab" + "cd"` gives `"abcd"`. No work is done twice. A deopt changes speed, never the result.</Step>
+</Figure>
 
 <Predict
   id="p-deopt"
@@ -449,7 +470,17 @@ console.log(add("ab", "cd"));`}
   explain="Optimized code checks its guesses. When one fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter, so the result is always what the language says."
 />
 
-It prints `100000`, then `abcd`. Here is what V8 reported when the same code ran with the flags `--trace-opt --trace-deopt`. The lines are trimmed to the ones about `add`, and the exact text changes between V8 versions.
+<ExplainBack
+  id="e-deopt"
+  prompt="In one sentence, how can V8 run machine code that only handles small integers without ever breaking JavaScript's rules?"
+  rubric={["The optimized code checks its guess (for example, both values are small integers) before relying on it", "When a check fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter", "The interpreter follows the language rules, so only speed changes, never the result"]}
+/>
+
+<Deeper title="V8's trace, and its other threads">
+
+"During execution V8 tracks how the program behaves, including tracking object shapes and types" ([Maglev](https://v8.dev/blog/maglev)). The feedback slots from segment 10 hold this record. The optimizing compilers use it to make "often speculative" machine code, which is code that assumes the future will look like the past.
+
+This is what V8 reported when the program ran with the flags `--trace-opt --trace-deopt`. The lines are trimmed to the ones about `add`, and the exact text changes between V8 versions.
 
 ```text
 [marking ... <JSFunction add ...> for optimization to MAGLEV, ConcurrencyMode::kConcurrent, reason: hot and stable]
@@ -460,57 +491,48 @@ It prints `100000`, then `abcd`. Here is what V8 reported when the same code ran
 abcd
 ```
 
-Smi is V8's name for a small integer. The optimized code checked its guess, the check failed, and V8 deoptimized. It dropped the optimized code and finished the call in the interpreter, or in V8's words, it "tiers-down and continues the function's execution in the interpreter" ([Sparkplug](https://v8.dev/blog/sparkplug)). V8 rebuilds the interpreter's state at the exact point of the failed check, so work the function already did is not done twice. The interpreter follows the language rules, so `"ab" + "cd"` gave `"abcd"`. A deoptimization can change speed. It never changes the result.
+In V8's words, a deoptimization "tiers-down and continues the function's execution in the interpreter" ([Sparkplug](https://v8.dev/blog/sparkplug)). V8 rebuilds the interpreter's state at the exact point of the failed check, so work the function already did is not done twice.
 
-Does JavaScript use only one thread, then? Your JavaScript does. But `ConcurrencyMode::kConcurrent` in the trace means V8 compiled `add` on a helper thread, off the thread that runs your code. V8 also uses helper threads to clean up unused memory (segment 16), and Node runs some slow work, such as file reads and `crypto.pbkdf2`, on a pool of helper threads. These helper threads never run your JavaScript functions. Only workers, which you start yourself, run JavaScript on other threads.
+Does JavaScript use only one thread, then? Your JavaScript does. But `ConcurrencyMode::kConcurrent` in the trace means V8 compiled `add` on a helper thread. V8 also uses helper threads to clean up unused memory (segment 16), and Node runs some slow work, such as file reads and `crypto.pbkdf2`, on a pool of helper threads. These helper threads never run your JavaScript functions. Only workers, which you start yourself, run JavaScript on other threads.
 
-<ExplainBack
-  id="e-deopt"
-  prompt="In one sentence, how can V8 run machine code that only handles small integers without ever breaking JavaScript's rules?"
-  rubric={["The optimized code checks its guess (for example, both values are small integers) before relying on it", "When a check fails, V8 deoptimizes: it drops the optimized code and continues in the interpreter", "The interpreter follows the language rules, so only speed changes, never the result"]}
-/>
+</Deeper>
 
 </Segment>
 
 <Segment id="s13-call-stack" goal="Each call that has not finished is a frame on the call stack; calling pushes, returning pops">
 
-Back to the one thread that runs your code. When one function calls another, the caller pauses in the middle of a line. When the inner function returns, the caller has to continue from exactly that spot, with its own variables still in place. So the engine keeps a record for every call that has started but not finished. The record says which function it is, where it paused, and what its variables hold. That record is a <Term id="stack-frame">stack frame</Term>.
-
-The frames form a list. A new call goes on top, and only the top frame runs. When a call returns, its frame is removed from the top. Last in, first out, like a stack of plates. This list is the <Term id="call-stack">call stack</Term>.
-
-<Sidenote>The specification calls a frame an "execution context" and the list the "execution context stack" ([section 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)): "The running execution context is always the top element of this stack." This is an abstract model. Engines build real frames, and an optimizer may even merge a small function into its caller (inlining). Lesson 1.2 uses the spec's names.</Sidenote>
-
-Before you step, learn the two parts of the picture. The left column is the call stack, newest frame on top, with the script's own frame at the bottom. The right side shows each call's variables in a box of its own. Lesson 1.2 gives those boxes their proper name. The visualizer stops once and asks what changes next.
-
 <Viz example="nested-calls" view="scope" pauseAt={[4]} title="Call stack: nested calls" />
 
-`square` was called twice, and each call got its own frame, one after the other. The second frame started fresh with `n = 4`. Nothing was left over from the first call.
+Each call that has started but not finished keeps a record: which function it is, where it paused, and what its variables hold. That record is a <Term id="stack-frame">stack frame</Term>. A call pushes a new frame on top, only the top frame runs, and a return removes it. Last in, first out. That list, the left column above, is the <Term id="call-stack">call stack</Term>.
 
-Only the top frame was ever running. The frames below it were paused, each waiting for a value to come back.
+<Deeper title="Paused callers, and the spec's names">
 
-Where does `sumOfSquares` wait while `square` runs? In its own frame. The frame records the exact spot, the middle of `const x = square(a)`, and the values of `a` and `b`. That record is what lets one thread go down into calls and come back up. A frame also leaves when an error is thrown out of its call. Generators and async functions, in later lessons, can pause a frame and resume it, so this simple picture covers ordinary calls.
+A caller pauses in the middle of a line, and its frame keeps that spot and its variables. So `sumOfSquares` waits in its own frame while `square` runs, paused inside `const x = square(a)` with `a` and `b` still set. That is what lets one thread go down into calls and come back up. The right side of the picture shows each call's variables in a box of its own. Lesson 1.2 gives those boxes their proper name.
+
+A frame also leaves when an error is thrown out of its call. Generators and async functions, in later lessons, can pause a frame and resume it.
+
+The specification calls a frame an "execution context" and the list the "execution context stack" ([section 9.4](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#sec-execution-contexts)): "The running execution context is always the top element of this stack." This is an abstract model. Engines build real frames, and an optimizer may even merge a small function into its caller (inlining).
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s14-recursion" goal="A recursive function gets a separate frame for every call, each with its own variables">
 
-A function that calls itself is recursive. The call stack does not care that it is the same function. Every call gets a new frame.
-
-Before you step, decide. Will the three calls of `factorial` share one `n`, or will each call have its own? Watch the right side as you step.
-
 <Viz example="factorial" view="scope" pauseAt={[8]} title="Call stack: recursion" />
 
-Three `factorial` frames were on the stack at the same time, holding `n = 3`, `n = 2` and `n = 1`. Each frame had its own `n`.
-
-The deepest call finished first. Then each frame below it received an answer and finished in turn: 1, then 2 × 1 = 2, then 3 × 2 = 6. The condition that stops the recursion, here `n === 1`, is called the base case.
-
-Every frame takes up space until its call returns. That is the cost of recursion. The next segment shows what happens when the calls never stop.
+A function that calls itself is recursive, and each call gets its own frame. Three `factorial` frames held `n` = 3, 2 and 1 at once. The deepest returned first, then 2 × 1 = 2, then 3 × 2 = 6. `n === 1`, which stops the recursion, is the base case. Every frame takes space until its call returns.
 
 </Segment>
 
-<Segment id="s15-overflow" goal="A stack overflow happens when calls keep pushing frames and none return, until the fixed-size stack is full">
+<Segment id="s15-overflow" goal="What happens to the call stack when a function keeps calling itself">
 
-`factorial` had a base case, so its calls stopped and every frame could return. The function below has no base case. Every call to `down` starts another call to `down` before it can finish.
+<Figure diagram="stack-overflow" title="Calls that never return" gate="p-overflow">
+  <Step>This is the program in the prediction below. Each thread has a stack for its frames. For now, only the script's frame is on it.</Step>
+  <Step>`down(3)` calls `down(2)`, which calls `down(1)`. Each call pushes a frame, and none returns, because `down` has no base case. Only the top frame runs.</Step>
+  <Step>The frames pile up. The stack is a fixed-size block: V8 lets JavaScript use 984 KB of it by default. About ten thousand small frames nearly fill it, long before RAM runs out.</Step>
+  <Step>The stack is full, so V8 throws a `RangeError`. The error leaves every `down` frame, and the `catch` prints it. This is a stack overflow. The fix is a base case, or a loop.</Step>
+</Figure>
 
 <Predict
   id="p-overflow"
@@ -532,11 +554,11 @@ try {
   explain="Every call pushes a frame and only a return removes it. With no base case, frames pile up until the fixed-size stack is full, and V8 throws RangeError."
 />
 
-It prints `RangeError: Maximum call stack size exceeded`. Every call pushed a frame and none returned, so the stack reached its limit. V8 then threw a `RangeError`, and the `catch` block printed it. This is a stack overflow. A `while (true) {}` loop is different. It pushes no frames, so it can run forever without overflowing.
+<Deeper title="Count the frames, and other engines">
 
-You may ask, "Why is the limit so small when my laptop has gigabytes of memory?" A thread's stack is one fixed-size block that the OS sets up, and frames sit side by side inside it. V8 also sets its own, smaller limit on how much of that stack JavaScript may use: 984 KB by default (`node --v8-options` describes `--stack-size=984` as the "default size of stack region v8 is allowed to use"). Run the code below to count how many frames fit. On Node v26, it counted 12,517 frames on the machine used for this lesson. Bigger frames mean fewer calls. Java works the same way. `-Xss` sets the stack size per thread (1024 KB by default on Linux x64), and running out throws `StackOverflowError`.
+A `while (true) {}` loop pushes no frames, so it can run forever without overflowing.
 
-The specification sets no limit and names no error for this, so the overflow itself is engine behaviour. MDN lists `RangeError` in Chrome and Safari, but `InternalError: too much recursion` in Firefox ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)). Those are engine choices. The fix is in your code. Give the recursion a base case, or turn very deep recursion into a loop.
+"Why is the limit so small when my laptop has gigabytes of memory?" A thread's stack is one fixed-size block that the OS sets up, and frames sit side by side inside it. V8 also sets its own, smaller limit on how much of that stack JavaScript may use: 984 KB by default (`node --v8-options` describes `--stack-size=984` as the "default size of stack region v8 is allowed to use"). Run the code below to count how many frames fit. On Node v26, it counted 12,517 frames on the machine used for this lesson. Bigger frames mean fewer calls. Java works the same way. `-Xss` sets the stack size per thread (1024 KB by default on Linux x64), and running out throws `StackOverflowError`.
 
 <Code runnable code={`let depth = 0;
 function dive() {
@@ -549,15 +571,17 @@ try {
   console.log("frames before the overflow:", depth);
 }`} />
 
-<Sidenote>The specification does describe one way around this, called proper tail calls. In strict mode, when a function's last act is to return another call, the spec discards the current frame before that call ([PrepareForTailCall](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-preparefortailcall)). V8 does not do this. In Node v26, a strict-mode function that ends with `return count(n - 1)` still overflows at a depth of 100,000.</Sidenote>
+The specification sets no limit and names no error for this, so the overflow itself is engine behaviour. MDN lists `RangeError` in Chrome and Safari, but `InternalError: too much recursion` in Firefox ([MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion)). Those are engine choices. The fix is in your code. Give the recursion a base case, or turn very deep recursion into a loop.
+
+The specification does describe one way around this, called proper tail calls. In strict mode, when a function's last act is to return another call, the spec discards the current frame before that call ([PrepareForTailCall](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-preparefortailcall)). V8 does not do this. In Node v26, a strict-mode function that ends with `return count(n - 1)` still overflows at a depth of 100,000.
+
+</Deeper>
 
 </Segment>
 
-<Segment id="s16-heap" goal="Objects live in the heap, whose data outlives the call that made it, and garbage collection frees it later">
+<Segment id="s16-heap" goal="Where objects live, and what happens to one when the call that made it returns">
 
-Frames have a short life. When a call returns, its frame leaves the call stack, and its local variables can no longer be reached through that call. (Lesson 1.3 shows the one way they can survive.) But code often needs data to live longer than the call that made it. A helper function creates an object and returns it, and later code reads it.
-
-In the Predict, `makeUser` creates an object and returns it. By the time the last line runs, the frame for `makeUser` is already gone.
+<Viz example="make-user" view="both" gate="p-survive" pauseAt={[4]} title="makeUser returns an object" />
 
 <Predict
   id="p-survive"
@@ -577,17 +601,29 @@ console.log(u.name);`}
   explain="A frame disappears when its call returns, but objects live in the heap and stay as long as something can reach them."
 />
 
-It prints `Asha`. The variable `user` belonged to `makeUser`'s frame, and that frame is gone. A variable holds a way to reach an object, not the object itself (lesson 1.1 shows this). The object stays usable because `u` still refers to it. In the usual engine model, objects live outside frames, in a region of memory for data whose lifetime is not tied to one call. This region is the <Term id="heap">heap</Term>. MDN calls it "just a name to denote a large (mostly unstructured) region of memory".
+<Deeper title="The heap, and who frees memory">
 
-Who removes objects from the heap? In C you would call `free()`. In JavaScript, MDN says JavaScript the engine "automatically allocates memory when objects are created and frees it when they are not used anymore". An object that nothing can reach becomes eligible to be freed, and the engine may reuse its memory later. This is <Term id="garbage-collection">garbage collection</Term>. An object you forgot but can still reach, say in a cache that only grows, is never freed. Lesson 1.9 covers such leaks.
+Objects live outside frames, in a region of memory whose data is not tied to one call: the <Term id="heap">heap</Term>. An object stays while something can still reach it. Once nothing can, the engine may free its memory later. That is <Term id="garbage-collection">garbage collection</Term>.
 
-You may ask, "So numbers live on the stack and objects on the heap?" It is a common rule of thumb, not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
+A frame's local variables can no longer be reached through that call once it returns. (Lesson 1.3 shows the one way they can survive.) A variable holds a way to reach an object, not the object itself (lesson 1.1 shows this). MDN calls the heap "just a name to denote a large (mostly unstructured) region of memory".
+
+In C you would call `free()`. JavaScript does it for you. MDN says JavaScript "automatically allocates memory when objects are created and frees it when they are not used anymore". An object that nothing can reach becomes eligible to be freed, and the engine may reuse its memory later. An object you forgot but can still reach, say in a cache that only grows, is never freed. Lesson 1.9 covers such leaks.
+
+"So numbers live on the stack and objects on the heap?" It is a common rule of thumb, not a rule of JavaScript. The specification never mentions a stack region or a heap. Where values are stored is the engine's choice. V8 can even skip creating an object that never leaves its function.
+
+</Deeper>
 
 </Segment>
 
 <Segment id="s17-map" goal="Sort every fact in this lesson into general computing, JavaScript spec, or V8 choice">
 
-Interview answers often mix four kinds of facts: general computing, the JavaScript spec, the runtime, and V8. Pick the one item the language itself promises.
+<Figure diagram="fact-sorter" title="Four kinds of fact" gate="p-which-rule">
+  <Step>Interview answers often mix four kinds of facts. To sort a fact, ask one question: would it still hold in Firefox, and in next year's V8?</Step>
+  <Step>General computing: true of every computer, whatever language runs on it.</Step>
+  <Step>The JavaScript spec: rules every engine must follow, in every browser and in Node.</Step>
+  <Step>The runtime: what the browser or Node adds around the engine. Code that uses these can work in one runtime and fail in another.</Step>
+  <Step>V8: choices one engine makes today. Firefox may do them differently, and so may next year's V8.</Step>
+</Figure>
 
 <Predict
   id="p-which-rule"
@@ -602,24 +638,16 @@ Interview answers often mix four kinds of facts: general computing, the JavaScri
   explain="The specification promises behaviour: results, errors and their order. Speed, compilation, stack size and memory layout belong to the engine."
 />
 
-For a new fact, ask whether it would still hold in Firefox and in next year's V8. If not, it is an engine detail.
-
-| Fact | Kind |
-|---|---|
-| CPUs run only their own machine code | General computing |
-| Memory is bytes with numbered addresses | General computing |
-| Processes have separate memory; a process's threads share it | General computing |
-| Early errors stop the whole script | JavaScript spec |
-| One job runs at a time, to completion | JavaScript spec |
-| Calls push contexts, the top one runs | JavaScript spec (a model) |
-| `document`, `setTimeout`, `console` | Runtime |
-| Bytecode, the four tiers, deopt | V8 |
-| 984 KB stack limit, its error message | V8 |
-| Where values are stored | V8 |
-
 </Segment>
 
 <Segment id="s18-wild" goal="One thread, one stack and a JIT show up in Express servers, React apps and the JVM">
+
+<Figure diagram="blocked-server" title="One slow handler, every user waits">
+  <Step>An Express server runs every request handler on one JavaScript thread, the main thread. Node also keeps a pool of helper threads. Requests A, B and C arrive close together.</Step>
+  <Step>Sync version. A's handler derives an encryption key from a password with `crypto.pbkdf2Sync`. That heavy work runs on the main thread, so B and C wait.</Step>
+  <Step>B and C, from other users, run only after A finishes. One slow synchronous handler delays every user of the server.</Step>
+  <Step>Callback version. `crypto.pbkdf2` derives the key on Node's helper threads, which never run your JavaScript. B and C run right away, one after another on the main thread. A's callback answers once the key is ready.</Step>
+</Figure>
 
 <Code code={`// salt and encrypt stand for your own code.
 // Before: this slow handler blocks every request on the server.
@@ -637,7 +665,9 @@ app.post("/secrets", (req, res, next) => {
   });
 });`} />
 
-**Express.** An Express server runs every request handler on one JavaScript thread. A handler that does heavy CPU work synchronously blocks every other request until it finishes. The Node docs warn that "if the Event Loop spends too long at any point, all current and new clients will not get a turn" ([Don't block the event loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)). The event loop is the loop on that thread that picks the next waiting callback and runs it. Lesson 1.7 covers it. Suppose a secrets service derives an encryption key from a password, as in the code above. `crypto.pbkdf2Sync` does that work on the main thread and blocks it. The callback version, `crypto.pbkdf2`, runs the work on Node's pool of helper threads, which the same page lists among its Worker Pool APIs.
+<Deeper title="A chess server, React and Java">
+
+The Node docs warn that "if the Event Loop spends too long at any point, all current and new clients will not get a turn" ([Don't block the event loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop)). The event loop is the loop on that thread that picks the next waiting callback and runs it. Lesson 1.7 covers it. The same page lists `crypto.pbkdf2` among its Worker Pool APIs.
 
 <Code code={`// A chess server using the ws package.
 wss.on("connection", (socket) => {
@@ -658,6 +688,8 @@ wss.on("connection", (socket) => {
 // StackOverflowError                    RangeError: Maximum call stack size exceeded
 // OutOfMemoryError: Java heap space     FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory`} />
 
+</Deeper>
+
 </Segment>
 
 <Segment id="s19-misconceptions" goal="Name the wrong models this lesson broke and what replaced each">
@@ -667,7 +699,7 @@ wss.on("connection", (socket) => {
 | Files run line by line | The whole script is parsed first. |
 | A second `let` replaces the first | It is an early error. |
 | Uncalled code is never checked | Its early errors still stop the script. |
-| JavaScript is compiled before it runs | V8 compiles on first call, then hot code. |
+| JavaScript is compiled before it runs | V8 compiles most functions on first call, then hot code. |
 | A byte holds any number | A byte holds 0 to 255. |
 | Tabs share variables | Each page has its own. |
 | A timer can interrupt running code | Each job runs to completion. |

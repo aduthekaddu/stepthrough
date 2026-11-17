@@ -1,0 +1,452 @@
+{
+  "id": "make-user",
+  "host": "neutral",
+  "granularity": "statement",
+  "source": "function makeUser() {\n  const user = { name: \"Asha\" };\n  return user;\n}\nconst u = makeUser();\nconsole.log(u.name);\n",
+  "frames": [
+    {
+      "step": 0,
+      "kind": "start",
+      "span": null,
+      "stack": [],
+      "envs": [],
+      "heap": [],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 1,
+      "kind": "statement",
+      "span": {
+        "startLine": 5,
+        "startCol": 1,
+        "endLine": 5,
+        "endCol": 21
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "makeUser",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "u",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "makeUser",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Only the script's own frame is on the stack. makeUser exists, but it has not run yet."
+    },
+    {
+      "step": 2,
+      "kind": "enter",
+      "span": {
+        "startLine": 2,
+        "startCol": 3,
+        "endLine": 2,
+        "endCol": 32
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "makeUser",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "makeUser",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "u",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "makeUser() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "makeUser",
+          "arrow": false,
+          "envId": "env0"
+        }
+      ],
+      "console": [],
+      "narration": "Calling makeUser pushes its frame. Its box has a name, user, with no value yet."
+    },
+    {
+      "step": 3,
+      "kind": "statement",
+      "span": {
+        "startLine": 3,
+        "startCol": 3,
+        "endLine": 3,
+        "endCol": 14
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "makeUser",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "makeUser",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "u",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "makeUser() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "makeUser",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "The object { name: \"Asha\" } is not inside the frame. It sits outside the stack, in the heap: memory whose data is not tied to one call. user points to it."
+    },
+    {
+      "step": 4,
+      "kind": "return",
+      "span": {
+        "startLine": 3,
+        "startCol": 10,
+        "endLine": 3,
+        "endCol": 10
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        },
+        {
+          "callId": "call1",
+          "fn": "makeUser",
+          "envId": "env1"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "makeUser",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "u",
+              "decl": "const",
+              "state": {
+                "kind": "uninitialized"
+              }
+            }
+          ]
+        },
+        {
+          "id": "env1",
+          "kind": "function",
+          "label": "makeUser() call",
+          "parentId": "env0",
+          "bindings": [
+            {
+              "name": "user",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "makeUser",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": null
+    },
+    {
+      "step": 5,
+      "kind": "statement",
+      "span": {
+        "startLine": 6,
+        "startCol": 1,
+        "endLine": 6,
+        "endCol": 20
+      },
+      "stack": [
+        {
+          "callId": "call0",
+          "fn": "(script)",
+          "envId": "env0"
+        }
+      ],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "makeUser",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "u",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "makeUser",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [],
+      "narration": "makeUser returned, so its frame and its name user are gone. The object stays, because u can still reach it. Once nothing can, the engine may free it later: garbage collection."
+    },
+    {
+      "step": 6,
+      "kind": "end",
+      "span": null,
+      "stack": [],
+      "envs": [
+        {
+          "id": "env0",
+          "kind": "global",
+          "label": "Global",
+          "parentId": null,
+          "bindings": [
+            {
+              "name": "makeUser",
+              "decl": "function",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj0"
+              }
+            },
+            {
+              "name": "u",
+              "decl": "const",
+              "state": {
+                "kind": "ref",
+                "heapId": "obj1"
+              }
+            }
+          ]
+        }
+      ],
+      "heap": [
+        {
+          "id": "obj0",
+          "kind": "function",
+          "name": "makeUser",
+          "arrow": false,
+          "envId": "env0"
+        },
+        {
+          "id": "obj1",
+          "kind": "object",
+          "className": null,
+          "props": [
+            {
+              "key": "name",
+              "value": {
+                "kind": "primitive",
+                "type": "string",
+                "text": "\"Asha\""
+              }
+            }
+          ]
+        }
+      ],
+      "console": [
+        "Asha"
+      ],
+      "narration": "u.name followed u to the object and printed Asha."
+    }
+  ],
+  "uncaught": null
+}

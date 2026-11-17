@@ -319,14 +319,16 @@ misconceptions:
   - FND-STACK-IS-ALL-MEMORY
   - FND-RETURN-FREES-ALL
 
-# Words are prose words per segment (lead-in + after the reveal). Minutes are approximate.
+# Visual-first (DECISIONS.md 2026-11-16): each segment opens with its `visual`, whose captions
+# carry the explanation, about 35 words per step. `words` is prose outside the captions and outside
+# Go deeper. Everything else the segment used to say sits in its Go deeper block. Minutes are approximate.
 segments:
   - id: s01-hook
     goal: "Running a file is not reading it one line at a time"
     minutes: 4
     terms_introduced: []
     terms_used: []
-    words: 40-70
+    words: 0-40
     code: examples in index (p-hook)
     interaction: { kind: predict, id: p-hook }
     doubt: null
@@ -335,8 +337,9 @@ segments:
     minutes: 3
     terms_introduced: [program, source-code, cpu]
     terms_used: []
-    words: 120-160
+    words: 0-40
     code: "add(2, 3) and add.toString() (runnable)"
+    visual: { component: Figure, diagram: text-vs-chip }
     interaction: { kind: run }
     doubt: "If the computer runs my JavaScript, surely the chip understands JavaScript?"
   - id: s03-machine-code
@@ -344,8 +347,9 @@ segments:
     minutes: 4
     terms_introduced: [machine-code, byte, compiler]
     terms_used: [cpu, source-code, program]
-    words: 150-190
+    words: 0-40
     code: "C add() compiled by gcc to 8d 04 37 c3 (measured m-machine-code)"
+    visual: { component: Figure, diagram: machine-code }
     interaction: { kind: explain, id: e-cpu }
     doubt: "Why can't one set of bytes run on every computer?"
   - id: s04-memory
@@ -353,9 +357,9 @@ segments:
     minutes: 4
     terms_introduced: [memory, address]
     terms_used: [byte, cpu, program]
-    words: 200-240
+    words: 0-40
     code: "Uint8Array as a model of a few bytes"
-    visual: "still: row of numbered boxes, address under each box"
+    visual: { component: Figure, diagram: memory-bytes }
     interaction: { kind: predict, id: p-byte }
     doubt: "Is a Uint8Array real memory?"
   - id: s05-process
@@ -363,8 +367,9 @@ segments:
     minutes: 4
     terms_introduced: [operating-system, process]
     terms_used: [memory, address, program]
-    words: 220-260
+    words: 0-40
     code: "/proc/self/maps from two node runs (measured m-maps)"
+    visual: { component: Figure, diagram: process-memory }
     interaction: { kind: predict, id: p-tabs }
     doubt: "Are two browser tabs two processes?"
   - id: s06-thread
@@ -372,7 +377,12 @@ segments:
     minutes: 4
     terms_introduced: [thread]
     terms_used: [process, memory, cpu]
-    words: 230-270
+    words: 0-40
+    visual:
+      [
+        { component: Figure, diagram: threads },
+        { component: Figure, diagram: busy-loop, gate: p-busy },
+      ]
     interaction: { kind: predict, id: p-busy }
     doubt: "If the computer has many cores, why does my loop block the timer?"
   - id: s07-interpreter
@@ -380,8 +390,9 @@ segments:
     minutes: 4
     terms_introduced: [interpreter, bytecode]
     terms_used: [compiler, machine-code, cpu, source-code]
-    words: 180-220
+    words: 0-40
     code: "C path vs Java path (javac, JVM -Xmixed)"
+    visual: { component: Figure, diagram: compile-vs-interpret }
     interaction: { kind: explain, id: e-compile }
     doubt: "So is Java compiled or interpreted?"
   - id: s08-engine-host
@@ -389,7 +400,8 @@ segments:
     minutes: 4
     terms_introduced: [engine, runtime]
     terms_used: [interpreter, compiler, source-code]
-    words: 200-240
+    words: 0-40
+    visual: { component: Figure, diagram: engine-runtime }
     interaction: { kind: predict, id: p-host }
     doubt: "Isn't console.log part of JavaScript?"
   - id: s09-parse-first
@@ -397,7 +409,8 @@ segments:
     minutes: 4
     terms_introduced: []
     terms_used: [engine, source-code]
-    words: 220-260
+    words: 0-40
+    visual: { component: Figure, diagram: parse-then-run }
     interaction: { kind: predict, id: p-parse-first, modifies: p-hook }
     doubt: "Why would the language check code that never runs?"
   - id: s10-bytecode
@@ -405,8 +418,9 @@ segments:
     minutes: 4
     terms_introduced: []
     terms_used: [bytecode, interpreter, engine, byte]
-    words: 200-240
+    words: 0-40
     code: "real --print-bytecode output for add (m-bytecode)"
+    visual: { component: Figure, diagram: ignition-bytecode }
     interaction: { kind: predict, id: p-lazy }
     doubt: "Why not turn everything into bytecode at once?"
   - id: s11-jit
@@ -414,7 +428,8 @@ segments:
     minutes: 4
     terms_introduced: [jit]
     terms_used: [bytecode, interpreter, machine-code, compiler, engine]
-    words: 230-270
+    words: 0-40
+    visual: { component: Figure, diagram: jit-tiers }
     interaction: { kind: predict, id: p-faster }
     doubt: "If compiled code is faster, why not compile everything at the start?"
   - id: s12-deopt
@@ -422,8 +437,9 @@ segments:
     minutes: 4
     terms_introduced: []
     terms_used: [jit, bytecode, interpreter, thread]
-    words: 180-220
+    words: 0-40
     code: "real --trace-opt --trace-deopt output (m-trace-opt)"
+    visual: { component: Figure, diagram: deopt, gate: p-deopt }
     interaction: { kind: predict, id: p-deopt, then: { kind: explain, id: e-deopt } }
     doubt: "Does JavaScript use only one thread, then?"
   - id: s13-call-stack
@@ -431,16 +447,9 @@ segments:
     minutes: 5
     terms_introduced: [call-stack, stack-frame]
     terms_used: [thread, memory]
-    words: 180-220
+    words: 50-70
     code: examples/nested-calls.js
-    visual:
-      {
-        component: Viz,
-        view: scope,
-        example: nested-calls,
-        pauseAt: [4],
-        pretrain: "still labelled description of the two columns before stepping",
-      }
+    visual: { component: Viz, view: scope, example: nested-calls, pauseAt: [4] }
     interaction: { kind: predict-next-frame, at: 4 }
     doubt: "Where does sumOfSquares wait while square runs?"
   - id: s14-recursion
@@ -448,7 +457,7 @@ segments:
     minutes: 4
     terms_introduced: []
     terms_used: [call-stack, stack-frame]
-    words: 150-190
+    words: 60-80
     code: examples/factorial.js
     visual: { component: Viz, view: scope, example: factorial, pauseAt: [8] }
     interaction: { kind: predict-next-frame, at: 8 }
@@ -458,7 +467,8 @@ segments:
     minutes: 4
     terms_introduced: []
     terms_used: [call-stack, stack-frame, memory, engine]
-    words: 200-240
+    words: 0-40
+    visual: { component: Figure, diagram: stack-overflow, gate: p-overflow }
     interaction: { kind: predict, id: p-overflow }
     doubt: "Why is the limit so small when my laptop has gigabytes of memory?"
   - id: s16-heap
@@ -466,7 +476,8 @@ segments:
     minutes: 4
     terms_introduced: [heap, garbage-collection]
     terms_used: [stack-frame, call-stack, memory, engine]
-    words: 220-260
+    words: 40-60
+    visual: { component: Viz, view: both, example: make-user, gate: p-survive, pauseAt: [4] }
     interaction: { kind: predict, id: p-survive }
     doubt: "Are numbers on the stack and objects on the heap?"
   - id: s17-map
@@ -474,15 +485,17 @@ segments:
     minutes: 3
     terms_introduced: []
     terms_used: [engine, jit, call-stack, heap, process, thread]
-    words: 160-200
+    words: 0-40
+    visual: { component: Figure, diagram: fact-sorter, gate: p-which-rule }
     interaction: { kind: predict, id: p-which-rule }
   - id: s18-wild
     goal: "One thread, one stack and a JIT show up in Express servers, React apps and the JVM"
     minutes: 4
     terms_introduced: []
     terms_used: [thread, runtime, call-stack, jit, heap, process]
-    words: 220-300 (three paragraphs, each after a code block)
+    words: 0-40
     code: "Express route with pbkdf2Sync vs pbkdf2; chess-server ws handler with a synchronous search; Java vs Node flags and out-of-space errors"
+    visual: { component: Figure, diagram: blocked-server }
     interaction: { kind: code }
     note: "In the wild comes before the misconceptions table, as in the pedagogy.md §5 worked outline. With misconceptions first, the s17 facts table and the misconceptions table ran to 349 words with no interaction between them."
 

@@ -85,7 +85,7 @@ test('the gate locks stepping until the prediction is committed, then asks what 
   await page.goto(PATH);
   const { root, diagram, narration, next } = figure(page, 'closure-scope');
   await expect(next).toHaveAttribute('aria-disabled', 'true');
-  await expect(root).toContainText('Answer the prediction above to start stepping.');
+  await expect(root).toContainText('Answer the prediction next to this figure to start stepping.');
   await diagram.focus();
   await diagram.press('ArrowRight');
   await expect(narration).toContainText('Step 0 of 13.');
@@ -111,3 +111,14 @@ test('the playground has no axe violations', async ({ page }) => {
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 });
+
+for (const scheme of ['light', 'dark'] as const) {
+  test(`every figure step has no axe violations in ${scheme} mode`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto('playground/figures/');
+    const { violations } = await new AxeBuilder({ page }).analyze();
+    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(' | ')}`)).toEqual(
+      [],
+    );
+  });
+}

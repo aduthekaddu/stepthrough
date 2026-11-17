@@ -69,6 +69,7 @@ Every concept also has a fixed place, shape and label, because olive/red and och
 - At 1280px and wider: `[1fr] [prose 66ch] [48px] [sidenotes 240px] [1fr]`.
 - Visualizers break out to `min(1100px, 100vw - 32px)`. One-control widgets stay in the prose column.
 - Side gutter at least 16px at every width.
+- No page scrolls sideways at 360px or wider (`e2e/phone.spec.ts` checks 360, 390 and 430). Code wraps, and a wrapped line hangs its indent by 2ch. Only fenced text diagrams keep their columns and scroll inside their own box.
 
 ## Visualizer panel
 
@@ -80,6 +81,7 @@ A `<figure>` on `--panel`, 1px `--rule` border, 6px radius.
 4. Stepper bar (48px, 56px on touch): Reset, Previous, Play/Pause, Next (32px square, 44px on touch, 1px `--muted` border). A tick ruler fills the rest: 1x8px ticks, every fifth 12px, the current step a 2x20px accent needle and a mono readout `07 / 23`. Steps where something happens get a 4px dot in the concept's colour and shape. Named phases above the ruler jump to their first step. Hover or focus on a tick previews its narration. The ruler drags and answers arrow keys. Keys: `→`/`l` next, `←`/`h` previous, `space` play/pause, `r` reset.
 5. Predict gate: stepping stays locked until the learner commits to the gate question.
 6. Ghost: for one step after a change, the previous state of the changed element stays as a faint outline (transient-information rule from the pedagogy research).
+7. Faded parts in a stepped figure (`Dim`) step every colour down to `--muted` and drop their fills; they never use opacity, so their text keeps AA contrast. `e2e/viz.spec.ts` runs axe on `/playground/figures`, which draws every figure at every step.
 
 ## Motion
 

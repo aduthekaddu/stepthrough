@@ -1,0 +1,413 @@
+/* Stepped figures: docs/design.md "Visualizer panel" and "Motion". The panel frame (border,
+   header, FIG number, gate note) comes from viz.module.css so every figure looks alike. */
+
+/* Card layout: picture, then the caption of the current step, then the stepper. */
+
+.card {
+  margin-block: 8px 24px;
+}
+
+.cardBody {
+  display: grid;
+}
+
+@container (width >= 760px) {
+  .cardBody {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .captions {
+    border-block-start: 0;
+    border-inline-start: 1px solid var(--rule);
+  }
+}
+
+/* --cell is the width of one byte cell; it resolves against the stage's own width. */
+.stage {
+  --cell: clamp(1.75rem, 10.5cqi, 2.75rem);
+  container-type: inline-size;
+  min-inline-size: 0;
+  padding: 16px 12px;
+}
+
+.stage:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+  border-radius: 4px;
+}
+
+/* Every caption sits in one cell, so the tallest sets the height and nothing moves. */
+.captions {
+  display: grid;
+  border-block-start: 1px solid var(--rule);
+}
+
+.caption {
+  grid-area: 1 / 1;
+  padding: 12px 16px;
+  font: 17px / 1.5 var(--serif);
+  visibility: hidden;
+}
+
+.caption[data-active] {
+  visibility: visible;
+}
+
+.caption :global(p) {
+  margin: 0;
+}
+
+/* Parts shared by every diagram */
+
+.reveal {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 120ms var(--ease),
+    visibility 0s linear 120ms;
+}
+
+.reveal[data-show] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 180ms var(--ease);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    translate: 0 6px;
+    transition:
+      opacity 120ms var(--ease),
+      translate 180ms var(--ease),
+      visibility 0s linear 120ms;
+  }
+
+  .reveal[data-show] {
+    translate: 0 0;
+    transition:
+      opacity 180ms var(--ease),
+      translate 180ms var(--ease);
+  }
+}
+
+/* A faded part steps every colour down to --muted instead of losing opacity: text under
+   opacity falls below the 4.5:1 that --muted keeps on the panel. */
+.dimmable {
+  transition: color 120ms var(--ease);
+}
+
+.dimmable[data-dim] {
+  --ink: var(--muted);
+  --accent: var(--muted);
+  --accent-ink: var(--muted);
+  --stack: var(--muted);
+  --heap: var(--muted);
+  --micro: var(--muted);
+  --macro: var(--muted);
+  --net: var(--muted);
+  --error: var(--muted);
+  color: var(--muted);
+}
+
+/* Muted text on a muted tint drops to 4.27:1, so a faded part keeps outlines but no fills. */
+.dimmable[data-dim] * {
+  background-color: transparent;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.flowRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.flowMiddle {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+@container (width >= 520px) {
+  .flowRow,
+  .flowMiddle {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .flowRow > *,
+  .flowMiddle > * {
+    flex: 1 1 0;
+    min-inline-size: 0;
+  }
+
+  .flowRow > .flow,
+  .flowMiddle > .flow {
+    flex: 0 0 auto;
+  }
+}
+
+.unit {
+  position: relative;
+  padding: 8px 10px;
+  border: 1.5px solid var(--muted);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.unit[data-kind="cpu"] {
+  border-color: var(--ink);
+  outline: 1.5px dashed var(--muted);
+  outline-offset: 3px;
+  margin: 4px;
+  text-align: center;
+}
+
+.unit[data-kind="unknown"] {
+  border-style: dashed;
+  text-align: center;
+}
+
+.unit[data-focus] {
+  border-inline-start: 3px solid var(--error);
+}
+
+.unitLabel {
+  margin: 0 0 2px;
+  font: 500 11px / 1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.unitTitle {
+  margin: 0;
+  font: 600 15px / 1.3 var(--sans);
+}
+
+.unit[data-kind="unknown"] .unitTitle {
+  font-size: 22px;
+}
+
+.note {
+  margin: 4px 0 0;
+  font: 13px / 1.35 var(--sans);
+  color: var(--ink);
+}
+
+.source {
+  margin: 6px 0 0;
+  font: 13px / 1.45 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rowLabel {
+  margin: 0 0 6px;
+  font: 500 11px / 1.3 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rowLabel code {
+  text-transform: none;
+  letter-spacing: 0;
+  font: 500 12px / 1.3 var(--mono);
+  color: var(--ink);
+}
+
+.pair {
+  display: grid;
+  gap: 8px;
+}
+
+.pair[data-always] {
+  grid-template-columns: 1fr 1fr;
+}
+
+@container (width >= 420px) {
+  .pair {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.spanAt {
+  display: grid;
+}
+
+/* Arrows: down on a narrow picture, right on a wide one. */
+
+.flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-block-size: 28px;
+  color: var(--muted);
+}
+
+.flow:not([data-show]) {
+  visibility: hidden;
+}
+
+.flowArrow {
+  inline-size: 20px;
+  block-size: 20px;
+  flex: none;
+  overflow: visible;
+}
+
+@container (width >= 520px) {
+  .flow {
+    flex-direction: column;
+  }
+
+  .flowArrow {
+    rotate: -90deg;
+  }
+}
+
+.flowShaft,
+.flowHead {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.flow[data-blocked] .flowShaft {
+  stroke: var(--error);
+  stroke-dasharray: 3 3;
+}
+
+.flow[data-blocked] .flowHead {
+  stroke: var(--error);
+}
+
+.flowCross {
+  fill: none;
+  stroke: var(--error);
+  stroke-width: 2;
+}
+
+.flowLabel {
+  font: 500 12px / 1.2 var(--sans);
+  color: var(--ink);
+  text-align: center;
+}
+
+.flow[data-blocked] .flowLabel {
+  color: var(--error);
+}
+
+/* Bytes: fixed-width cells so brackets underneath line up with them. */
+
+.byteGrid,
+.byteAnatomy {
+  display: grid;
+  justify-content: start;
+  gap: 4px;
+}
+
+.byteGrid[data-wide] {
+  --cell: clamp(4.5rem, 30cqi, 6rem);
+}
+
+.byteGrid[data-small] {
+  --cell: clamp(1.4rem, 8.5cqi, 2.2rem);
+}
+
+.bits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-block-start: 8px;
+}
+
+.bytes {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--cell, 2.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* `.bytes > .byte` beats the prose rule `li + li { margin-top }` from the lesson column. */
+.bytes > .byte {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  margin: 0;
+}
+
+.byteAt {
+  font: 500 11px / 1 var(--sans);
+  color: var(--muted);
+}
+
+.byteValue {
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding: 6px 0;
+  border: 1.5px solid var(--muted);
+  border-inline-start-width: 0;
+  background: var(--panel);
+  font: 500 13px / 1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  transition:
+    color 120ms var(--ease),
+    background-color 120ms var(--ease);
+}
+
+.byte:first-child .byteValue {
+  border-inline-start-width: 1.5px;
+  border-start-start-radius: 4px;
+  border-end-start-radius: 4px;
+}
+
+.byte:last-child .byteValue {
+  border-start-end-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+.byte[data-focus] .byteValue {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+.byte[data-dim] .byteValue {
+  color: var(--muted);
+}
+
+.spans {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--cell, 2.5rem);
+  gap: 0;
+}
+
+/* A bracket under its cells: two ticks up and a line, then the label. */
+.span {
+  position: relative;
+  padding: 12px 2px 0;
+  font: 12px / 1.3 var(--sans);
+  text-align: center;
+}
+
+.span::before {
+  content: "";
+  position: absolute;
+  inset: 2px 4px auto;
+  block-size: 6px;
+  border: 1.5px solid var(--ink);
+  border-block-start: 0;
+}

@@ -25,7 +25,7 @@ byte:
   introducedIn: fnd-how-programs-run
 compiler:
   term: compiler
-  definition: A program that translates code into another form, such as machine code or bytecode, before that code runs.
+  definition: A program that translates code into another form, such as machine code or bytecode. gcc does it ahead of time, before the program runs; a JIT does it while the program runs.
   aliases: [compilers]
   introducedIn: fnd-how-programs-run
 memory:

@@ -33,7 +33,7 @@ export function CodePane({
               <span className={styles.lineNo} aria-hidden="true">
                 {n}
               </span>
-              <span>{text || ' '}</span>
+              <span className={styles.lineText}>{text || ' '}</span>
             </span>
           );
         })}

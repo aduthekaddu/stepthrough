@@ -1,7 +1,6 @@
 'use client';
 
 import type { Trace } from '@stepthrough/trace';
-import { useReducedMotion } from 'motion/react';
 import {
   type KeyboardEvent,
   type ReactNode,
@@ -26,15 +25,24 @@ import {
   recordOwners,
 } from './model.ts';
 import {
+  AUTOPLAY_MS,
   initialPanelState,
   isCorrect,
   isPrompting,
+  lastPreviewable,
   type PanelAction,
   type PanelContext,
   predictTargets,
   reducePanel,
+  stepKeyAction,
 } from './panel-state.ts';
-import { type NextFramePrediction, recordNextFramePrediction, useGateOpen } from './predictions.ts';
+import {
+  GATE_NOTE,
+  type NextFramePrediction,
+  recordNextFramePrediction,
+  useGateOpen,
+} from './predictions.ts';
+import { usePrefersReducedMotion } from './reduced-motion.ts';
 import { type Phase, Stepper } from './Stepper.tsx';
 import styles from './viz.module.css';
 
@@ -50,7 +58,6 @@ export type VizPanelProps = {
   onPredictNext?: ((prediction: NextFramePrediction) => void) | undefined;
 };
 
-const AUTOPLAY_MS = 1200;
 /** A step that arrives sooner than this after the last one skips the animation. */
 const INSTANT_MS = 400;
 const DEFAULT_WIDTH = 640;
@@ -108,15 +115,6 @@ const LEGEND: { concept: Exclude<Concept, 'error'>; label: string; shape: ReactN
 
 const now = () => performance.now();
 
-const SHORTCUTS: Record<string, PanelAction['type']> = {
-  ArrowRight: 'next',
-  l: 'next',
-  ArrowLeft: 'prev',
-  h: 'prev',
-  ' ': 'toggle-play',
-  r: 'reset',
-};
-
 export function VizPanel({
   trace,
   view,
@@ -128,7 +126,11 @@ export function VizPanel({
 }: VizPanelProps) {
   const gateOpen = useGateOpen(gate);
   const last = trace.frames.length - 1;
-  const ctx: PanelContext = useMemo(() => ({ last, pauseAt, gateOpen }), [last, pauseAt, gateOpen]);
+  const reduced = usePrefersReducedMotion();
+  const ctx: PanelContext = useMemo(
+    () => ({ last, pauseAt, gateOpen, autoplay: !reduced }),
+    [last, pauseAt, gateOpen, reduced],
+  );
   const [state, setState] = useState(initialPanelState);
   const dispatch = useCallback(
     (action: PanelAction) => setState((s) => reducePanel(s, action, ctx)),
@@ -187,7 +189,6 @@ export function VizPanel({
     return () => clearInterval(id);
   }, [state.playing, dispatch]);
 
-  const reduced = useReducedMotion() ?? false;
   const mode = { reduced, instant: state.movedAt - state.prevMovedAt < INSTANT_MS };
   const prompting = isPrompting(state, ctx);
   const locked = !gateOpen || prompting;
@@ -196,15 +197,10 @@ export function VizPanel({
   const [focus, setFocus] = useState<Concept | null>(null);
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
-    const type = SHORTCUTS[e.key];
+    const type = stepKeyAction(e);
     if (!type) return;
-    const target = e.target as HTMLElement;
-    const onRange = target instanceof HTMLInputElement && target.type === 'range';
-    if (onRange && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) return;
-    if (target instanceof HTMLButtonElement && e.key === ' ') return;
     e.preventDefault();
-    dispatch({ type, at: now() } as PanelAction);
+    dispatch({ type, at: now() });
   };
 
   const answer = (index: number) => {
@@ -217,7 +213,12 @@ export function VizPanel({
   };
 
   return (
-    <figure className={styles.figure} data-focus={focus ?? undefined} onKeyDown={onKeyDown}>
+    <figure
+      className={styles.figure}
+      data-interaction=""
+      data-focus={focus ?? undefined}
+      onKeyDown={onKeyDown}
+    >
       <figcaption className={styles.header}>
         <span className={styles.label}>{title}</span>
         <ul className={styles.legend} aria-label="Key">
@@ -299,9 +300,7 @@ export function VizPanel({
         </fieldset>
       )}
 
-      {!gateOpen && (
-        <p className={styles.gateNote}>Answer the prediction above to start stepping.</p>
-      )}
+      {!gateOpen && <p className={styles.gateNote}>{GATE_NOTE}</p>}
 
       <Stepper
         step={step}
@@ -309,6 +308,8 @@ export function VizPanel({
         playing={state.playing}
         locked={locked}
         gateOpen={gateOpen}
+        autoplay={!reduced}
+        lastPreviewable={lastPreviewable(state, ctx)}
         concepts={concepts}
         narrations={narrations}
         phases={phases}
