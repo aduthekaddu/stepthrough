@@ -1,0 +1,31 @@
+apps/web/components/figures/diagrams/blocked-server.tsx
+  s_a40494ff401cc2::t_5897862ff60a09 1-116
+apps/web/components/figures/diagrams/busy-loop.tsx
+  s_a40494ff401cc2::t_08f3364b51db9e 1-93
+apps/web/components/figures/diagrams/os-parts.tsx
+  s_a40494ff401cc2::t_86c1d351270304 1-10
+apps/web/components/figures/diagrams/os.module.css
+  s_a40494ff401cc2::t_51a609a575d53b 1-432
+apps/web/components/figures/diagrams/process-memory.tsx
+  s_a40494ff401cc2::t_a6aefb6cba0d9b 1-103
+apps/web/components/figures/diagrams/threads.tsx
+  s_a40494ff401cc2::t_08eb784f7d2a31 1-66
+apps/web/components/figures/registry.ts
+  s_a40494ff401cc2::t_644bcab78e7efe 2-3,9,12,28-30,35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0e44a2ab4467d8ba2da4fb1bb55037824416e061",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
