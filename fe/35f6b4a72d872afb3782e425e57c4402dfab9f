@@ -1,0 +1,24 @@
+apps/web/components/figures/diagrams/engine-runtime.tsx
+  s_a40494ff401cc2::t_9f101b1b64f9c9 1-104
+  s_a40494ff401cc2::t_d6dbd845861262 105-107
+apps/web/components/figures/diagrams/engine.module.css
+  s_a40494ff401cc2::t_17bdcb316e131a 192-193,200-211,216-224
+apps/web/components/figures/registry.ts
+  s_a40494ff401cc2::t_18f6be3157d7dc 3,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fe35f6b4a72d872afb3782e425e57c4402dfab9f",
+  "prompts": {},
+  "sessions": {
+    "s_a40494ff401cc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "abff70c5-30b9-435c-befa-bfb047f0f914",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "aduthekaddu <138025602+aduthekaddu@users.noreply.github.com>"
+    }
+  }
+}
