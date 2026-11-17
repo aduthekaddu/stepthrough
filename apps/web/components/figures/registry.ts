@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import { CompileVsInterpret } from './diagrams/compile-vs-interpret.tsx';
+import { EngineRuntime } from './diagrams/engine-runtime.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
@@ -19,6 +20,7 @@ export const DIAGRAMS = {
   'machine-code': MachineCode,
   'memory-bytes': MemoryBytes,
   'compile-vs-interpret': CompileVsInterpret,
+  'engine-runtime': EngineRuntime,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;

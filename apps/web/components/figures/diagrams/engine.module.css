@@ -189,16 +189,38 @@
   }
 }
 
-/* engine-runtime */
+/* engine-runtime: on a phone both runtimes share one cell and Node takes the browser's place,
+   so the figure stays one screen tall; on a wide stage they sit side by side. */
 
 .runtimes {
   display: grid;
   gap: 12px;
 }
 
+.runtimes > * {
+  grid-area: 1 / 1;
+}
+
+.runtimes > [data-replaced] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 120ms var(--ease),
+    visibility 0s linear 120ms;
+}
+
 @container (width >= 520px) {
   .runtimes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .runtimes > * {
+    grid-area: auto;
+  }
+
+  .runtimes > [data-replaced] {
+    opacity: 1;
+    visibility: visible;
   }
 }
 
