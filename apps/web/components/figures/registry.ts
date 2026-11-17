@@ -1,11 +1,15 @@
 import type { ComponentType } from 'react';
+import { BlockedServer } from './diagrams/blocked-server.tsx';
+import { BusyLoop } from './diagrams/busy-loop.tsx';
 import { Deopt } from './diagrams/deopt.tsx';
 import { FactSorter } from './diagrams/fact-sorter.tsx';
 import { JitTiers } from './diagrams/jit-tiers.tsx';
 import { MachineCode } from './diagrams/machine-code.tsx';
 import { MemoryBytes } from './diagrams/memory-bytes.tsx';
+import { ProcessMemory } from './diagrams/process-memory.tsx';
 import { StackOverflow } from './diagrams/stack-overflow.tsx';
 import { TextVsChip } from './diagrams/text-vs-chip.tsx';
+import { Threads } from './diagrams/threads.tsx';
 
 /** What every diagram receives: the step to draw. Captions live in the lesson, not here. */
 export type DiagramProps = { step: number };
@@ -21,10 +25,14 @@ export const DIAGRAMS = {
   'text-vs-chip': TextVsChip,
   'machine-code': MachineCode,
   'memory-bytes': MemoryBytes,
+  'process-memory': ProcessMemory,
+  threads: Threads,
+  'busy-loop': BusyLoop,
   'jit-tiers': JitTiers,
   deopt: Deopt,
   'stack-overflow': StackOverflow,
   'fact-sorter': FactSorter,
+  'blocked-server': BlockedServer,
 } satisfies Record<string, DiagramSpec>;
 
 export type DiagramName = keyof typeof DIAGRAMS;
